@@ -1,5 +1,11 @@
-import React from 'react';
+import Card from './components/card/Card';
 
 export default function App(): JSX.Element {
-  return <h1>Hello World!</h1>;
+  return (
+    <Card
+      title="This is the title for this card"
+      description="This is the description for this card"
+      buttonText="Click this button"
+    />
+  );
 }
