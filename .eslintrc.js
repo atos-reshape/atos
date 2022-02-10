@@ -18,5 +18,8 @@ module.exports = {
     sourceType: 'module'
   },
   plugins: ['@typescript-eslint', 'prettier', 'import'],
-  rules: { '@typescript-eslint/no-var-requires': 0 }
+  rules: {
+    '@typescript-eslint/no-var-requires': 0,
+    'prettier/prettier': ['error', { endOfLine: 'auto' }]
+  }
 };
