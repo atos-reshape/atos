@@ -9,7 +9,7 @@ import {
 
 interface CardProps {
   title: string;
-  description: string;
+  description?: string;
   buttonText: string;
   onClick?: () => void;
 }
