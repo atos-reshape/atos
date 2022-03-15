@@ -1,29 +1,26 @@
-import {
-    Entity, Property, Unique, Index, PrimaryKey
-} from "@mikro-orm/core";
+import { Entity, Index, PrimaryKey, Property, Unique } from '@mikro-orm/core';
 
 @Entity()
 export class Lobby {
-    // name?: means nullable
+  // name?: means nullable
 
-    @PrimaryKey()
-    id!: string;
-    
-    @Property()
-    @Unique()
-    @Index()
-    code!: string;
+  @PrimaryKey()
+  id!: string;
 
-    @Property()
-    title!: string;
+  @Property()
+  @Unique()
+  @Index()
+  code!: string;
 
-    @Property()
-    cardSetId?: string;
+  @Property()
+  title!: string;
 
-    @Property()
-    createdAt: Date = new Date();
+  @Property()
+  cardSetId?: string;
 
-    @Property({ onUpdate: () => new Date() })
-    updatedAt: Date = new Date();
+  @Property()
+  createdAt: Date = new Date();
 
+  @Property({ onUpdate: () => new Date() })
+  updatedAt: Date = new Date();
 }
