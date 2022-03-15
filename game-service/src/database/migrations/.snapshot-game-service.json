@@ -8,12 +8,12 @@
       "columns": {
         "id": {
           "name": "id",
-          "type": "serial",
-          "unsigned": true,
-          "autoincrement": true,
-          "primary": true,
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
           "nullable": false,
-          "mappedType": "integer"
+          "mappedType": "string"
         },
         "created_at": {
           "name": "created_at",
@@ -46,15 +46,6 @@
         },
         "title": {
           "name": "title",
-          "type": "varchar(255)",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
-          "nullable": false,
-          "mappedType": "string"
-        },
-        "card_set_id": {
-          "name": "card_set_id",
           "type": "varchar(255)",
           "unsigned": false,
           "autoincrement": false,
