@@ -1,9 +1,5 @@
-import { IsArray, IsNotEmpty } from 'class-validator';
-
-export class CreateLobbyDto {
-  @IsNotEmpty()
+export interface CreateLobby {
   title: string;
-
-  @IsArray()
-  cards: string[] = [];
+  cardSetId: string; // UUID
+  // cards: any[]
 }

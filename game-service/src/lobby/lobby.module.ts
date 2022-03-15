@@ -3,11 +3,10 @@ import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { LobbyController } from './lobby.controller';
 import { LobbyService } from './lobby.service';
 import { Lobby } from './lobby.entity';
-import { Round } from '../round/round.entity';
 
 @Module({
-  imports: [MikroOrmModule.forFeature([Lobby, Round])],
+  imports: [MikroOrmModule.forFeature([Lobby])],
   controllers: [LobbyController],
   providers: [LobbyService],
 })
-export class LobbyModule {}
+export class LobbiesModule {}

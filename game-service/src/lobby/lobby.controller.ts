@@ -1,24 +1,18 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import { Body, Controller, Get, Post } from '@nestjs/common';
 import { LobbyService } from './lobby.service';
-import { CreateLobbyDto } from './dto/create-lobby.dto';
-import { Lobby } from './lobby.entity';
+import { CreateLobby } from './dto/create-lobby.dto';
 
 @Controller('lobbies')
 export class LobbyController {
-  constructor(private readonly lobbyService: LobbyService) {}
+  constructor(private readonly lobbiesService: LobbyService) {}
 
   @Get()
-  getLobbies(): Promise<Lobby[]> {
-    return this.lobbyService.getAll();
-  }
-
-  @Get(':id')
-  getLobby(@Param('id') id: string): Promise<Lobby> {
-    return this.lobbyService.getById(id);
+  getLobbies(): Promise<any[]> {
+    return this.lobbiesService.getAll();
   }
 
   @Post()
-  createLobby(@Body() params: CreateLobbyDto): Promise<Lobby> {
-    return this.lobbyService.createNewLobby(params);
+  createLobby(@Body() params: CreateLobby): any {
+    return this.lobbiesService.createNewLobby(params);
   }
 }
