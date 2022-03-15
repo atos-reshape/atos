@@ -6,8 +6,7 @@ on:
       - release*
     paths:
       - web/**
-  pull_request:
-    types: [ opened, synchronize, reopened ]
+
 jobs:
   eslint:
     runs-on: ubuntu-latest
