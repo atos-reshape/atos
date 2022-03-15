@@ -8,12 +8,12 @@
       "columns": {
         "id": {
           "name": "id",
-          "type": "varchar(255)",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
+          "type": "serial",
+          "unsigned": true,
+          "autoincrement": true,
+          "primary": true,
           "nullable": false,
-          "mappedType": "string"
+          "mappedType": "integer"
         },
         "created_at": {
           "name": "created_at",
@@ -53,13 +53,13 @@
           "nullable": false,
           "mappedType": "string"
         },
-        "current_round_id": {
-          "name": "current_round_id",
+        "card_set_id": {
+          "name": "card_set_id",
           "type": "varchar(255)",
           "unsigned": false,
           "autoincrement": false,
           "primary": false,
-          "nullable": true,
+          "nullable": false,
           "mappedType": "string"
         }
       },
@@ -85,15 +85,6 @@
           "unique": true
         },
         {
-          "columnNames": [
-            "current_round_id"
-          ],
-          "composite": false,
-          "keyName": "lobby_current_round_id_unique",
-          "primary": false,
-          "unique": true
-        },
-        {
           "keyName": "lobby_pkey",
           "columnNames": [
             "id"
@@ -104,100 +95,7 @@
         }
       ],
       "checks": [],
-      "foreignKeys": {
-        "lobby_current_round_id_foreign": {
-          "constraintName": "lobby_current_round_id_foreign",
-          "columnNames": [
-            "current_round_id"
-          ],
-          "localTableName": "public.lobby",
-          "referencedColumnNames": [
-            "id"
-          ],
-          "referencedTableName": "public.round",
-          "deleteRule": "set null",
-          "updateRule": "cascade"
-        }
-      }
-    },
-    {
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "varchar(255)",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
-          "nullable": false,
-          "mappedType": "string"
-        },
-        "created_at": {
-          "name": "created_at",
-          "type": "timestamptz(0)",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
-          "nullable": false,
-          "length": 6,
-          "mappedType": "datetime"
-        },
-        "updated_at": {
-          "name": "updated_at",
-          "type": "timestamptz(0)",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
-          "nullable": false,
-          "length": 6,
-          "mappedType": "datetime"
-        },
-        "cards": {
-          "name": "cards",
-          "type": "text[]",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
-          "nullable": false,
-          "mappedType": "array"
-        },
-        "lobby_id": {
-          "name": "lobby_id",
-          "type": "varchar(255)",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
-          "nullable": false,
-          "mappedType": "string"
-        }
-      },
-      "name": "round",
-      "schema": "public",
-      "indexes": [
-        {
-          "keyName": "round_pkey",
-          "columnNames": [
-            "id"
-          ],
-          "composite": false,
-          "primary": true,
-          "unique": true
-        }
-      ],
-      "checks": [],
-      "foreignKeys": {
-        "round_lobby_id_foreign": {
-          "constraintName": "round_lobby_id_foreign",
-          "columnNames": [
-            "lobby_id"
-          ],
-          "localTableName": "public.round",
-          "referencedColumnNames": [
-            "id"
-          ],
-          "referencedTableName": "public.lobby",
-          "updateRule": "cascade"
-        }
-      }
+      "foreignKeys": {}
     }
   ]
 }
