@@ -1,9 +1,10 @@
+import { v4 } from 'uuid';
 import { Entity, PrimaryKey, Property } from '@mikro-orm/core';
 
 @Entity({ abstract: true })
 export abstract class BaseEntity {
   @PrimaryKey()
-  id: number;
+  id: string = v4();
 
   @Property()
   createdAt: Date = new Date();

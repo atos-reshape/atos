@@ -15,7 +15,10 @@ export class LobbyService {
     return this.lobbyRepository.findAll();
   }
 
-  createNewLobby(settings: CreateLobby): Lobby {
-    return this.lobbyRepository.create(settings);
+  async createNewLobby(settings: CreateLobby): Promise<Lobby> {
+    const lobby = this.lobbyRepository.create(settings);
+
+    await this.lobbyRepository.persistAndFlush(lobby);
+    return lobby;
   }
 }
