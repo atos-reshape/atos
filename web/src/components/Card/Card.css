@@ -10,6 +10,12 @@
     text-align: center;
 }
 
+@media screen and (max-width: 564px){
+    .card{
+        width: 50vw;
+    }
+}
+
 .cardtext {
     margin-top: 0px;
 }
