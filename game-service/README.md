@@ -1,36 +1,38 @@
 ## Installation
 
 ```bash
-$ npm install
+$ yarn install
 ```
 
 ## Running the app
 
 ```bash
 # development
-$ npm run start
+$ yarn run start
 
 # watch mode
-$ npm run start:dev
+$ yarn run start:dev
 
 # production mode
-$ npm run start:prod
+$ yarn run start:prod
 ```
 
 ## Test
 
 ```bash
 # unit tests
-$ npm run test
+$ yarn run test
 
 # e2e tests
-$ npm run test:e2e
+$ yarn run test:e2e
 
 # test coverage
-$ npm run test:cov
+$ yarn run test:cov
 ```
 
-### Dependencies
-``
-yarn add @mikro-orm/core @mikro-orm/nestjs @mikro-orm/postgresql
-``
+## Migrations
+
+```bash
+# generate migrations based on schema difference
+$ yarn db:migrate:create
+```
