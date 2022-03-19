@@ -1,5 +1,14 @@
-import { Entity, Index, Property, Unique } from '@mikro-orm/core';
+import {
+  Collection,
+  Entity,
+  Index,
+  OneToMany,
+  OneToOne,
+  Property,
+  Unique,
+} from '@mikro-orm/core';
 import { BaseEntity } from '../database/entities/base-entity.entity';
+import { Round } from '../round/round.entity';
 
 function generateGameCode() {
   let text = '';
@@ -19,4 +28,13 @@ export class Lobby extends BaseEntity {
 
   @Property()
   title!: string;
+
+  @OneToMany({ entity: () => Round, mappedBy: 'lobby', hidden: true })
+  rounds = new Collection<Round>(this);
+
+  @OneToOne(() => Round, (round) => round.currentLobby, {
+    owner: true,
+    nullable: true,
+  })
+  currentRound?: Round;
 }
