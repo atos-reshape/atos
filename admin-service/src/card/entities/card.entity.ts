@@ -5,4 +5,7 @@ import { BaseEntity } from '../../database/entities/base-entity.entity';
 export class Card extends BaseEntity {
   @Property()
   text!: string;
+
+  @Property({ nullable: true })
+  deletedAt?: Date;
 }

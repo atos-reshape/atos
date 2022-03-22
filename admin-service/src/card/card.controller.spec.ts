@@ -106,8 +106,6 @@ describe('CardController', () => {
       const testCard = orm.em.create(Card, card());
       orm.em.persist(testCard);
 
-      jest.spyOn(cardService, 'findOne').mockResolvedValue(testCard);
-
       const deleteResult = await cardController.delete(testCard.id);
       expect(deleteResult).toBeUndefined();
     });
