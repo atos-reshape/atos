@@ -59,7 +59,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       working-directory: ./admin-service
-      DB_NAME: admin-service
+      DB_NAME_TEST: admin-service-test
       DB_USER: postgres
       DB_PASSWORD: postgres
     strategy:
@@ -94,19 +94,9 @@ jobs:
           yarn
         working-directory: ${{ env.working-directory }}
 
-      - name: Run migrations
-        run: |
-           yarn migrate
-        working-directory: ${{ env.working-directory }}
-
       - name: Test
         run: |
           yarn test
-        working-directory: ${{ env.working-directory }}
-
-      - name: E2E tests
-        run: |
-          yarn test:e2e
         working-directory: ${{ env.working-directory }}
 
       - name: Teardown docker
