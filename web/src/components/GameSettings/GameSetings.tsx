@@ -1,22 +1,13 @@
 import { Container, Group, TextInput, Button } from '@mantine/core';
-import React, { useState } from 'react';
+import { useState, useContext } from 'react';
+import Context from '../../pages/context/Context';
 
-// interface Settings {
-//   name: string;
-//   timer: int;
-// }
-interface Props {
-  cards: { cardId: string; cardContent: string; cardsetId: string }[];
-}
-
-function GameSettings(props: Props) {
-  const { cards } = props;
-  const [name, setName] = useState('');
-  const [timer, setTimer] = useState('');
+function GameSettings() {
+  const { cards, title, setTitle, timer, setTimer } = useContext(Context);
 
   function createGame() {
     //replace this with send api
-    console.log({ name: name, timer: parseTimer(timer), cards: cards });
+    console.log({ name: title, timer: parseTimer(timer), cards: cards });
   }
 
   function parseTimer(input: string) {
@@ -35,8 +26,12 @@ function GameSettings(props: Props) {
             placeholder="Game Name"
             label="Game Name"
             required
-            value={name}
-            onChange={(event) => setName(event.currentTarget.value)}
+            value={title}
+            onChange={
+              setTitle
+                ? (event) => setTitle(event.currentTarget.value)
+                : undefined
+            }
           />
 
           <TextInput
@@ -44,7 +39,11 @@ function GameSettings(props: Props) {
             placeholder="mm:ss"
             required
             value={timer}
-            onChange={(event) => setTimer(event.currentTarget.value)}
+            onChange={
+              setTimer
+                ? (event) => setTimer(event.currentTarget.value)
+                : undefined
+            }
           />
 
           <Button onClick={createGame}>Create Game Room</Button>
