@@ -1,13 +1,27 @@
 import { Container, Group, TextInput, Button } from '@mantine/core';
-import { useState, useContext } from 'react';
+import { useContext } from 'react';
 import Context from '../../pages/context/Context';
+import { useCreateLobby } from '../../api/requests/lobbies';
+import { useGetCards } from '../../api/requests/card';
 
 function GameSettings() {
+  const pulledCards = useGetCards();
+  const createLobby = useCreateLobby();
   const { cards, title, setTitle, timer, setTimer } = useContext(Context);
 
   function createGame() {
     //replace this with send api
-    console.log({ name: title, timer: parseTimer(timer), cards: cards });
+    console.log({
+      title: title,
+      timer: parseTimer(timer),
+      cards: pulledCards.data
+    });
+    //send create game request with the needed data
+    createLobby.mutate({
+      title: title,
+      timer: parseTimer(timer),
+      cards: cards.map((card: any) => card.id)
+    });
   }
 
   function parseTimer(input: string) {

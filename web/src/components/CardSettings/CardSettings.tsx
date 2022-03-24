@@ -1,10 +1,11 @@
-import { useContext, useEffect, useState } from 'react';
-import { Container, Group, Select, Button } from '@mantine/core';
+import { useContext, useEffect } from 'react';
+import { Container, Group, Select } from '@mantine/core';
 import Card from '../../components/Card/Card';
 import AddCard from '../../modals/AddCard/AddCard';
 import RemoveCard from '../../modals/RemoveCard/RemoveCard';
-import cardsJson from '../../cards.json';
 import Context from '../../pages/context/Context';
+import { useGetCards } from '../../api/requests/card';
+import AddExistingCard from '../../modals/AddCard/AddExistingCard';
 
 interface CardType {
   value: string;
@@ -12,68 +13,69 @@ interface CardType {
 }
 
 function CardSettings() {
-  const {
-    cards,
-    addCard,
-    selectedCard,
-    selectedCardset,
-    setSelectedCard,
-    setSelectedCardset
-  } = useContext(Context);
+  const { cards, selectedCard, selectedCardset, setSelectedCard } =
+    useContext(Context);
 
+  const pulledCards = useGetCards();
   useEffect(() => {
-    const cardsFile = cardsJson.cards
-      .filter((card) => card.cardsetId === selectedCardset)
-      .map((card) => {
-        return {
-          cardId: card.id,
-          cardContent: card.content,
-          cardsetId: card.cardsetId
-        };
-      });
-
-    // setGameCards(cards);
-    if (addCard) {
-      cards.splice(0, cards.length);
-      cardsFile.map((card) => addCard(card));
-    }
+    // const cardsFile = cardsJson.cards
+    //   .filter((card) => card.cardsetId === selectedCardset)
+    //   .map((card) => {
+    //     return {
+    //       cardId: card.id,
+    //       cardContent: card.content,
+    //       cardsetId: card.cardsetId
+    //     };
+    //   });
+    // const pulledCards = axios
+    //   .get('http://localhost:3002/api/cards')
+    //   .then((response) => {
+    //     console.log(response);
+    //     const filteredCards = response.data.map((card: any) => {
+    //       return {
+    //         cardId: card.id,
+    //         cardContent: card.text,
+    //         cardsetId: selectedCardset
+    //       };
+    //     });
+    //     console.log(filteredCards);
+    //     if (addCard) {
+    //       filteredCards.splice(0, cards.length);
+    //       filteredCards.map((card:any) => addCard(card));
+    //     }
+    //   });
   }, [selectedCardset]);
   return (
     <Container>
       <Group direction="column">
-        <h1>Card Settings</h1>
-        <Select
-          label="Card Set Settings"
-          placeholder="Choose card set to edit"
-          data={[
-            { value: 'preset1', label: 'Preset1' },
-            { value: 'preset2', label: 'Preset2' }
-          ]}
-          value={selectedCardset}
-          onChange={setSelectedCardset}
-        />
         <Select
           label="Cards"
           placeholder="Choose card"
-          data={cardsJson.cards
-            .filter((card) => card.cardsetId === selectedCardset)
-            .map((card): CardType => {
-              return { value: card.id, label: card.id };
-            })}
+          data={
+            pulledCards.data?.map((card: any): CardType => {
+              return { value: card.id, label: card.text };
+            }) || []
+          }
           value={selectedCard}
           onChange={setSelectedCard}
         />
 
         <Card
           CardText={
-            cardsJson.cards.find((card) => card.id === selectedCard)?.content ||
-            ''
+            cards.find((card) => card.id === selectedCard)?.content || ''
           }
         />
         <Group>
           <AddCard />
+          <AddExistingCard />
           <RemoveCard />
         </Group>
+
+        {cards
+          ? cards.map((card: any) => {
+              return <Card CardText={card.text} />;
+            })
+          : null}
       </Group>
     </Container>
   );

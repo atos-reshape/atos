@@ -1,21 +1,18 @@
 import { useState, useContext } from 'react';
-import { Modal, Group, Button, TextInput } from '@mantine/core';
+import { Modal, Group, Button, TextInput, Select } from '@mantine/core';
 import Context from '../../pages/context/Context';
 import { useGetCards } from '../../api/requests/card';
 
 function AddCard() {
   const [opened, setOpened] = useState(false);
-  const [content, setContent] = useState('');
+  const [content, setContent] = useState<string | null>('');
   const { cards, addCard, selectedCardset } = useContext(Context);
   const pulledCards = useGetCards();
 
   function addCardToSet() {
     if (addCard) {
-      addCard({
-        cardId: (cards.length + 2).toString(),
-        cardContent: content,
-        cardPreset: selectedCardset
-      });
+      const card = pulledCards.data.find((card: any) => card.id == content);
+      addCard(card);
     }
     console.log(cards);
   }
@@ -27,19 +24,23 @@ function AddCard() {
         title="Add card to game round"
       >
         <Group direction="column">
-          <TextInput
-            label="Card Content"
-            placeholder="Card Content"
-            required
+          <Select
+            label="Select Card to be added"
+            placeholder="Choose card to be added"
+            data={
+              pulledCards.data?.map((card: any): any => {
+                return { value: card.id, label: card.text };
+              }) || []
+            }
             value={content}
-            onChange={(event) => setContent(event.currentTarget.value)}
+            onChange={setContent}
           />
 
           <Button onClick={addCardToSet}>Add Card To Game Instance</Button>
         </Group>
       </Modal>
 
-      <Button onClick={() => setOpened(true)}>Add Card</Button>
+      <Button onClick={() => setOpened(true)}>Add Card To Round</Button>
     </>
   );
 }

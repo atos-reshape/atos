@@ -19,6 +19,7 @@ export class LobbyController {
 
   @Post()
   createLobby(@Body() params: CreateLobbyDto): Promise<Lobby> {
+    console.log(params);
     return this.lobbyService.createNewLobby(params);
   }
 }

@@ -8,6 +8,7 @@ export const useGameContext = () => {
   const [selectedCardset, setSelectedCardset] = useState<string | null>('');
 
   const addCard = (card: any) => {
+    console.log(card);
     setCards((oldCards: any[]) => {
       return [...oldCards, card];
     });
@@ -21,6 +22,7 @@ export const useGameContext = () => {
 
   return {
     cards,
+    setCards,
     title,
     setTitle,
     timer,
