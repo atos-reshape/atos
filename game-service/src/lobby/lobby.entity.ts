@@ -9,15 +9,7 @@ import {
 } from '@mikro-orm/core';
 import { BaseEntity } from '../database/entities/base-entity.entity';
 import { Round } from '../round/round.entity';
-
-function generateGameCode() {
-  let text = '';
-  const possible = '1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-  for (let i = 0; i < 8; i++)
-    text += possible.charAt(Math.floor(Math.random() * possible.length));
-
-  return text;
-}
+import generateGameCode from '../helpers/gameCodeGenerator.helper';
 
 @Entity()
 export class Lobby extends BaseEntity {

@@ -1,29 +1,28 @@
 {
-  "name": "game-service",
+  "name": "admin-service",
   "version": "0.0.1",
-  "description": "This a the game micro service that will handle the game logic for the Atos game: [RESHAPE]",
-  "author": "Stijn Nooijen",
-  "contributors": [
-    "Stijn Nooijen",
-    "Jelle Huibregtse"
-  ],
+  "description": "This is the admin microservice that will handle all admin operators for the Atos game RESHAPE.",
+  "author": "Jelle Huibregtse",
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
     "prebuild": "rimraf dist",
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
+    "format:check": "prettier --check \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
-    "db:migrate:create": "npx mikro-orm migration:create",
     "start:dev": "nest start --watch",
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
-    "test": "jest",
+    "lint:check": "eslint \"{src,apps,libs,test}/**/*.ts\"",
+    "test": "jest --setupFiles=dotenv/config --forceExit",
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./test/jest-e2e.json"
+    "test:e2e": "jest --config ./test/jest-e2e.json",
+    "create:migration": "mikro-orm migration:create",
+    "migrate": "mikro-orm migration:up"
   },
   "dependencies": {
     "@mikro-orm/cli": "^5.1.0",
@@ -35,11 +34,11 @@
     "@nestjs/config": "^1.2.0",
     "@nestjs/core": "^8.0.0",
     "@nestjs/platform-express": "^8.0.0",
-    "class-transformer": "^0.5.1",
-    "class-validator": "^0.13.2",
+    "@nestjs/swagger": "^5.2.0",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
-    "rxjs": "^7.2.0"
+    "rxjs": "^7.2.0",
+    "swagger-ui-express": "^4.3.0"
   },
   "devDependencies": {
     "@faker-js/faker": "^6.0.0",
