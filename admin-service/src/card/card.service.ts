@@ -66,7 +66,7 @@ export class CardService {
   async delete(id: string): Promise<void> {
     const card = await this.findOne(id);
     if (!card) throw new NotFoundException('Card not found');
-    wrap(card).assign({ ...card, isDeleted: new Date() } as Card);
+    wrap(card).assign({ ...card, deletedAt: new Date() } as Card);
 
     return await this.cardRepository.flush();
   }
