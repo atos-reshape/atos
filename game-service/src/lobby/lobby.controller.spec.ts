@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { LobbyController } from './lobby.controller';
 import { LobbyService } from './lobby.service';
 import { Lobby } from './lobby.entity';
-import { lobby, round } from '../../test/factories';
+import { lobby, round } from '@factories/index';
 import { CreateLobbyDto } from './dto/create-lobby.dto';
 
 describe('LobbyController', () => {

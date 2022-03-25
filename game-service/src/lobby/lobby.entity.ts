@@ -9,7 +9,7 @@ import {
 } from '@mikro-orm/core';
 import { BaseEntity } from '../database/entities/base-entity.entity';
 import { Round } from '../round/round.entity';
-import generateGameCode from '../helpers/gameCodeGenerator.helper';
+import { generateGameCode } from '@helpers/index';
 
 @Entity()
 export class Lobby extends BaseEntity {
