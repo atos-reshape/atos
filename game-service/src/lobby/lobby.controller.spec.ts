@@ -2,43 +2,46 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { LobbyController } from './lobby.controller';
 import { LobbyService } from './lobby.service';
 import { Lobby } from './lobby.entity';
-import { lobby, round } from '@factories/index';
+import { createLobbies, lobby, round } from '@factories/index';
 import { CreateLobbyDto } from './dto/create-lobby.dto';
+import { MikroORM } from '@mikro-orm/core';
+import { MikroOrmModule } from '@mikro-orm/nestjs';
+import config from '../mikro-orm.config';
+import { Round } from '../round/round.entity';
+import { ConfigModule } from '@nestjs/config';
 
 describe('LobbyController', () => {
   let controller: LobbyController;
   let app: TestingModule;
+  let orm: MikroORM;
 
-  const currentRound = round();
-  const lobbies = [lobby(), lobby({ currentRound })];
-  const createdLobby = lobby();
-  const mockLobbyService = {
-    getAll: jest.fn((): Lobby[] => lobbies),
-    getById: jest.fn((id: string) => lobbies.find((value) => value.id == id)),
-    createNewLobby: jest.fn((createLobbyDTO: CreateLobbyDto) => {
-      return {
-        ...createdLobby,
-        title: createLobbyDTO.title,
-        currentRound: {
-          cards: createLobbyDTO.cards,
-        },
-      } as Lobby;
-    }),
-  };
-
-  beforeEach(async () => {
+  beforeAll(async () => {
+    console.log(process.env.DB_NAME_TEST);
     app = await Test.createTestingModule({
+      imports: [
+        ConfigModule.forRoot(),
+        MikroOrmModule.forRoot({
+          ...config,
+          dbName: process.env.DB_NAME_TEST,
+          password: process.env.DB_PASSWORD,
+          user: process.env.DB_USER,
+        }),
+        MikroOrmModule.forFeature({ entities: [Lobby, Round] }),
+      ],
       controllers: [LobbyController],
       providers: [LobbyService],
-    })
-      .overrideProvider(LobbyService)
-      .useValue(mockLobbyService)
-      .compile();
+    }).compile();
 
     controller = app.get<LobbyController>(LobbyController);
+    orm = app.get<MikroORM>(MikroORM);
+  });
+
+  beforeEach(async () => {
+    await orm.getSchemaGenerator().refreshDatabase();
   });
 
   afterAll(async () => {
+    await orm.close();
     await app.close();
   });
 
@@ -48,13 +51,30 @@ describe('LobbyController', () => {
 
   describe('getLobbies', () => {
     it('should return all lobbies', async () => {
-      expect(await controller.getLobbies()).toEqual(lobbies);
+      round({ lobby: lobby({}, orm) }, orm);
+      createLobbies([{}, {}, {}], orm);
+      expect(await controller.getLobbies()).toHaveLength(4);
     });
   });
 
   describe('getLobby', () => {
-    it('should return one specific lobby', async () => {
-      expect(await controller.getLobby(lobbies[0].id)).toEqual(lobbies[0]);
+    describe('with a current round', () => {
+      it('should return one specific lobby', async () => {
+        const defaultLobby = lobby({}, orm);
+        round({ lobby: defaultLobby }, orm);
+        expect(await controller.getLobby(defaultLobby.id)).toEqual(
+          defaultLobby,
+        );
+      });
+    });
+
+    describe('without a current round', () => {
+      it('should return one specific lobby without round', async () => {
+        const withoutRound = lobby({}, orm);
+        expect(await controller.getLobby(withoutRound.id)).toEqual(
+          withoutRound,
+        );
+      });
     });
   });
 
@@ -64,8 +84,7 @@ describe('LobbyController', () => {
         title: 'some-title',
         cards: ['card-id'],
       };
-      expect(await controller.createLobby(request)).toEqual({
-        ...createdLobby,
+      expect(await controller.createLobby(request)).toMatchObject({
         title: request.title,
         currentRound: {
           cards: request.cards,

@@ -15,7 +15,7 @@ export class Round extends BaseEntity {
   cards!: string[];
 
   @ManyToOne({ entity: () => Lobby, wrappedReference: true })
-  lobby!: IdentifiedReference<Lobby>;
+  lobby!: Lobby;
 
   @OneToOne(() => Lobby, (lobby) => lobby.currentRound, {
     hidden: true,

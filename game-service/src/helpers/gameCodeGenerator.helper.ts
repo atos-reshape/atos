@@ -1,4 +1,4 @@
-export function generateGameCode() {
+function generateGameCode() {
   let text = '';
   const possible = '1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ';
   for (let i = 0; i < 6; i++)
@@ -6,3 +6,5 @@ export function generateGameCode() {
 
   return text;
 }
+
+export { generateGameCode };
