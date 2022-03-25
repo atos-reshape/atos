@@ -13,7 +13,6 @@ import { faker } from '@faker-js/faker';
 
 describe('CardController', () => {
   let cardController: CardController;
-  let cardService: CardService;
   let app: TestingModule;
   let orm: MikroORM;
 
@@ -30,7 +29,6 @@ describe('CardController', () => {
       providers: [CardService],
     }).compile();
 
-    cardService = app.get<CardService>(CardService);
     cardController = app.get<CardController>(CardController);
     orm = app.get<MikroORM>(MikroORM);
 
@@ -44,7 +42,7 @@ describe('CardController', () => {
   });
 
   beforeEach(async () => {
-    await orm.em.clear();
+    await orm.getSchemaGenerator().refreshDatabase();
   });
 
   afterAll(async () => {
@@ -53,46 +51,33 @@ describe('CardController', () => {
 
   describe('findAll', () => {
     it('should return an array of cards', async () => {
-      const cards: Card[] = [];
-      cards.push(card());
-      cards.push(card());
-
-      jest.spyOn(cardService, 'findAll').mockResolvedValue(cards);
+      const cards = [orm.em.create(Card, card()), orm.em.create(Card, card())];
+      cards.forEach((card) => orm.em.persist(card));
 
       const findAllResult = await cardController.findAll();
       expect(findAllResult).toMatchObject(cards);
     });
 
     it('should return an empty array if there are no cards', async () => {
-      jest.spyOn(cardService, 'findAll').mockResolvedValue([]);
-
       const findAllResult = await cardController.findAll();
       expect(findAllResult).toMatchObject([]);
     });
 
     it('should return only the active cards', async () => {
-      const cards: Card[] = [];
-      cards.push(card());
-      cards.push(card());
+      const cards = [orm.em.create(Card, card()), orm.em.create(Card, card())];
       cards[0].deletedAt = new Date();
-
-      jest
-        .spyOn(cardService, 'findAll')
-        .mockResolvedValue(cards.filter((c) => !c.deletedAt));
+      cards.forEach((card) => orm.em.persist(card));
 
       const findAllResult = await cardController.findAll();
       expect(findAllResult).toMatchObject([cards[1]]);
     });
 
     it('should return all cards if isActive is true', async () => {
-      const cards: Card[] = [];
-      cards.push(card());
-      cards.push(card());
+      const cards = [orm.em.create(Card, card()), orm.em.create(Card, card())];
       cards[0].deletedAt = new Date();
+      cards.forEach((card) => orm.em.persist(card));
 
-      jest.spyOn(cardService, 'findAll').mockResolvedValue(cards);
-
-      const findAllResult = await cardController.findAll(true);
+      const findAllResult = await cardController.findAll(false);
       expect(findAllResult).toMatchObject(cards);
     });
   });
