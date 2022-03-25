@@ -1,18 +1,9 @@
-import {
-  Body,
-  ClassSerializerInterceptor,
-  Controller,
-  Get,
-  Param,
-  Post,
-  UseInterceptors,
-} from '@nestjs/common';
+import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 import { RoundService } from './round.service';
 import { CreateRoundDto } from './dto/create-round.dto';
 import { RoundResponseDto } from './dto/round-response.dto';
 
 @Controller('lobbies/:lobby_id/rounds')
-@UseInterceptors(ClassSerializerInterceptor)
 export class RoundController {
   constructor(private readonly roundService: RoundService) {}
 

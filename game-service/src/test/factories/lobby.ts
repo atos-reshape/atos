@@ -1,6 +1,6 @@
 import { v4 } from 'uuid';
 import { faker } from '@faker-js/faker';
-import { Lobby } from '../../src/lobby/lobby.entity';
+import { Lobby } from '../../lobby/lobby.entity';
 import { generateGameCode } from '@helpers/index';
 import { MikroORM } from '@mikro-orm/core';
 

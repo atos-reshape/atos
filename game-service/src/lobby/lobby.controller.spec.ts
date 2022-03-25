@@ -6,9 +6,9 @@ import { createLobbies, lobby, round } from '@factories/index';
 import { CreateLobbyDto } from './dto/create-lobby.dto';
 import { MikroORM } from '@mikro-orm/core';
 import { MikroOrmModule } from '@mikro-orm/nestjs';
-import config from '../mikro-orm.config';
 import { Round } from '../round/round.entity';
 import { ConfigModule } from '@nestjs/config';
+import { UseDatabaseTestConfig } from '../test/helpers/database';
 
 describe('LobbyController', () => {
   let controller: LobbyController;
@@ -16,16 +16,10 @@ describe('LobbyController', () => {
   let orm: MikroORM;
 
   beforeAll(async () => {
-    console.log(process.env.DB_NAME_TEST);
     app = await Test.createTestingModule({
       imports: [
         ConfigModule.forRoot(),
-        MikroOrmModule.forRoot({
-          ...config,
-          dbName: process.env.DB_NAME_TEST,
-          password: process.env.DB_PASSWORD,
-          user: process.env.DB_USER,
-        }),
+        UseDatabaseTestConfig(),
         MikroOrmModule.forFeature({ entities: [Lobby, Round] }),
       ],
       controllers: [LobbyController],
@@ -46,7 +40,7 @@ describe('LobbyController', () => {
   });
 
   it('should be defined', () => {
-    expect(controller).toBeDefined();
+    expect(controller).toBeInstanceOf(LobbyController);
   });
 
   describe('getLobbies', () => {
