@@ -7,7 +7,7 @@ services:
     environment:
       POSTGRES_USER: ${DB_USER:-postgres}
       POSTGRES_PASSWORD: ${DB_PASSWORD:-postgres}
-      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_DB: ${DB_NAME_TEST}
       PGDATA: /data/postgres
     volumes:
       - postgres:/data/postgres

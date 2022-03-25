@@ -1,13 +1,14 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AppModule } from './app.module';
 import { CardModule } from './card/card.module';
+import { useDatabaseTestConfig } from '../test/helpers/database';
 
 describe('AppModule', () => {
   let module: TestingModule;
 
   beforeAll(async () => {
     module = await Test.createTestingModule({
-      imports: [AppModule],
+      imports: [useDatabaseTestConfig(), AppModule],
     }).compile();
   });
 

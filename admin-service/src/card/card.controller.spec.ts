@@ -6,10 +6,11 @@ import { CardService } from './card.service';
 import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { Card } from './entities/card.entity';
 import { NotFoundException } from '@nestjs/common';
-import { card } from '../factories/card';
+import { card } from '../../test/factories/card';
 import { MikroORM } from '@mikro-orm/core';
 import { CreateCardDto } from './dtos/create-card.dto';
 import { faker } from '@faker-js/faker';
+import { useDatabaseTestConfig } from '../../test/helpers/database';
 
 describe('CardController', () => {
   let cardController: CardController;
@@ -19,10 +20,7 @@ describe('CardController', () => {
   beforeAll(async () => {
     module = await Test.createTestingModule({
       imports: [
-        MikroOrmModule.forRoot({
-          ...config,
-          dbName: process.env.DB_NAME_TEST,
-        }),
+        useDatabaseTestConfig(),
         MikroOrmModule.forFeature({ entities: [Card] }),
       ],
       controllers: [CardController],

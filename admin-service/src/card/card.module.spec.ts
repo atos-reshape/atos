@@ -1,9 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { MikroOrmModule } from '@mikro-orm/nestjs';
-import config from '../mikro-orm.config';
 import { Card } from './entities/card.entity';
 import { CardController } from './card.controller';
 import { CardService } from './card.service';
+import { useDatabaseTestConfig } from '../../test/helpers/database';
 
 describe('CardModule', () => {
   let module: TestingModule;
@@ -11,10 +11,7 @@ describe('CardModule', () => {
   beforeAll(async () => {
     module = await Test.createTestingModule({
       imports: [
-        MikroOrmModule.forRoot({
-          ...config,
-          dbName: process.env.DB_NAME_TEST,
-        }),
+        useDatabaseTestConfig(),
         MikroOrmModule.forFeature({ entities: [Card] }),
       ],
       controllers: [CardController],
