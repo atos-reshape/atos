@@ -13,11 +13,11 @@ import { faker } from '@faker-js/faker';
 
 describe('CardController', () => {
   let cardController: CardController;
-  let app: TestingModule;
+  let module: TestingModule;
   let orm: MikroORM;
 
   beforeAll(async () => {
-    app = await Test.createTestingModule({
+    module = await Test.createTestingModule({
       imports: [
         MikroOrmModule.forRoot({
           ...config,
@@ -29,8 +29,8 @@ describe('CardController', () => {
       providers: [CardService],
     }).compile();
 
-    cardController = app.get<CardController>(CardController);
-    orm = app.get<MikroORM>(MikroORM);
+    cardController = module.get<CardController>(CardController);
+    orm = module.get<MikroORM>(MikroORM);
 
     // Run the migrations for testing.
     const migrator = orm.getMigrator();
@@ -46,7 +46,7 @@ describe('CardController', () => {
   });
 
   afterAll(async () => {
-    await app.close();
+    await module.close();
   });
 
   describe('findAll', () => {
