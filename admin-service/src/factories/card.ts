@@ -1,6 +1,6 @@
 import { v4 } from 'uuid';
 import { faker } from '@faker-js/faker';
-import { Card } from '../../src/card/entities/card.entity';
+import { Card } from '../card/entities/card.entity';
 
 export const card = (data: Partial<Card> = {}): Card => {
   return {
