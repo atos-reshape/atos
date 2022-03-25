@@ -25,9 +25,9 @@ function RemoveCard() {
             label="Select Card to be removed"
             placeholder="Choose card to be removed"
             data={
-              cards.length == 0
+              cards?.length == 0
                 ? [{ value: 'Loading', label: 'Loading' }]
-                : cards.map((card) => {
+                : cards?.map((card) => {
                     return {
                       key: parseInt(card.cardId),
                       value: card.cardContent,

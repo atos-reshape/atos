@@ -7,11 +7,11 @@ function AddCard() {
   const [opened, setOpened] = useState(false);
   const [content, setContent] = useState<string | null>('');
   const { cards, addCard, selectedCardset } = useContext(Context);
-  const pulledCards = useGetCards();
 
   function addCardToSet() {
     if (addCard) {
-      const card = pulledCards.data.find((card: any) => card.id == content);
+      const card = cards.find((card: any) => card.id == content);
+      card.addedManually = true;
       addCard(card);
     }
     console.log(cards);
@@ -28,7 +28,7 @@ function AddCard() {
             label="Select Card to be added"
             placeholder="Choose card to be added"
             data={
-              pulledCards.data?.map((card: any): any => {
+              cards?.map((card: any): any => {
                 return { value: card.id, label: card.text };
               }) || []
             }

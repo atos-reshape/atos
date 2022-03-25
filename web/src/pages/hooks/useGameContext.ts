@@ -1,15 +1,22 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useGetCards } from '../../api/requests/card';
 
 export const useGameContext = () => {
-  const [cards, setCards] = useState<any[]>([]);
+  const { data, status } = useGetCards();
+  const [cards, setCards] = useState<any[]>(data || []);
   const [title, setTitle] = useState('');
   const [timer, setTimer] = useState('');
   const [selectedCard, setSelectedCard] = useState<string | null>('');
   const [selectedCardset, setSelectedCardset] = useState<string | null>('');
 
+  useEffect(() => {
+    if (status === 'success') setCards(data);
+  }, [data]);
+
   const addCard = (card: any) => {
     console.log(card);
     setCards((oldCards: any[]) => {
+      console.log(oldCards);
       return [...oldCards, card];
     });
   };

@@ -1,10 +1,15 @@
-import { useContext, useEffect } from 'react';
-import { Container, Group, Select } from '@mantine/core';
+import { useContext, useEffect, useState } from 'react';
+import {
+  Container,
+  Group,
+  Select,
+  TransferList,
+  TransferListData
+} from '@mantine/core';
 import Card from '../../components/Card/Card';
 import AddCard from '../../modals/AddCard/AddCard';
 import RemoveCard from '../../modals/RemoveCard/RemoveCard';
 import Context from '../../pages/context/Context';
-import { useGetCards } from '../../api/requests/card';
 import AddExistingCard from '../../modals/AddCard/AddExistingCard';
 
 interface CardType {
@@ -13,38 +18,34 @@ interface CardType {
 }
 
 function CardSettings() {
-  const { cards, selectedCard, selectedCardset, setSelectedCard } =
-    useContext(Context);
+  const {
+    cards,
+    setCards,
+    selectedCard,
+    selectedCardset,
+    setSelectedCard,
+    addCard
+  } = useContext(Context);
 
-  const pulledCards = useGetCards();
+  const [transferListData, setTransferListData] = useState<TransferListData>([
+    [{ value: 'Loading', label: 'Loading', content: 'cardtest1' }],
+    [{ value: 'Loading', label: 'Loading', content: 'cardtest2' }]
+  ]);
   useEffect(() => {
-    // const cardsFile = cardsJson.cards
-    //   .filter((card) => card.cardsetId === selectedCardset)
+    // transferListData[0] = cards
+    //   ?.filter((card) => card.manuallyAdded === undefined)
     //   .map((card) => {
-    //     return {
-    //       cardId: card.id,
-    //       cardContent: card.content,
-    //       cardsetId: card.cardsetId
-    //     };
+    //     return { value: card.id, label: card.text };
     //   });
-    // const pulledCards = axios
-    //   .get('http://localhost:3002/api/cards')
-    //   .then((response) => {
-    //     console.log(response);
-    //     const filteredCards = response.data.map((card: any) => {
-    //       return {
-    //         cardId: card.id,
-    //         cardContent: card.text,
-    //         cardsetId: selectedCardset
-    //       };
-    //     });
-    //     console.log(filteredCards);
-    //     if (addCard) {
-    //       filteredCards.splice(0, cards.length);
-    //       filteredCards.map((card:any) => addCard(card));
-    //     }
-    //   });
-  }, [selectedCardset]);
+    // transferListData[1] = cards?.filter((card) => card.manuallyAdded === true);
+    console.log(cards);
+  }, [cards]);
+
+  function setNewCards(value: any) {
+    if (addCard) addCard({ id: value.value, text: value.label });
+    setTransferListData(value);
+    console.log(cards, transferListData);
+  }
   return (
     <Container>
       <Group direction="column">
@@ -52,7 +53,7 @@ function CardSettings() {
           label="Cards"
           placeholder="Choose card"
           data={
-            pulledCards.data?.map((card: any): CardType => {
+            cards?.map((card: any): CardType => {
               return { value: card.id, label: card.text };
             }) || []
           }
@@ -60,11 +61,12 @@ function CardSettings() {
           onChange={setSelectedCard}
         />
 
-        <Card
-          CardText={
-            cards.find((card) => card.id === selectedCard)?.content || ''
-          }
+        <TransferList
+          value={transferListData}
+          onChange={setNewCards}
+          titles={['Selected Cards for the Round', 'Manually added cards']}
         />
+
         <Group>
           <AddCard />
           <AddExistingCard />
