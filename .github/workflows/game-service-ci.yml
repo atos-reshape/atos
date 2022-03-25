@@ -104,11 +104,6 @@ jobs:
           yarn test
         working-directory: ${{ env.working-directory }}
 
-      - name: E2E tests
-        run: |
-          yarn test:e2e
-        working-directory: ${{ env.working-directory }}
-
       - name: Teardown docker
         run: docker-compose down
         working-directory: ${{ env.working-directory }}
