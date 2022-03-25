@@ -1,7 +1,7 @@
 name: Admin service CI
 
 on:
-  workflow_dispatch
+  workflow_dispatch:
   push:
     branches-ignore:
       - main
