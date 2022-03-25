@@ -75,6 +75,18 @@
       "json",
       "ts"
     ],
+    "coveragePathIgnorePatterns": [
+      "./src/database",
+      "./src/main.ts"
+    ],
+    "coverageThreshold": {
+      "global": {
+        "branches": 90,
+        "functions": 90,
+        "lines": 90,
+        "statements": 90
+      }
+    },
     "rootDir": "src",
     "testRegex": ".*\\.spec\\.ts$",
     "transform": {
@@ -84,7 +96,11 @@
       "**/*.(t|j)s"
     ],
     "coverageDirectory": "../coverage",
-    "testEnvironment": "node"
+    "testEnvironment": "node",
+    "moduleNameMapper": {
+      "^@factories/(.*)$": "<rootDir>/../test/factories/$1",
+      "^@helpers/(.*)$": "<rootDir>/helpers/$1"
+    }
   },
   "mikro-orm": {
     "useTsNode": true,
