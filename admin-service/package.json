@@ -16,9 +16,9 @@
     "start:prod": "node dist/main",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
     "lint:check": "eslint \"{src,apps,libs,test}/**/*.ts\"",
-    "test": "jest --setupFiles=dotenv/config --forceExit",
-    "test:watch": "jest --watch --setupFiles=dotenv/config --forceExit",
-    "test:cov": "jest --coverage --setupFiles=dotenv/config --forceExit",
+    "test": "jest --runInBand --setupFiles=dotenv/config --forceExit",
+    "test:watch": "jest --runInBand --watch --setupFiles=dotenv/config --forceExit",
+    "test:cov": "jest --runInBand --coverage --setupFiles=dotenv/config --forceExit",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "create:migration": "mikro-orm migration:create",
     "migrate": "mikro-orm migration:up"
