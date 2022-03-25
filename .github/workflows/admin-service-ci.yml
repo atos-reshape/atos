@@ -1,12 +1,13 @@
 name: Admin service CI
 
 on:
+  workflow_dispatch
   push:
     branches-ignore:
       - main
       - release*
     paths:
-      - admin-service/**
+      - admin-service/*
 
 jobs:
   eslint:
