@@ -6,9 +6,10 @@ import {
   Param,
   Post,
   Put,
+  Query,
 } from '@nestjs/common';
 import { CardService } from './card.service';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CreateCardDto } from './dtos/create-card.dto';
 import { Card } from './entities/card.entity';
 
@@ -18,10 +19,11 @@ export class CardController {
   constructor(private readonly cardService: CardService) {}
 
   @ApiOperation({ summary: 'Get all cards' })
+  @ApiQuery({ name: 'isActive' })
   @ApiResponse({ status: 200, description: 'Returned all cards' })
   @Get()
-  async findAll(): Promise<Card[]> {
-    return this.cardService.findAll();
+  async findAll(@Query('isActive') isActive = true): Promise<Card[]> {
+    return this.cardService.findAll(isActive);
   }
 
   @ApiOperation({ summary: 'Get card by id' })
