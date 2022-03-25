@@ -1,5 +1,5 @@
 import { v4 } from 'uuid';
-import { Round } from '../../src/round/round.entity';
+import { Round } from '../../round/round.entity';
 import { faker } from '@faker-js/faker';
 import { MikroORM } from '@mikro-orm/core';
 

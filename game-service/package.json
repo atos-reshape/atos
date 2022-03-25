@@ -12,19 +12,18 @@
   "scripts": {
     "prebuild": "rimraf dist",
     "build": "nest build",
-    "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
-    "format:check": "prettier --check \"src/**/*.ts\" \"test/**/*.ts\"",
+    "format": "prettier --write \\\"src/**/*.ts\\\" \\\"src/test/**/*.ts\\\"",
+    "format:check": "prettier --check \\\"src/**/*.ts\\\" \\\"src/test/**/*.ts\\\"",
     "start": "nest start",
     "start:dev": "nest start --watch",
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
     "lint:check": "eslint \"{src,apps,libs,test}/**/*.ts\"",
-    "test": "jest",
-    "test:watch": "jest --watch",
-    "test:cov": "jest --coverage",
+    "test": "jest --runInBand",
+    "test:watch": "jest --runInBand --watch",
+    "test:cov": "jest --runInBand --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./test/jest-e2e.json",
     "migrate:create": "npx mikro-orm migration:create",
     "migrate": "mikro-orm migration:up"
   },
@@ -77,7 +76,9 @@
     ],
     "coveragePathIgnorePatterns": [
       "./src/database",
-      "./src/main.ts"
+      "./src/main.ts",
+      "./src/app.module.ts",
+      "./src/test"
     ],
     "coverageThreshold": {
       "global": {
@@ -98,7 +99,7 @@
     "coverageDirectory": "../coverage",
     "testEnvironment": "node",
     "moduleNameMapper": {
-      "^@factories/(.*)$": "<rootDir>/../test/factories/$1",
+      "^@factories/(.*)$": "<rootDir>/test/factories/$1",
       "^@helpers/(.*)$": "<rootDir>/helpers/$1"
     }
   },

@@ -59,7 +59,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       working-directory: ./game-service
-      DB_NAME: game-service
+      DB_NAME_TEST: game-service
       DB_USER: postgres
       DB_PASSWORD: postgres
     strategy:
