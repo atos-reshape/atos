@@ -59,7 +59,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       working-directory: ./admin-service
-      DB_NAME_TEST: admin-service-test
+      DB_NAME: admin-service-test
       DB_USER: postgres
       DB_PASSWORD: postgres
     strategy:
