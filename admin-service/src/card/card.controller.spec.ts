@@ -1,4 +1,3 @@
-import config from '../mikro-orm.config';
 import { v4 } from 'uuid';
 import { Test, TestingModule } from '@nestjs/testing';
 import { CardController } from './card.controller';
