@@ -1,21 +1,31 @@
 import { Exclude, Expose } from 'class-transformer';
 import { Round } from '../round.entity';
+import { ApiProperty } from '@nestjs/swagger';
 
 @Exclude()
 export class RoundResponseDto {
+  @ApiProperty()
   @Expose()
   id: string;
+
+  @ApiProperty()
   @Expose()
   cards: string[];
+
+  @ApiProperty()
   @Expose()
   createdAt: Date;
+
+  @ApiProperty()
   @Expose()
   updatedAt: Date;
+
+  @ApiProperty()
   @Expose()
-  roundId: string;
+  lobbyId: string;
 
   constructor(partial: Partial<Round>) {
     Object.assign(this, partial);
-    this.roundId = partial.lobby.id;
+    this.lobbyId = partial.lobby.id;
   }
 }

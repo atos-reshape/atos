@@ -3,12 +3,15 @@ import { LobbyController } from './lobby.controller';
 import { LobbyService } from './lobby.service';
 import { Lobby } from './lobby.entity';
 import { createLobbies, lobby, round } from '@factories/index';
-import { CreateLobbyDto } from './dto/create-lobby.dto';
 import { MikroORM } from '@mikro-orm/core';
 import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { Round } from '../round/round.entity';
 import { ConfigModule } from '@nestjs/config';
 import { UseDatabaseTestConfig } from '../test/helpers/database';
+import { LobbyResponseDto, CreateLobbyDto } from './dto';
+import { v4 } from 'uuid';
+import { NotFoundException } from '@nestjs/common';
+import { validate } from 'class-validator';
 
 describe('LobbyController', () => {
   let controller: LobbyController;
@@ -62,6 +65,14 @@ describe('LobbyController', () => {
       });
     });
 
+    describe('with non existing lobby id', () => {
+      it('should return 404', async () => {
+        await expect(controller.getLobby(v4())).rejects.toThrowError(
+          NotFoundException,
+        );
+      });
+    });
+
     describe('without a current round', () => {
       it('should return one specific lobby without round', async () => {
         const withoutRound = lobby({}, orm);
@@ -73,17 +84,42 @@ describe('LobbyController', () => {
   });
 
   describe('createLobby', () => {
-    it('should create a new lobby including a new round', async () => {
+    describe('with correct request body', () => {
       const request: CreateLobbyDto = {
         title: 'some-title',
         cards: ['card-id'],
       };
-      expect(await controller.createLobby(request)).toMatchObject({
-        title: request.title,
-        currentRound: {
-          cards: request.cards,
-        },
-      } as Lobby);
+
+      it('should create a new lobby including a new round', async () => {
+        expect(await controller.createLobby(request)).toMatchObject({
+          title: request.title,
+          currentRound: {
+            cards: request.cards,
+          },
+        } as LobbyResponseDto);
+      });
+    });
+
+    describe('with incorrect request body', () => {
+      const request: CreateLobbyDto = new CreateLobbyDto({
+        title: undefined,
+        cards: ['card-id'],
+      });
+
+      it('should return correct validation errors', async () => {
+        expect(await validate(request)).toMatchObject([
+          {
+            property: 'title',
+            value: undefined,
+          },
+        ]);
+      });
+
+      it('should return new validation error', async () => {
+        await expect(() => controller.createLobby(request)).rejects.toThrow(
+          "Value for Lobby.title is required, 'undefined' found",
+        );
+      });
     });
   });
 });
