@@ -8,8 +8,10 @@ import { Round } from './round.entity';
 import { RoundController } from './round.controller';
 import { RoundService } from './round.service';
 import { round, lobby } from '@factories/index';
-import { CreateRoundDto } from './dto/create-round.dto';
-import { RoundResponseDto } from './dto/round-response.dto';
+import { v4 } from 'uuid';
+import { CreateRoundDto, RoundResponseDto } from './dto';
+import { NotFoundException } from '@nestjs/common';
+import { validate } from 'class-validator';
 
 describe('RoundController', () => {
   let controller: RoundController;
@@ -51,21 +53,56 @@ describe('RoundController', () => {
         {
           id: myRound.id,
           cards: myRound.cards,
-          roundId: myRound.lobby.id,
+          lobbyId: myRound.lobby.id,
         } as RoundResponseDto,
       ]);
     });
   });
 
   describe('createRound', () => {
-    it('should create a new round and assign as current round', async () => {
-      const existingLobby: Lobby = lobby({}, orm);
-      const request: CreateRoundDto = {
-        cards: ['id-1', 'id-2'],
-      };
-      expect(
-        await controller.createRound(existingLobby.id, request),
-      ).toMatchObject({ cards: request.cards } as RoundResponseDto);
+    const request: CreateRoundDto = {
+      cards: ['id-1', 'id-2'],
+    };
+
+    describe('for an existing lobby', () => {
+      it('should create a new round and assign as current round', async () => {
+        const existingLobby: Lobby = lobby({}, orm);
+        expect(
+          await controller.createRound(existingLobby.id, request),
+        ).toMatchObject({ cards: request.cards } as RoundResponseDto);
+      });
+    });
+
+    describe('for a non existing round', () => {
+      it('should return 404', async () => {
+        await expect(
+          controller.createRound(v4(), request),
+        ).rejects.toThrowError(NotFoundException);
+      });
+    });
+
+    describe('with incorrect request body', () => {
+      const request: CreateRoundDto = new CreateRoundDto({
+        cards: undefined,
+      });
+
+      it('should return correct validation errors', async () => {
+        expect(await validate(request)).toMatchObject([
+          {
+            property: 'cards',
+            value: undefined,
+          },
+        ]);
+      });
+
+      it('should return new validation error', async () => {
+        const existingLobby: Lobby = lobby({}, orm);
+        await expect(() =>
+          controller.createRound(existingLobby.id, request),
+        ).rejects.toThrow(
+          "Value for Round.cards is required, 'undefined' found",
+        );
+      });
     });
   });
 });
