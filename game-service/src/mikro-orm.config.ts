@@ -5,7 +5,7 @@ import { Options } from '@mikro-orm/core';
 const logger = new Logger('MikroORM');
 const config = {
   type: 'postgresql',
-  dbName: process.env.DB_NAME || process.env.DB_NAME_TEST,
+  dbName: process.env.DB_NAME,
   entities: ['./dist/**/*.entity.js', './dist/database/entities/*.entity.js'],
   entitiesTs: ['./src/**/*.entity.ts', './src/database/entities/*.entity.ts'],
   debug: true,
