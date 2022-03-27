@@ -43,10 +43,7 @@ export class PlayerService {
    * @param name is the name of the player.
    */
   async addNewPlayer(lobby: Lobby, { name }: JoinLobbyDto): Promise<Player> {
-    const player = this.playerRepository.create({
-      lobby: lobby,
-      name: name,
-    });
+    const player = this.playerRepository.create({ lobby, name });
 
     await this.playerRepository.persistAndFlush(player);
 
