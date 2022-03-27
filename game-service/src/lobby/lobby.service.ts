@@ -57,4 +57,18 @@ export class LobbyService {
 
     return lobby;
   }
+
+  /**
+   * Retrieve a specific lobby from the database.
+   * @param code is the unique code of the lobby.
+   * @returns the lobby that matches to code.
+   * @exception NotFoundException if the given code does not match a lobby.
+   */
+  async getByGameCode(code: string): Promise<Lobby> {
+    const lobby = await this.lobbyRepository.findOne({ code });
+
+    if (!lobby) throw new NotFoundException('Lobby not found');
+
+    return lobby;
+  }
 }

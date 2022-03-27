@@ -151,6 +151,85 @@
           "length": 6,
           "mappedType": "datetime"
         },
+        "name": {
+          "name": "name",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "mappedType": "string"
+        },
+        "lobby_id": {
+          "name": "lobby_id",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "mappedType": "string"
+        }
+      },
+      "name": "player",
+      "schema": "public",
+      "indexes": [
+        {
+          "keyName": "player_pkey",
+          "columnNames": [
+            "id"
+          ],
+          "composite": false,
+          "primary": true,
+          "unique": true
+        }
+      ],
+      "checks": [],
+      "foreignKeys": {
+        "player_lobby_id_foreign": {
+          "constraintName": "player_lobby_id_foreign",
+          "columnNames": [
+            "lobby_id"
+          ],
+          "localTableName": "public.player",
+          "referencedColumnNames": [
+            "id"
+          ],
+          "referencedTableName": "public.lobby",
+          "updateRule": "cascade"
+        }
+      }
+    },
+    {
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "mappedType": "string"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamptz(0)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": 6,
+          "mappedType": "datetime"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamptz(0)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": 6,
+          "mappedType": "datetime"
+        },
         "cards": {
           "name": "cards",
           "type": "text[]",
@@ -195,6 +274,106 @@
             "id"
           ],
           "referencedTableName": "public.lobby",
+          "updateRule": "cascade"
+        }
+      }
+    },
+    {
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "mappedType": "string"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamptz(0)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": 6,
+          "mappedType": "datetime"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamptz(0)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": 6,
+          "mappedType": "datetime"
+        },
+        "round_id": {
+          "name": "round_id",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "mappedType": "string"
+        },
+        "player_id": {
+          "name": "player_id",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "mappedType": "string"
+        },
+        "cards": {
+          "name": "cards",
+          "type": "text[]",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "mappedType": "array"
+        }
+      },
+      "name": "selected_cards",
+      "schema": "public",
+      "indexes": [
+        {
+          "keyName": "selected_cards_pkey",
+          "columnNames": [
+            "id"
+          ],
+          "composite": false,
+          "primary": true,
+          "unique": true
+        }
+      ],
+      "checks": [],
+      "foreignKeys": {
+        "selected_cards_round_id_foreign": {
+          "constraintName": "selected_cards_round_id_foreign",
+          "columnNames": [
+            "round_id"
+          ],
+          "localTableName": "public.selected_cards",
+          "referencedColumnNames": [
+            "id"
+          ],
+          "referencedTableName": "public.round",
+          "updateRule": "cascade"
+        },
+        "selected_cards_player_id_foreign": {
+          "constraintName": "selected_cards_player_id_foreign",
+          "columnNames": [
+            "player_id"
+          ],
+          "localTableName": "public.selected_cards",
+          "referencedColumnNames": [
+            "id"
+          ],
+          "referencedTableName": "public.player",
           "updateRule": "cascade"
         }
       }
