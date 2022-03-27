@@ -50,6 +50,7 @@ export class LobbyController {
     schema: responseWithCurrentRound,
   })
   @ApiResponse({ status: 400, description: 'Invalid lobby' })
+  @SerializeOptions({ groups: ['withCurrentRound'] })
   @Post()
   async createLobby(@Body() params: CreateLobbyDto): Promise<LobbyResponseDto> {
     return new LobbyResponseDto(await this.lobbyService.createNewLobby(params));
