@@ -62,6 +62,7 @@ jobs:
       DB_NAME_TEST: game-service-test
       DB_USER: postgres
       DB_PASSWORD: postgres
+      JWT_SECRET: JWT-test-secret
     strategy:
       fail-fast: false
     steps:
