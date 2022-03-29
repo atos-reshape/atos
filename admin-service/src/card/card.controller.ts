@@ -7,6 +7,8 @@ import {
   Post,
   Put,
   Query,
+  Res,
+  Req,
 } from '@nestjs/common';
 import { CardService } from './card.service';
 import {
@@ -21,6 +23,8 @@ import {
 } from '@nestjs/swagger';
 import { CreateCardDto } from './dtos/create-card.dto';
 import { Card } from './entities/card.entity';
+import { paginate } from '../helpers/pagination.helper';
+import { Response, Request } from 'express';
 
 /**
  * The REST API controller for the card service.
@@ -34,8 +38,22 @@ export class CardController {
   @ApiQuery({ name: 'isActive' })
   @ApiOkResponse()
   @Get()
-  async findAll(@Query('isActive') isActive = true): Promise<Card[]> {
-    return this.cardService.findAll(isActive);
+  async findAll(
+    @Query('isActive') isActive = true,
+    @Query('perPage') limit = 25,
+    @Query('page') offset = 0,
+    @Res() response?: Response,
+    @Req() request?: Request,
+  ) {
+    return response.json(
+      paginate<Card>(
+        request,
+        response,
+        await this.cardService.findAll(isActive, limit, offset),
+        limit,
+        offset,
+      ),
+    );
   }
 
   @ApiOperation({ summary: 'Get card by id' })

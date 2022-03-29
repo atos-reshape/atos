@@ -19,12 +19,23 @@ export class CardService {
   /**
    * Retrieve all cards from database.
    * @param isActive - Filter on the active cards, if false return all cards including deleted ones.
+   * @param limit - Limit the number of cards returned.
+   * @param offset - Offset the number of cards returned.
    * @returns An array of cards.
    */
-  async findAll(isActive: boolean): Promise<Card[]> {
-    return await this.cardRepository.findAll({
-      filters: { isActive },
-    });
+  async findAll(
+    isActive: boolean,
+    limit: number,
+    offset: number,
+  ): Promise<[Card[], number]> {
+    return await this.cardRepository.findAndCount(
+      {},
+      {
+        filters: { isActive },
+        limit,
+        offset,
+      },
+    );
   }
 
   /**
