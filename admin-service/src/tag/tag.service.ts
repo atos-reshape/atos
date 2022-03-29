@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { EntityRepository } from '@mikro-orm/postgresql';
 import { InjectRepository } from '@mikro-orm/nestjs';
 import { wrap } from '@mikro-orm/core';
@@ -53,6 +57,8 @@ export class TagService {
   async delete(id: string): Promise<void> {
     const tag = await this.findOne(id);
     if (!tag) throw new NotFoundException('Tag not found');
+    if (tag.deletedAt) throw new ConflictException('Card already deleted');
+
     wrap(tag).assign({ ...tag, deletedAt: new Date() } as Tag);
 
     return await this.tagRepository.flush();

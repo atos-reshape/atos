@@ -82,7 +82,7 @@ describe('TagController', () => {
 
       const result = await tagController.create(testTag);
       expect(result).toBeInstanceOf(Tag);
-      expect(result).toEqual(testTag);
+      expect(result).toMatchObject(testTag);
     });
   });
 
@@ -91,8 +91,7 @@ describe('TagController', () => {
       const testTag = tag({}, orm);
 
       const result = await tagController.delete(testTag.id);
-      expect(result).toBeInstanceOf(Tag);
-      expect(result).toEqual(testTag);
+      expect(result).toBeUndefined();
     });
 
     it('should return null if no tag is found', async () => {
