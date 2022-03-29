@@ -8,6 +8,10 @@ import { Tag } from '../../tag/entities/tag.entity';
   cond: { deletedAt: null },
   default: true,
 })
+@Filter({
+  name: 'hasTag',
+  cond: (args) => ({ tag: { name: args.name } }),
+})
 export class Card extends BaseEntity {
   @Property()
   text!: string;

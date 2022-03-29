@@ -15,11 +15,12 @@ export class CardService {
   /**
    * Retrieve all cards from database.
    * @param isActive - Filter on the active cards, if false return all cards including deleted ones.
+   * @param tag - The tag name to filter on.
    * @returns An array of cards.
    */
-  async findAll(isActive: boolean): Promise<Card[]> {
+  async findAll(isActive: boolean, tag: string): Promise<Card[]> {
     return await this.cardRepository.findAll({
-      filters: { isActive },
+      filters: { isActive, tag: { name: tag } },
     });
   }
 

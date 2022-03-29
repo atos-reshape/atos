@@ -22,8 +22,11 @@ export class CardController {
   @ApiQuery({ name: 'isActive' })
   @ApiResponse({ status: 200, description: 'Returned all cards' })
   @Get()
-  async findAll(@Query('isActive') isActive = true): Promise<Card[]> {
-    return this.cardService.findAll(isActive);
+  async findAll(
+    @Query('isActive') isActive = true,
+    @Query('tag') tag: string,
+  ): Promise<Card[]> {
+    return this.cardService.findAll(isActive, tag);
   }
 
   @ApiOperation({ summary: 'Get card by id' })
