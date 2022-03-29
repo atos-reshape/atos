@@ -1,11 +1,5 @@
 import { useContext, useEffect, useState } from 'react';
-import {
-  Container,
-  Group,
-  Select,
-  TransferList,
-  TransferListData
-} from '@mantine/core';
+import { Container, Group, Select } from '@mantine/core';
 import Card from '../../components/Card/Card';
 import AddCard from '../../modals/AddCard/AddCard';
 import RemoveCard from '../../modals/RemoveCard/RemoveCard';
