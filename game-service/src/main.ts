@@ -14,8 +14,10 @@ async function bootstrap() {
   await redisIoAdapter.connectToRedis();
   app.useWebSocketAdapter(redisIoAdapter);
 
+  app.setGlobalPrefix('api');
+
   loadOpenAPI(app);
-  app.enableCors();
+
   // Automatic request body validation
   app.useGlobalPipes(new ValidationPipe({ transform: true }));
 

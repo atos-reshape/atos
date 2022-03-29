@@ -26,7 +26,7 @@ export class LobbyResponseDto {
   updatedAt: Date;
 
   @Expose({ groups: ['withCurrentRound'] })
-  @Transform(({ value }) => new RoundResponseDto(value))
+  @Transform(({ value }) => (value ? new RoundResponseDto(value) : null))
   currentRound: RoundResponseDto;
 
   constructor(lobby: Lobby) {

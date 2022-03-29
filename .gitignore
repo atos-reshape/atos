@@ -110,3 +110,5 @@ thumb
 sketch
 **/.snapshot-*.json
 .vscode
+
+.env
