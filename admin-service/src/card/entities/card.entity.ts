@@ -1,5 +1,6 @@
-import { Entity, Filter, Property } from '@mikro-orm/core';
+import { Entity, Filter, ManyToOne, Property } from '@mikro-orm/core';
 import { BaseEntity } from '../../database/entities/base-entity.entity';
+import { Tag } from '../../tag/entities/tag.entity';
 
 @Entity()
 @Filter({
@@ -13,4 +14,7 @@ export class Card extends BaseEntity {
 
   @Property({ nullable: true })
   deletedAt?: Date;
+
+  @ManyToOne(() => Tag, { nullable: true })
+  tag?: Tag;
 }
