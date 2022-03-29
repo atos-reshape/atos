@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { EntityRepository } from '@mikro-orm/postgresql';
 import { InjectRepository } from '@mikro-orm/nestjs';
 import { Card } from './entities/card.entity';
@@ -15,12 +19,11 @@ export class CardService {
   /**
    * Retrieve all cards from database.
    * @param isActive - Filter on the active cards, if false return all cards including deleted ones.
-   * @param tag - The tag name to filter on.
    * @returns An array of cards.
    */
-  async findAll(isActive: boolean, tag: string): Promise<Card[]> {
+  async findAll(isActive: boolean): Promise<Card[]> {
     return await this.cardRepository.findAll({
-      filters: { isActive, tag: { name: tag } },
+      filters: { isActive },
     });
   }
 
@@ -35,11 +38,11 @@ export class CardService {
 
   /**
    * Create a new card in the database.
-   * @param card - The data to create the card with.
+   * @param cardData - The data to create the card with.
    * @returns The created card.
    */
-  async create(card: CreateCardDto): Promise<Card> {
-    const newCard = this.cardRepository.create({ text: card.text });
+  async create(cardData: CreateCardDto): Promise<Card> {
+    const newCard = this.cardRepository.create({ text: cardData.text });
     await this.cardRepository.persistAndFlush(newCard);
     return newCard;
   }
@@ -67,6 +70,8 @@ export class CardService {
   async delete(id: string): Promise<void> {
     const card = await this.findOne(id);
     if (!card) throw new NotFoundException('Card not found');
+    if (card.deletedAt) throw new ConflictException('Card already deleted');
+
     wrap(card).assign({ ...card, deletedAt: new Date() } as Card);
 
     return await this.cardRepository.flush();
