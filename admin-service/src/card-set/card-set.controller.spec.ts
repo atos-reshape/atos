@@ -31,6 +31,7 @@ describe('CardSetController', () => {
   });
 
   afterAll(async () => {
+    await orm.close();
     await app.close();
   });
 
