@@ -12,4 +12,8 @@ export class Tag extends BaseEntity {
   @OneToMany(() => Card, (card) => card.tag)
   @ApiProperty()
   cards = new Collection<Card>(this);
+
+  @Property({ nullable: true })
+  @ApiProperty()
+  deletedAt?: Date;
 }

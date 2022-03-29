@@ -40,18 +40,23 @@ describe('CardController', () => {
   });
 
   describe('findAll', () => {
-    it('should return an array of cards', async () => {
-      const length = 5;
-      const cards = createCards(new Array(length).fill({}), orm);
+    it.each([...Array(10).keys()])(
+      'should return an array of cards',
+      async (length) => {
+        const cards = createCards(new Array(length).fill({}), orm);
 
-      const findAllResult = await cardController.findAll();
-      expect(findAllResult).toMatchObject(cards);
-      expect(findAllResult).toHaveLength(length);
-    });
+        const result = await cardController.findAll();
+        expect(result).toBeInstanceOf(Array);
+        expect(result).toHaveLength(length);
+        expect(result).toEqual(cards);
+      },
+    );
 
     it('should return an empty array if there are no cards', async () => {
-      const findAllResult = await cardController.findAll();
-      expect(findAllResult).toMatchObject([]);
+      const result = await cardController.findAll();
+      expect(result).toBeInstanceOf(Array);
+      expect(result).toHaveLength(0);
+      expect(result).toEqual([]);
     });
 
     it('should return only the active cards', async () => {
