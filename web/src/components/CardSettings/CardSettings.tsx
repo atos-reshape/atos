@@ -18,34 +18,8 @@ interface CardType {
 }
 
 function CardSettings() {
-  const {
-    cards,
-    setCards,
-    selectedCard,
-    selectedCardset,
-    setSelectedCard,
-    addCard
-  } = useContext(Context);
-
-  const [transferListData, setTransferListData] = useState<TransferListData>([
-    [{ value: 'Loading', label: 'Loading', content: 'cardtest1' }],
-    [{ value: 'Loading', label: 'Loading', content: 'cardtest2' }]
-  ]);
-  useEffect(() => {
-    // transferListData[0] = cards
-    //   ?.filter((card) => card.manuallyAdded === undefined)
-    //   .map((card) => {
-    //     return { value: card.id, label: card.text };
-    //   });
-    // transferListData[1] = cards?.filter((card) => card.manuallyAdded === true);
-    console.log(cards);
-  }, [cards]);
-
-  function setNewCards(value: any) {
-    if (addCard) addCard({ id: value.value, text: value.label });
-    setTransferListData(value);
-    console.log(cards, transferListData);
-  }
+  const { cards, selectedCard, selectedCardset, setSelectedCard } =
+    useContext(Context);
   return (
     <Container>
       <Group direction="column">
@@ -59,12 +33,6 @@ function CardSettings() {
           }
           value={selectedCard}
           onChange={setSelectedCard}
-        />
-
-        <TransferList
-          value={transferListData}
-          onChange={setNewCards}
-          titles={['Selected Cards for the Round', 'Manually added cards']}
         />
 
         <Group>
