@@ -1,124 +1,146 @@
-import { CardSetController } from './card-set.controller';
-import { CardSetService } from './card-set.service';
-import { CardSet } from './entities/card-set.entity';
-import { cardSet } from '../../test/factories/cardSet';
-import config from '../mikro-orm.config';
 import { v4 } from 'uuid';
 import { Test, TestingModule } from '@nestjs/testing';
 import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { NotFoundException } from '@nestjs/common';
 import { MikroORM } from '@mikro-orm/core';
+import faker from '@faker-js/faker';
+import { useDatabaseTestConfig } from 'test/helpers/database';
+import { CardSetController } from './card-set.controller';
+import { CardSet } from './entities/card-set.entity';
+import { CardSetService } from './card-set.service';
+import { cardSet } from 'test/factories/cardSet';
 
-describe('CardSetController', () => {
+describe('CardSetSetController', () => {
   let cardSetController: CardSetController;
-  let cardSetService: CardSetService;
-  let app: TestingModule;
+  let module: TestingModule;
   let orm: MikroORM;
 
-  beforeEach(async () => {
-    app = await Test.createTestingModule({
+  beforeAll(async () => {
+    module = await Test.createTestingModule({
       imports: [
-        MikroOrmModule.forRoot(config),
+        useDatabaseTestConfig(),
         MikroOrmModule.forFeature({ entities: [CardSet] }),
       ],
       controllers: [CardSetController],
       providers: [CardSetService],
     }).compile();
 
-    cardSetService = app.get<CardSetService>(CardSetService);
-    cardSetController = app.get<CardSetController>(CardSetController);
-    orm = app.get<MikroORM>(MikroORM);
+    cardSetController = module.get<CardSetController>(CardSetController);
+    orm = module.get<MikroORM>(MikroORM);
+
+    // Run the migrations for testing.
+    const migrator = orm.getMigrator();
+    const migrations = await migrator.getPendingMigrations();
+
+    if (migrations && migrations.length > 0) {
+      await migrator.up();
+    }
+  });
+
+  beforeEach(async () => {
+    await orm.getSchemaGenerator().refreshDatabase();
   });
 
   afterAll(async () => {
     await orm.close();
-    await app.close();
+    await module.close();
   });
 
   describe('findAll', () => {
     it('should return an array of card sets', async () => {
-      const cardSets: CardSet[] = [];
-      cardSets.push(cardSet());
-      cardSets.push(cardSet());
+      const length = 5;
+      const cardSets = createCardSets(new Array(length).fill({}), orm);
 
-      jest.spyOn(cardSetService, 'findAll').mockResolvedValue(cardSets);
-
-      const findAllResult = await cardSetController.findAll();
+      const findAllResult = await CardSetController.findAll();
       expect(findAllResult).toMatchObject(cardSets);
+      expect(findAllResult).toHaveLength(length);
     });
 
-    it('should return an empty array if there are no card sets', async () => {
-      jest.spyOn(cardSetService, 'findAll').mockResolvedValue([]);
-
-      const findAllResult = await cardSetController.findAll();
+    it('should return an empty array if there are no CardSets', async () => {
+      const findAllResult = await CardSetController.findAll();
       expect(findAllResult).toMatchObject([]);
+    });
+
+    it('should return only the active card sets', async () => {
+      const CardSets = createCardSets([{ deletedAt: new Date() }, {}], orm);
+
+      const findAllResult = await CardSetController.findAll();
+      expect(findAllResult).toMatchObject([CardSets[1]]);
+      expect(findAllResult).toHaveLength(1);
+    });
+
+    it('should return all card sets if isActive is true', async () => {
+      const CardSets = createCardSets([{ deletedAt: new Date() }, {}], orm);
+
+      const findAllResult = await CardSetController.findAll(false);
+      expect(findAllResult).toMatchObject(CardSets);
+      expect(findAllResult).toHaveLength(2);
     });
   });
 
   describe('findOne', () => {
-    it('should return a card set', async () => {
-      const testCardSet = cardSet();
+    it('should return a CardSet', async () => {
+      const testCardSet = cardSet({}, orm);
 
-      jest.spyOn(cardSetService, 'findOne').mockResolvedValue(testCardSet);
-
-      const findOneResult = await cardSetController.findOne(testCardSet.id);
+      const findOneResult = await CardSetController.findOne(testCardSet.id);
       expect(findOneResult).toMatchObject(testCardSet);
     });
 
-    it('should return 404 if there is no card set', async () => {
-      jest.spyOn(cardSetService, 'findOne').mockResolvedValue(null);
-
-      const findOneResult = await cardSetController.findOne(v4());
+    it('should return 404 if there is no CardSet', async () => {
+      const findOneResult = await CardSetController.findOne(v4());
       expect(findOneResult).toBeNull();
     });
   });
 
   describe('create', () => {
-    it('should create a card set', async () => {
-      const testCardSet = cardSet();
+    it('should create a CardSet', async () => {
+      const testCardSet = new CreateCardSetDto();
+      testCardSet.text = faker.lorem.sentence();
 
-      jest.spyOn(cardSetService, 'create').mockResolvedValue(testCardSet);
-
-      const createResult = await cardSetController.create(testCardSet);
+      const createResult = await CardSetController.create(testCardSet);
       expect(createResult).toMatchObject(testCardSet);
     });
   });
 
   describe('update', () => {
-    it('should return a card set', async () => {
-      const testCardSet = cardSet();
+    it('should return a CardSet', async () => {
+      const testCardSet = cardSet({}, orm);
 
-      jest.spyOn(cardSetService, 'update').mockResolvedValue(testCardSet);
+      const CardSetUpdate = new CreateCardSetDto();
+      CardSetUpdate.text = faker.lorem.sentence();
 
-      const updateResult = await cardSetController.update(
-        testCardSet.id,
-        testCardSet,
-      );
+      // Update the CardSet
+      testCardSet.text = CardSetUpdate.text;
+      const updateResult = await CardSetController.update(testCardSet.id, CardSetUpdate);
+
       expect(updateResult).toMatchObject(testCardSet);
     });
 
-    it('should return 404 if there is no card set', async () => {
-      jest.spyOn(cardSetService, 'update').mockResolvedValue(null);
+    it('should return 404 if there is no CardSet', async () => {
+      const CardSetUpdate = new CreateCardSetDto();
+      CardSetUpdate.text = faker.lorem.sentence();
 
-      const updateResult = await cardSetController.update(v4, new CardSet());
-      expect(updateResult).toBeNull();
+      const nonExistingUUID = v4();
+
+      try {
+        await CardSetController.update(nonExistingUUID, CardSetUpdate);
+      } catch (e) {
+        expect(e).toBeInstanceOf(NotFoundException);
+      }
     });
   });
 
   describe('delete', () => {
-    it('should return a card set', async () => {
-      const testCardSet = orm.em.create(CardSet, cardSet());
-      orm.em.persist(testCardSet);
+    it('should return a CardSet', async () => {
+      const testCardSet = cardSet({}, orm);
 
-      jest.spyOn(cardSetService, 'findOne').mockResolvedValue(testCardSet);
-
-      const deleteResult = await cardSetController.delete(testCardSet.id);
+      const deleteResult = await CardSetController.delete(testCardSet.id);
       expect(deleteResult).toBeUndefined();
     });
 
-    it('should return 404 if there is no card set', async () => {
+    it('should return 404 if there is no CardSet', async () => {
       try {
-        await cardSetController.delete(v4());
+        await CardSetController.delete(v4());
       } catch (e) {
         expect(e).toBeInstanceOf(NotFoundException);
       }
