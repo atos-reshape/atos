@@ -1,5 +1,4 @@
 import {
-  Collection,
   Entity,
   Filter,
   ManyToMany,
