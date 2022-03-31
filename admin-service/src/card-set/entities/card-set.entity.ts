@@ -1,9 +1,4 @@
-import {
-  Entity,
-  Filter,
-  ManyToMany,
-  Property,
-} from '@mikro-orm/core';
+import { Entity, Filter, ManyToMany, Property } from '@mikro-orm/core';
 import { Card } from '../../card/entities/card.entity';
 import { BaseEntity } from '../../database/entities/base-entity.entity';
 
