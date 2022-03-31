@@ -108,4 +108,5 @@ bower_components
 psd
 thumb
 sketch
-admin-service/src/database/migrations/.snapshot-admin-service.json
+**/.snapshot-*.json
+.vscode
