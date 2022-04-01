@@ -46,8 +46,8 @@ export class CardSetController {
   @ApiNotFoundResponse()
   @ApiConflictResponse()
   @Post()
-  async create(@Body() cardSet: CreateCardSetDto): Promise<CardSet> {
-    return this.cardSetService.create(cardSet);
+  async create(@Body() card: CreateCardSetDto): Promise<CardSet> {
+    return this.cardSetService.create(card);
   }
 
   @ApiOperation({ summary: 'Update card set' })
@@ -58,9 +58,9 @@ export class CardSetController {
   @Put(':id')
   async update(
     @Param('id') id: string,
-    @Body() cardSet: CreateCardSetDto,
+    @Body() card: CreateCardSetDto,
   ): Promise<CardSet> {
-    return this.cardSetService.update(id, cardSet);
+    return this.cardSetService.update(id, card);
   }
 
   @ApiOperation({ summary: 'Delete card set by id' })

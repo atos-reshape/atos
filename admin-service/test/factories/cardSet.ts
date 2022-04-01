@@ -3,19 +3,17 @@ import { faker } from '@faker-js/faker';
 import { Card } from '../../src/card/entities/card.entity';
 import { MikroORM } from '@mikro-orm/core';
 import { CardSet } from '../../src/card-set/entities/card-set.entity';
-import { card } from './card';
 
 export const cardSet = (
   data: Partial<CardSet> = {},
   orm?: MikroORM,
 ): CardSet => {
-  const cards: Card[] = [card(), card()];
+  const cards: Card[] = [];
 
   let cardSet = {
     id: v4(),
     cardSet: cards,
     type: faker.lorem.sentence(),
-    name: faker.lorem.sentence(),
     createdAt: faker.date.recent(),
     updatedAt: faker.date.recent(),
     ...data,
