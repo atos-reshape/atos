@@ -15,6 +15,9 @@ export class CardSet extends BaseEntity {
   @Property()
   type!: string;
 
+  @Property()
+  name!: string;
+
   @Property({ nullable: true })
   deletedAt?: Date;
 }

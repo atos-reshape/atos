@@ -40,6 +40,7 @@ export class CardSetService {
     const newCardSet = this.cardSetRepository.create({
       cards: cardSet.cards,
       type: cardSet.type,
+      name: cardSet.name,
     });
     await this.cardSetRepository.persistAndFlush(newCardSet);
     return newCardSet;

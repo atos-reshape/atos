@@ -6,5 +6,8 @@ export class CreateCardSetDto {
   cards: Card[];
 
   @IsNotEmpty()
+  name: string;
+
+  @IsNotEmpty()
   type: string;
 }
