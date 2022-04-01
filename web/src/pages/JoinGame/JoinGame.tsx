@@ -5,6 +5,7 @@ function JoinGame() {
   const [gameCode, setGameCode] = useState('');
   const joinGameMutation = useJoinGame(gameCode);
   function joinGame() {
+    //will take in name: string as a param, working on it today
     joinGameMutation.mutate({}, { onSuccess: (res) => console.log(res) });
   }
   return (

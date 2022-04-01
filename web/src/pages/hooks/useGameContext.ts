@@ -14,9 +14,7 @@ export const useGameContext = () => {
   }, [data]);
 
   const addCard = (card: any) => {
-    console.log(card);
     setCards((oldCards: any[]) => {
-      console.log(oldCards);
       return [...oldCards, card];
     });
   };

@@ -10,7 +10,6 @@ function RemoveCard() {
     if (removeCard) {
       const id = cards.find((card) => card.cardContent === content).cardId;
       removeCard(id);
-      console.log('Removed at id: ' + id);
     }
   }
   return (

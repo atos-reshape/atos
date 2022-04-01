@@ -14,7 +14,6 @@ function AddCard() {
       card.addedManually = true;
       addCard(card);
     }
-    console.log(cards);
   }
   return (
     <>

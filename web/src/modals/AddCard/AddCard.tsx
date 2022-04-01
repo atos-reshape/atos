@@ -20,10 +20,7 @@ function AddCard() {
           }
         }
       );
-
-      //addCard(newCard);
     }
-    console.log(cards);
   }
   return (
     <>

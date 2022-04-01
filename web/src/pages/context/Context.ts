@@ -1,6 +1,5 @@
 import { createContext } from 'react';
 
-// const CardDefault = [{ cardId: '', cardContent: '', cardsetId: '' }];
 interface ContextType {
   cards: any[];
   setCards?: React.Dispatch<React.SetStateAction<any[]>>;

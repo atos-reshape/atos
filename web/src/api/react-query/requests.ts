@@ -16,7 +16,6 @@ export const executeRequest = async <TResponse = any>(
       return error;
     });
 
-  console.log(json);
   if (!response.ok) {
     return Promise.reject(json);
   }

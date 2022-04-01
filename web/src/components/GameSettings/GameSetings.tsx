@@ -10,12 +10,6 @@ function GameSettings() {
   const { cards, title, setTitle, timer, setTimer } = useContext(Context);
 
   function createGame() {
-    //replace this with send api
-    console.log({
-      title: title,
-      timer: parseTimer(timer),
-      cards: pulledCards.data
-    });
     //send create game request with the needed data
     createLobby.mutate({
       title: title,
