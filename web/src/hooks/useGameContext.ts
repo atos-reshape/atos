@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useGetCards } from '../../api/requests/card';
+import { useGetCards } from '../api/requests/card';
 
 export const useGameContext = () => {
   const [cards, setCards] = useState<any[]>([]);

@@ -1,3 +1,7 @@
+import { SocketContext } from '../../hooks/useSocketContext';
+import { useContext } from 'react';
+
+//component to test context state
 function CardSocket() {
   const socketState = useContext(SocketContext);
   return (
