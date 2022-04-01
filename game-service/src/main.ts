@@ -10,7 +10,7 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   loadOpenAPI(app);
-
+  app.enableCors();
   // Automatic request body validation
   app.useGlobalPipes(new ValidationPipe({ transform: true }));
 
