@@ -5,16 +5,16 @@ import { useCreateLobby } from '../../api/requests/lobbies';
 import { useGetCards } from '../../api/requests/card';
 
 function GameSettings() {
-  const pulledCards = useGetCards();
   const createLobby = useCreateLobby();
-  const { cards, title, setTitle, timer, setTimer } = useContext(Context);
+  const { title, setTitle, timer, setTimer } = useContext(Context);
 
+  const { data } = useGetCards();
   function createGame() {
     //send create game request with the needed data
     createLobby.mutate({
       title: title,
       timer: parseTimer(timer),
-      cards: cards.map((card: any) => card.id)
+      cards: data.map((card: any) => card.id)
     });
   }
 
