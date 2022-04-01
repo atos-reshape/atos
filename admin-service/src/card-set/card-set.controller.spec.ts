@@ -1,8 +1,8 @@
 import faker from '@faker-js/faker';
 import { v4 } from 'uuid';
-import { MikroORM } from '@mikro-orm/core';
+import { MikroORM, wrap } from '@mikro-orm/core';
 import { MikroOrmModule } from '@mikro-orm/nestjs';
-import { NotFoundException } from '@nestjs/common';
+import { ClassSerializerInterceptor, NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { useDatabaseTestConfig } from '../../test/helpers/database';
 import { CardSetController } from './card-set.controller';
@@ -10,11 +10,13 @@ import { CardSetService } from './card-set.service';
 import { CreateCardSetDto } from './dtos/create-card-set.dto';
 import { CardSet } from './entities/card-set.entity';
 import { cardSet, createCardSets } from '../../test/factories/cardSet';
+import { card } from '../../test/factories/card';
 
 describe('CardSetController', () => {
   let cardSetController: CardSetController;
   let module: TestingModule;
   let orm: MikroORM;
+  let cardCollection;
 
   beforeAll(async () => {
     module = await Test.createTestingModule({
@@ -23,11 +25,12 @@ describe('CardSetController', () => {
         MikroOrmModule.forFeature({ entities: [CardSet] }),
       ],
       controllers: [CardSetController],
-      providers: [CardSetService],
+      providers: [CardSetService, ClassSerializerInterceptor],
     }).compile();
 
     cardSetController = module.get<CardSetController>(CardSetController);
     orm = module.get<MikroORM>(MikroORM);
+    cardCollection = [card(), card()];
   });
 
   beforeEach(async () => {
@@ -89,9 +92,12 @@ describe('CardSetController', () => {
     it('should create a card set', async () => {
       const testCardSet = new CreateCardSetDto();
       testCardSet.type = faker.lorem.sentence();
+      testCardSet.name = faker.lorem.sentence();
+      testCardSet.cards = cardCollection;
 
       const createResult = await cardSetController.create(testCardSet);
-      expect(createResult).toMatchObject(testCardSet);
+
+      expect(wrap(createResult).toObject()).toMatchObject(testCardSet);
     });
   });
 
@@ -101,6 +107,8 @@ describe('CardSetController', () => {
 
       const cardSetUpdate = new CreateCardSetDto();
       cardSetUpdate.type = faker.lorem.sentence();
+      cardSetUpdate.name = faker.lorem.sentence();
+      cardSetUpdate.cards = [card(), card()];
 
       // Update the card
       testCardSet.type = cardSetUpdate.type;
