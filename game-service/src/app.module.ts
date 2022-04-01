@@ -4,6 +4,8 @@ import { LobbyModule } from './lobby/lobby.module';
 import { ConfigModule } from '@nestjs/config';
 import { MikroORM } from '@mikro-orm/core';
 import { RoundModule } from './round/round.module';
+import { PlayerModule } from './payer/player.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -11,6 +13,8 @@ import { RoundModule } from './round/round.module';
     ConfigModule.forRoot(),
     LobbyModule,
     RoundModule,
+    PlayerModule,
+    AuthModule,
   ],
 })
 export class AppModule implements OnModuleInit {

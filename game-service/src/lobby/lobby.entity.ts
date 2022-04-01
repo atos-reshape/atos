@@ -10,6 +10,7 @@ import {
 import { BaseEntity } from '../database/entities/base-entity.entity';
 import { Round } from '../round/round.entity';
 import { generateGameCode } from '@helpers/index';
+import { Player } from '../payer/player.entity';
 
 @Entity()
 export class Lobby extends BaseEntity {
@@ -23,6 +24,9 @@ export class Lobby extends BaseEntity {
 
   @OneToMany({ entity: () => Round, mappedBy: 'lobby', hidden: true })
   rounds = new Collection<Round>(this);
+
+  @OneToMany({ entity: () => Player, mappedBy: 'lobby', hidden: true })
+  players = new Collection<Player>(this);
 
   @OneToOne(() => Round, (round) => round.currentLobby, {
     owner: true,
