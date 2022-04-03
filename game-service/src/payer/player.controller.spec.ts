@@ -12,6 +12,7 @@ import { PlayerResponseDto } from './dto/player-response.dto';
 import { player } from '@factories/player';
 import { v4 } from 'uuid';
 import { NotFoundException } from '@nestjs/common';
+import { SocketService } from '../lobby/socket.service';
 
 describe('PlayerController', () => {
   let controller: PlayerController;
@@ -26,7 +27,7 @@ describe('PlayerController', () => {
         MikroOrmModule.forFeature({ entities: [Lobby, Player] }),
       ],
       controllers: [PlayerController],
-      providers: [PlayerService],
+      providers: [PlayerService, SocketService],
     }).compile();
 
     controller = app.get<PlayerController>(PlayerController);

@@ -4,6 +4,7 @@ import { EntityRepository } from '@mikro-orm/postgresql';
 import { Player } from './player.entity';
 import { InjectRepository } from '@mikro-orm/nestjs';
 import { JoinLobbyDto } from '../auth/dto/join-lobby.dto';
+import { SocketService } from '../lobby/socket.service';
 
 @Injectable()
 export class PlayerService {
@@ -12,6 +13,7 @@ export class PlayerService {
     private readonly lobbyRepository: EntityRepository<Lobby>,
     @InjectRepository(Player)
     private readonly playerRepository: EntityRepository<Player>,
+    private readonly socketService: SocketService,
   ) {}
 
   /**
@@ -46,6 +48,8 @@ export class PlayerService {
     const player = this.playerRepository.create({ lobby, name });
 
     await this.playerRepository.persistAndFlush(player);
+
+    this.socketService.send(lobby.id, 'player.joined', { player });
 
     return player;
   }

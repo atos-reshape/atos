@@ -17,8 +17,10 @@ import { lobby } from '@factories/lobby';
 import { JoinResponseDto } from './dto/join-response.dto';
 import { NotFoundException } from '@nestjs/common';
 import { JoinLobbyDto } from './dto/join-lobby.dto';
+import { SocketService } from '../lobby/socket.service';
 
 describe('AuthController', () => {
+  let socketService: SocketService;
   let controller: AuthController;
   let app: TestingModule;
   let orm: MikroORM;
@@ -36,9 +38,16 @@ describe('AuthController', () => {
         MikroOrmModule.forFeature({ entities: [Lobby, Player, Round] }),
       ],
       controllers: [AuthController],
-      providers: [AuthService, PlayerService, LobbyService, JwtStrategy],
+      providers: [
+        AuthService,
+        PlayerService,
+        LobbyService,
+        JwtStrategy,
+        SocketService,
+      ],
     }).compile();
 
+    socketService = app.get<SocketService>(SocketService);
     controller = app.get<AuthController>(AuthController);
     orm = app.get<MikroORM>(MikroORM);
   });
@@ -60,12 +69,19 @@ describe('AuthController', () => {
     describe('with a valid lobby', () => {
       it('should return a valid response', async () => {
         const l = lobby({}, orm);
+        jest.spyOn(socketService, 'send').mockImplementation(() => undefined);
+
         expect(
           await controller.joinLobby(
             l.code,
             new JoinLobbyDto({ name: 'Random Player Name' }),
           ),
         ).toMatchObject({ lobbyId: l.id } as JoinResponseDto);
+        expect(socketService.send).toBeCalledWith(
+          l.id,
+          'player.joined',
+          expect.any(Object),
+        );
       });
     });
 

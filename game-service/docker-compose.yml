@@ -17,9 +17,22 @@ services:
       - postgres
     restart: unless-stopped
 
+  redis:
+    container_name: redis
+    image: redis:alpine
+    command: redis-server # --requirepass ....
+    ports:
+      - ${REDIS_PORT:-6379}:6379
+    volumes:
+      - redis:/data
+    environment:
+      - REDIS_REPLICATION_MODE=master
+      - ALLOW_EMPTY_PASSWORD=yes
+
 networks:
   postgres:
     driver: bridge
 
 volumes:
-  postgres:
+  postgres: {}
+  redis: {}
