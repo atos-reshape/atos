@@ -6,13 +6,14 @@ import { useDatabaseTestConfig } from '../../test/helpers/database';
 import { TagController } from './tag.controller';
 import { TagService } from './tag.service';
 import { Tag } from './entities/tag.entity';
-import { tag, createTags } from '../../test/factories/tag';
+import { createTags, tag } from '../../test/factories/tag';
 import { CreateTagDto } from './dtos/create-tag.dto';
 import { faker } from '@faker-js/faker';
 import { NotFoundException } from '@nestjs/common';
 
 describe('TagController', () => {
   let tagController: TagController;
+  let tagService: TagService;
   let module: TestingModule;
   let orm: MikroORM;
 
@@ -27,6 +28,7 @@ describe('TagController', () => {
     }).compile();
 
     tagController = module.get<TagController>(TagController);
+    tagService = module.get<TagService>(TagService);
     orm = module.get<MikroORM>(MikroORM);
   });
 
@@ -92,6 +94,9 @@ describe('TagController', () => {
 
       const result = await tagController.delete(testTag.id);
       expect(result).toBeUndefined();
+
+      const tagFromRepository = await tagService.findOne(testTag.id);
+      expect(tagFromRepository.deletedAt).toBeInstanceOf(Date);
     });
 
     it('should return null if no tag is found', async () => {

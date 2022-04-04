@@ -13,6 +13,7 @@ import { useDatabaseTestConfig } from '../../test/helpers/database';
 
 describe('CardController', () => {
   let cardController: CardController;
+  let cardService: CardService;
   let module: TestingModule;
   let orm: MikroORM;
 
@@ -27,6 +28,7 @@ describe('CardController', () => {
     }).compile();
 
     cardController = module.get<CardController>(CardController);
+    cardService = module.get<CardService>(CardService);
     orm = module.get<MikroORM>(MikroORM);
   });
 
@@ -129,11 +131,14 @@ describe('CardController', () => {
   });
 
   describe('delete', () => {
-    it('should return a card', async () => {
+    it('should delete a card', async () => {
       const testCard = card({}, orm);
 
       const deleteResult = await cardController.delete(testCard.id);
       expect(deleteResult).toBeUndefined();
+
+      const cardFromRepository = await cardService.findOne(testCard.id);
+      expect(cardFromRepository.deletedAt).toBeInstanceOf(Date);
     });
 
     it('should return 404 if there is no card', async () => {
