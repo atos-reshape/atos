@@ -6,18 +6,18 @@ type Relation = 'first' | 'next' | 'prev' | 'last';
 /**
  * Pagination link creator.
  *
- * For instance, if you have 1015 resources, calling GET /data?page=4&per_page=100 will return:
- * </data?page=1&per_page=100>; rel="first",
- * </data?page=11&per_page=100>; rel="last",
- * </data?page=5&per_page=100>; rel="next",
- * </data?page=3&per_page=100>; rel="prev"
+ * For instance, if you have 1015 resources, calling GET /data?page=4&perPage=100 will return:
+ * </data?page=1&perPage=100>; rel="first",
+ * </data?page=11&perPage=100>; rel="last",
+ * </data?page=5&perPage=100>; rel="next",
+ * </data?page=3&perPage=100>; rel="prev"
  *
  * @param resourceUrl - The resource url.
  * @param limit - The amount of items on each page.
  * @param offset - The offset of the first item.
  * @param total - The total amount of items.
  */
-function getLink(
+export function getLink(
   resourceUrl: string,
   limit: number,
   offset: number,
@@ -33,17 +33,17 @@ function getLink(
   link += getLine(1, 'first');
 
   // Last page
-  const lastPage = Math.ceil(offset / limit);
+  const lastPage = Math.ceil(total / limit);
   link += getLine(lastPage, 'last');
 
   // Next page
   if (offset + limit < total) {
-    link += getLine(lastPage, 'next');
+    link += getLine(offset + 1, 'next');
   }
 
   // Previous page
   if (offset > 0) {
-    link += getLine(Math.ceil(offset / limit), 'prev');
+    link += getLine(offset - 1, 'prev');
   }
 
   // Remove last character from link
