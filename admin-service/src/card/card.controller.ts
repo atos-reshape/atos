@@ -25,6 +25,7 @@ import { CreateCardDto } from './dtos/create-card.dto';
 import { Card } from './entities/card.entity';
 import { paginate } from '../helpers/pagination.helper';
 import { Response, Request } from 'express';
+import { PageOptionsDto } from './dtos/page-options.dto';
 
 /**
  * The REST API controller for the card service.
@@ -40,8 +41,7 @@ export class CardController {
   @Get()
   async findAll(
     @Query('isActive') isActive = true,
-    @Query('perPage') limit = 25,
-    @Query('page') offset = 0,
+    @Query() pageOptions?: PageOptionsDto,
     @Res() response?: Response,
     @Req() request?: Request,
   ) {
@@ -49,9 +49,8 @@ export class CardController {
       paginate<Card>(
         request,
         response,
-        await this.cardService.findAll(isActive, limit, offset),
-        limit,
-        offset,
+        await this.cardService.findAll(isActive, pageOptions),
+        pageOptions,
       ),
     );
   }

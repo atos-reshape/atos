@@ -8,6 +8,7 @@ import { InjectRepository } from '@mikro-orm/nestjs';
 import { Card } from './entities/card.entity';
 import { CreateCardDto } from './dtos/create-card.dto';
 import { wrap } from '@mikro-orm/core';
+import { PageOptionsDto } from './dtos/page-options.dto';
 
 @Injectable()
 export class CardService {
@@ -19,21 +20,20 @@ export class CardService {
   /**
    * Retrieve all cards from database.
    * @param isActive - Filter on the active cards, if false return all cards including deleted ones.
-   * @param limit - Limit the number of cards returned.
-   * @param offset - Offset the number of cards returned.
+   * @param pageOptions - Pagination options.
+   *
    * @returns An array of cards.
    */
   async findAll(
     isActive: boolean,
-    limit: number,
-    offset: number,
+    pageOptions: PageOptionsDto,
   ): Promise<[Card[], number]> {
     return await this.cardRepository.findAndCount(
       {},
       {
         filters: { isActive },
-        limit,
-        offset,
+        limit: pageOptions.limit,
+        offset: pageOptions.offset,
       },
     );
   }

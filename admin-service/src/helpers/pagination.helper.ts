@@ -1,4 +1,5 @@
 import { Response, Request } from 'express';
+import { PageOptionsDto } from '../card/dtos/page-options.dto';
 
 export type PaginatedResult<T = unknown> = [T[], number];
 type Relation = 'first' | 'next' | 'prev' | 'last';
@@ -55,18 +56,19 @@ export function getLink(
  *
  * @param request - The request object.
  * @param response - The response object.
+ * @param pageOptions - The page options dto.
  * @param data - The data to paginate.
- * @param limit - The limit of the pagination.
- * @param offset - The offset of the pagination.
  */
 export function paginate<T = unknown>(
   request: Request,
   response: Response,
   [items, total]: PaginatedResult<T>,
-  limit: number,
-  offset: number,
+  pageOptions: PageOptionsDto,
 ) {
-  response.setHeader('Link', getLink(request.path, limit, offset, total));
+  response.setHeader(
+    'Link',
+    getLink(request.path, pageOptions.limit, pageOptions.offset, total),
+  );
   response.setHeader('total-count', String(total));
   return items;
 }
