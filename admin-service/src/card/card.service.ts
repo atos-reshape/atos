@@ -44,7 +44,9 @@ export class CardService {
    * @returns The card with the given id.
    */
   async findOne(id: string): Promise<Card> {
-    return await this.cardRepository.findOne(id);
+    return await this.cardRepository.findOne(id, {
+      filters: { isActive: false },
+    });
   }
 
   /**
