@@ -12,5 +12,5 @@ export class SelectedCards extends BaseEntity {
   player!: Player;
 
   @Property({ type: ArrayType, nullable: false })
-  cards!: string[];
+  cards: string[] = [];
 }
