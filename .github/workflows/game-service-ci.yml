@@ -2,9 +2,6 @@ name: Game service CI
 
 on:
   push:
-    branches-ignore:
-      - main
-      - release*
     paths:
       - game-service/**
 

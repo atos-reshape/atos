@@ -2,9 +2,6 @@ name: Admin service CI
 
 on:
   push:
-    branches-ignore:
-      - main
-      - release*
     paths:
       - admin-service/**
 
