@@ -8,6 +8,8 @@ import { PlayerResponseDto } from './dto/player-response.dto';
 export class PlayerController {
   constructor(private readonly playerService: PlayerService) {}
 
+  //Player Actions
+
   @ApiOperation({ summary: 'Get all players' })
   @ApiResponse({
     status: 200,

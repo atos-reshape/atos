@@ -15,7 +15,7 @@ import { SelectedCards } from '../payer/selectedCards.entity';
 @Entity()
 export class Round extends BaseEntity {
   @Property({ type: ArrayType, nullable: false })
-  cards!: string[];
+  cards: string[] = [];
 
   @ManyToOne({ entity: () => Lobby, wrappedReference: true })
   lobby!: Lobby;
