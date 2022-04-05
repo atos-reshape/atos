@@ -109,3 +109,4 @@ psd
 thumb
 sketch
 **/.snapshot-*.json
+.vscode
