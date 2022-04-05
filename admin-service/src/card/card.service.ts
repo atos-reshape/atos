@@ -9,6 +9,7 @@ import { Card } from './entities/card.entity';
 import { CreateCardDto } from './dtos/create-card.dto';
 import { wrap } from '@mikro-orm/core';
 import { PageOptionsDto } from './dtos/page-options.dto';
+import { PaginatedResult } from '../helpers/pagination.helper';
 
 @Injectable()
 export class CardService {
@@ -27,7 +28,7 @@ export class CardService {
   async findAll(
     isActive: boolean,
     pageOptions: PageOptionsDto,
-  ): Promise<[Card[], number]> {
+  ): Promise<PaginatedResult<Card>> {
     return await this.cardRepository.findAndCount(
       {},
       {
