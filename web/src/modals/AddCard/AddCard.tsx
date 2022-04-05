@@ -6,21 +6,18 @@ import { useCreateCard } from '../../api/requests/createcard';
 function AddCard() {
   const [opened, setOpened] = useState(false);
   const [content, setContent] = useState('');
-  const { cards, addCard, selectedCardset } = useContext(Context);
   const createCard = useCreateCard();
   function addCardToSet() {
-    if (addCard) {
-      createCard.mutate(
-        {
-          text: content
-        },
-        {
-          onSuccess: async (data) => {
-            addCard(data);
-          }
+    createCard.mutate(
+      {
+        text: content
+      },
+      {
+        onSuccess: async (data) => {
+          alert(`Created card ${data.id} with text ${data.text}`);
         }
-      );
-    }
+      }
+    );
   }
   return (
     <>

@@ -3,7 +3,7 @@ import GameSettings from '../../components/GameSettings/GameSetings';
 import CardSettings from '../../components/CardSettings/CardSettings';
 import './GameSetup.css';
 import Context from '../context/Context';
-import { useGameContext } from '../hooks/useGameContext';
+import { useGameContext } from '../../hooks/useGameContext';
 
 export default function GameSetup(): JSX.Element {
   const context = useGameContext();

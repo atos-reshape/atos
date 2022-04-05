@@ -5,6 +5,7 @@ import AddCard from '../../modals/AddCard/AddCard';
 import RemoveCard from '../../modals/RemoveCard/RemoveCard';
 import Context from '../../pages/context/Context';
 import AddExistingCard from '../../modals/AddCard/AddExistingCard';
+import { useGetCards } from '../../api/requests/card';
 
 interface CardType {
   value: string;
@@ -12,8 +13,12 @@ interface CardType {
 }
 
 function CardSettings() {
-  const { cards, selectedCard, selectedCardset, setSelectedCard } =
+  const { selectedCard, selectedCardset, setSelectedCard } =
     useContext(Context);
+
+  const { data } = useGetCards({
+    onError: () => alert('Could not fetch cards')
+  });
   return (
     <Container>
       <Group direction="column">
@@ -21,7 +26,7 @@ function CardSettings() {
           label="Cards"
           placeholder="Choose card"
           data={
-            cards?.map((card: any): CardType => {
+            data?.map((card: any): CardType => {
               return { value: card.id, label: card.text };
             }) || []
           }
@@ -35,9 +40,9 @@ function CardSettings() {
           <RemoveCard />
         </Group>
 
-        {cards
-          ? cards.map((card: any) => {
-              return <Card CardText={card.text} />;
+        {data
+          ? data.map((card: any) => {
+              return <Card CardText={card.text} key={card.id} />;
             })
           : null}
       </Group>

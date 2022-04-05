@@ -3,10 +3,22 @@ import { Button, Container, Group, TextInput } from '@mantine/core';
 import { useJoinGame } from '../../api/requests/joingame';
 function JoinGame() {
   const [gameCode, setGameCode] = useState('');
+  const [playerName, setPlayerName] = useState('');
   const joinGameMutation = useJoinGame(gameCode);
+
   function joinGame() {
-    //will take in name: string as a param, working on it today
-    joinGameMutation.mutate({}, { onSuccess: (res) => console.log(res) });
+    joinGameMutation.mutate(
+      { name: playerName },
+      {
+        onSuccess: (res) => {
+          localStorage.setItem('accessTokenAtos', res.accessToken);
+          window.location.href = `/game?id=${res.lobbyId}`;
+        },
+        onError: (res) => {
+          alert(res.message);
+        }
+      }
+    );
   }
   return (
     <Container size="xs">
@@ -20,6 +32,18 @@ function JoinGame() {
             setGameCode
               ? (event) =>
                   setGameCode(event.currentTarget.value.toLocaleUpperCase())
+              : undefined
+          }
+        />
+
+        <TextInput
+          placeholder="Player Name"
+          label="Player Name"
+          required
+          value={playerName}
+          onChange={
+            setPlayerName
+              ? (event) => setPlayerName(event.currentTarget.value)
               : undefined
           }
         />

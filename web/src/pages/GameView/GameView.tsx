@@ -1,8 +1,15 @@
+import { useSearchParams } from 'react-router-dom';
+import CardSocket from '../../components/CardSocket/CardSocket';
+import { SocketProvider } from '../../hooks/useSocketContext';
+
 function GameView() {
+  const [searchParams] = useSearchParams();
+  const id = searchParams.get('id');
+
   return (
-    <>
-      <h1>Game View</h1>
-    </>
+    <SocketProvider id={id}>
+      <CardSocket />
+    </SocketProvider>
   );
 }
 

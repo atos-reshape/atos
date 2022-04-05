@@ -12,7 +12,6 @@ export const executeRequest = async <TResponse = any>(
         message: response.statusText,
         errors: {}
       };
-
       return error;
     });
 
