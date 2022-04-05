@@ -3,7 +3,7 @@ import { Container, Group, Select } from '@mantine/core';
 import Card from '../../components/Card/Card';
 import AddCard from '../../modals/AddCard/AddCard';
 import RemoveCard from '../../modals/RemoveCard/RemoveCard';
-import Context from '../../pages/context/Context';
+import Context from '../../context/Context';
 import AddExistingCard from '../../modals/AddCard/AddExistingCard';
 import { useGetCards } from '../../api/requests/card';
 

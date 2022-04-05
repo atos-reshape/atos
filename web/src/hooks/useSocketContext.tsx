@@ -30,6 +30,10 @@ export const SocketProvider = ({ children, id }: any) => {
         setState(response);
       });
     });
+
+    socket.on('player.joined', function (data) {
+      console.log(data);
+    });
   }, []);
 
   return (

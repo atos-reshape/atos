@@ -1,6 +1,6 @@
 import { useState, useContext } from 'react';
 import { Modal, Group, Button, TextInput } from '@mantine/core';
-import Context from '../../pages/context/Context';
+import Context from '../../context/Context';
 import { useCreateCard } from '../../api/requests/createcard';
 
 function AddCard() {
