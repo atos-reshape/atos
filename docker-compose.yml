@@ -27,7 +27,7 @@ services:
     networks:
       - backend
     links:
-      - db
+      - postgres
     depends_on:
       - postgres
   game-service:
@@ -38,15 +38,18 @@ services:
       - ./game-service/.env
     environment:
       DB_HOST: postgres
+      REDIS_HOST: redis
       DB_USER: ${DB_USER:-postgres}
       DB_PASSWORD: ${DB_PASSWORD:-postgres}
       DB_NAME: ${DB_NAME}
     networks:
       - backend
     links:
-      - db
+      - postgres
+      - redis
     depends_on:
       - postgres
+      - redis
   postgres:
     container_name: postgres_container
     image: postgres
@@ -63,9 +66,24 @@ services:
     networks:
       - backend
 
+  redis:
+    container_name: redis
+    image: redis:alpine
+    command: redis-server # --requirepass ....
+    ports:
+      - ${REDIS_PORT:-6379}:6379
+    volumes:
+      - redis:/data
+    environment:
+      - REDIS_REPLICATION_MODE=master
+      - ALLOW_EMPTY_PASSWORD=yes
+    networks:
+      - backend
+
 networks:
   backend:
     driver: bridge
 
 volumes:
   postgres: {}
+  redis: {}

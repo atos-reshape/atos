@@ -30,12 +30,34 @@ async function bootstrap() {
     }),
   );
 
+  app.use(
+    '/api/auth',
+    createProxyMiddleware({
+      target: `http://${process.env.GAME_SERVICE_HOST}:${process.env.GAME_SERVICE_PORT}`,
+      changeOrigin: true,
+      logLevel: 'debug',
+      logProvider: () => logProvider,
+    }),
+  );
+
   // Admin service api proxy
   app.use(
     '/api/cards',
     createProxyMiddleware({
       target: `http://${process.env.ADMIN_SERVICE_HOST}:${process.env.ADMIN_SERVICE_PORT}`,
       changeOrigin: true,
+      logLevel: 'debug',
+      logProvider: () => logProvider,
+    }),
+  );
+
+  // Websocket connection for the lobby namespace
+  app.use(
+    '/lobby',
+    createProxyMiddleware({
+      target: `ws://${process.env.GAME_SERVICE_HOST}:${process.env.GAME_SERVICE_PORT}`,
+      changeOrigin: true,
+      ws: true,
       logLevel: 'debug',
       logProvider: () => logProvider,
     }),
