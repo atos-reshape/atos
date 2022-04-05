@@ -12,6 +12,7 @@ import { LobbyResponseDto, CreateLobbyDto } from './dto';
 import { v4 } from 'uuid';
 import { NotFoundException } from '@nestjs/common';
 import { validate } from 'class-validator';
+import { SocketService } from './socket.service';
 
 describe('LobbyController', () => {
   let controller: LobbyController;
@@ -26,7 +27,7 @@ describe('LobbyController', () => {
         MikroOrmModule.forFeature({ entities: [Lobby, Round] }),
       ],
       controllers: [LobbyController],
-      providers: [LobbyService],
+      providers: [LobbyService, SocketService],
     }).compile();
 
     controller = app.get<LobbyController>(LobbyController);

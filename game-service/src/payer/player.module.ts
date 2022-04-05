@@ -4,10 +4,11 @@ import { Player } from './player.entity';
 import { Lobby } from '../lobby/lobby.entity';
 import { PlayerController } from './player.controller';
 import { PlayerService } from './player.service';
+import { SocketService } from '../lobby/socket.service';
 
 @Module({
   imports: [MikroOrmModule.forFeature([Lobby, Player])],
   controllers: [PlayerController],
-  providers: [PlayerService],
+  providers: [PlayerService, SocketService],
 })
 export class PlayerModule {}

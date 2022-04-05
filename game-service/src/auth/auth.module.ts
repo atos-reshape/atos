@@ -11,6 +11,7 @@ import { Round } from '../round/round.entity';
 import { PassportModule } from '@nestjs/passport';
 import { JwtStrategy } from './jwt.strategy';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { SocketService } from '../lobby/socket.service';
 
 @Module({
   imports: [
@@ -26,7 +27,13 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
     MikroOrmModule.forFeature([Lobby, Player, Round]),
   ],
   controllers: [AuthController],
-  providers: [AuthService, PlayerService, LobbyService, JwtStrategy],
+  providers: [
+    AuthService,
+    PlayerService,
+    LobbyService,
+    JwtStrategy,
+    SocketService,
+  ],
   exports: [AuthService],
 })
 export class AuthModule {}
