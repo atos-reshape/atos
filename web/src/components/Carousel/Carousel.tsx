@@ -10,13 +10,6 @@ function Carousel() {
   const { carouselCards, selectedCards, setCarouselCards, setSelectedCards } =
     useContext(PlayerGameContext);
 
-  const { data } = useGetCards({
-    onError: () => alert('Could not fetch cards'),
-    onSuccess: () => {
-      if (data !== undefined) setCarouselCards(data);
-    }
-  });
-
   const responsive = {
     superLargeDesktop: {
       // the naming can be any, depends on you.
