@@ -5,13 +5,18 @@ import { CardService } from './card.service';
 import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { Card } from './entities/card.entity';
 import { NotFoundException } from '@nestjs/common';
-import { card, createCards } from '../../test/factories/card';
-import { MikroORM } from '@mikro-orm/core';
-import { CreateCardDto } from './dtos/create-card.dto';
-import { faker } from '@faker-js/faker';
+import {
+  card,
+  cardWithTranslation,
+  createCards,
+} from '../../test/factories/card';
+import { Collection, MikroORM } from '@mikro-orm/core';
+import { CreateCardDto } from './dtos';
 import { useDatabaseTestConfig } from '../../test/helpers/database';
-import { Response, Request } from 'express';
-import { PageOptionsDto } from './dtos/page-options.dto';
+import { Request, Response } from 'express';
+import { PageOptionsDto } from './dtos';
+import { cardTranslation } from '../../test/factories/cardTranslation';
+import { CardTranslation } from './entities/card-translation.entity';
 
 describe('CardController', () => {
   let cardController: CardController;
@@ -128,11 +133,14 @@ describe('CardController', () => {
 
   describe('create', () => {
     it('should create a card', async () => {
+      const translation = cardTranslation({}, orm);
       const testCard = new CreateCardDto();
-      testCard.text = faker.lorem.sentence();
+      testCard.translations.push(translation);
 
       const createResult = await cardController.create(testCard);
-      expect(createResult).toMatchObject(testCard);
+      expect(createResult.translations).toHaveLength(
+        testCard.translations.length,
+      );
     });
   });
 
@@ -140,19 +148,26 @@ describe('CardController', () => {
     it('should return a card', async () => {
       const testCard = card({}, orm);
 
+      const translation = cardTranslation(
+        {
+          card: testCard,
+        },
+        orm,
+      );
       const cardUpdate = new CreateCardDto();
-      cardUpdate.text = faker.lorem.sentence();
+      cardUpdate.translations.push(translation);
 
       // Update the card
-      testCard.text = cardUpdate.text;
+      testCard.translations.add(translation);
       const updateResult = await cardController.update(testCard.id, cardUpdate);
 
       expect(updateResult).toMatchObject(testCard);
     });
 
     it('should return 404 if there is no card', async () => {
+      const translation = cardTranslation({}, orm);
       const cardUpdate = new CreateCardDto();
-      cardUpdate.text = faker.lorem.sentence();
+      cardUpdate.translations.push(translation);
 
       const nonExistingUUID = v4();
 
@@ -166,7 +181,7 @@ describe('CardController', () => {
 
   describe('delete', () => {
     it('should delete a card', async () => {
-      const testCard = card({}, orm);
+      const testCard = cardWithTranslation({}, orm);
 
       const deleteResult = await cardController.delete(testCard.id);
       expect(deleteResult).toBeUndefined();

@@ -7,8 +7,8 @@ import {
   Post,
   Put,
   Query,
-  Res,
   Req,
+  Res,
 } from '@nestjs/common';
 import { CardService } from './card.service';
 import {
@@ -24,7 +24,7 @@ import {
 import { CreateCardDto } from './dtos/create-card.dto';
 import { Card } from './entities/card.entity';
 import { paginate } from '../helpers/pagination.helper';
-import { Response, Request } from 'express';
+import { Request, Response } from 'express';
 import { PageOptionsDto } from './dtos/page-options.dto';
 
 /**

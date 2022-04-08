@@ -1,4 +1,4 @@
-import { Response, Request } from 'express';
+import { Request, Response } from 'express';
 import { PageOptionsDto } from '../card/dtos/page-options.dto';
 
 export type PaginatedResult<T = unknown> = [T[], number];

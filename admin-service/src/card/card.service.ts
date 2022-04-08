@@ -46,16 +46,19 @@ export class CardService {
   async findOne(id: string): Promise<Card> {
     return await this.cardRepository.findOne(id, {
       filters: { isActive: false },
+      populate: ['translations'],
     });
   }
 
   /**
    * Create a new card in the database.
-   * @param cardData - The data to create the card with.
+   * @param card - The data to create the card with.
    * @returns The created card.
    */
-  async create(cardData: CreateCardDto): Promise<Card> {
-    const newCard = this.cardRepository.create({ text: cardData.text });
+  async create(card: CreateCardDto): Promise<Card> {
+    const newCard = this.cardRepository.create({
+      ...card,
+    });
     await this.cardRepository.persistAndFlush(newCard);
     return newCard;
   }
@@ -70,6 +73,7 @@ export class CardService {
     const card = await this.findOne(id);
     if (!card) throw new NotFoundException('Card not found');
     wrap(card).assign(cardData);
+    card.translations.set(cardData.translations);
     await this.cardRepository.flush();
 
     return card;
