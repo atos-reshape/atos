@@ -1,0 +1,89 @@
+version: '3'
+services:
+  gateway:
+    build: ./api-gateway
+    restart: always
+    hostname: api-gateway
+    env_file:
+      - ./api-gateway/.env
+    environment:
+      GAME_SERVICE_HOST: game-service
+      ADMIN_SERVICE_HOST: admin-service
+    ports:
+      - "8000:3003"
+    networks:
+      - backend
+  admin-service:
+    build: ./admin-service
+    restart: always
+    hostname: admin-service
+    env_file:
+      - ./admin-service/.env
+    environment:
+      DB_HOST: postgres
+      DB_USER: ${DB_USER:-postgres}
+      DB_PASSWORD: ${DB_PASSWORD:-postgres}
+      DB_NAME: ${DB_NAME}
+    networks:
+      - backend
+    links:
+      - postgres
+    depends_on:
+      - postgres
+  game-service:
+    build: ./game-service
+    restart: always
+    hostname: game-service
+    env_file:
+      - ./game-service/.env
+    environment:
+      DB_HOST: postgres
+      REDIS_HOST: redis
+      DB_USER: ${DB_USER:-postgres}
+      DB_PASSWORD: ${DB_PASSWORD:-postgres}
+      DB_NAME: ${DB_NAME}
+    networks:
+      - backend
+    links:
+      - postgres
+      - redis
+    depends_on:
+      - postgres
+      - redis
+  postgres:
+    container_name: postgres_container
+    image: postgres
+    environment:
+      POSTGRES_USER: ${DB_USER:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-postgres}
+      POSTGRES_DB: ${DB_NAME}
+      PGDATA: /data/postgres
+    volumes:
+      - postgres:/data/postgres
+    ports:
+      - "5432:5432"
+    restart: unless-stopped
+    networks:
+      - backend
+
+  redis:
+    container_name: redis
+    image: redis:alpine
+    command: redis-server # --requirepass ....
+    ports:
+      - ${REDIS_PORT:-6379}:6379
+    volumes:
+      - redis:/data
+    environment:
+      - REDIS_REPLICATION_MODE=master
+      - ALLOW_EMPTY_PASSWORD=yes
+    networks:
+      - backend
+
+networks:
+  backend:
+    driver: bridge
+
+volumes:
+  postgres: {}
+  redis: {}

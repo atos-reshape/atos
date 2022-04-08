@@ -16,6 +16,7 @@ const config = {
   },
   logger: logger.log.bind(logger),
   user: process.env.DB_USER,
+  host: process.env.DB_HOST,
   password: process.env.DB_PASSWORD,
   registerRequestContext: false,
   allowGlobalContext: true,
