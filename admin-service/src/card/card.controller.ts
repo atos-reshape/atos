@@ -7,12 +7,29 @@ import {
   Post,
   Put,
   Query,
+  Res,
+  Req,
 } from '@nestjs/common';
 import { CardService } from './card.service';
-import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBadRequestResponse,
+  ApiConflictResponse,
+  ApiCreatedResponse,
+  ApiNotFoundResponse,
+  ApiOkResponse,
+  ApiOperation,
+  ApiQuery,
+  ApiTags,
+} from '@nestjs/swagger';
 import { CreateCardDto } from './dtos/create-card.dto';
 import { Card } from './entities/card.entity';
+import { paginate } from '../helpers/pagination.helper';
+import { Response, Request } from 'express';
+import { PageOptionsDto } from './dtos/page-options.dto';
 
+/**
+ * The REST API controller for the card service.
+ */
 @ApiTags('cards')
 @Controller('cards')
 export class CardController {
@@ -20,34 +37,46 @@ export class CardController {
 
   @ApiOperation({ summary: 'Get all cards' })
   @ApiQuery({ name: 'isActive' })
-  @ApiResponse({ status: 200, description: 'Returned all cards' })
+  @ApiOkResponse()
   @Get()
-  async findAll(@Query('isActive') isActive = true): Promise<Card[]> {
-    return this.cardService.findAll(isActive);
+  async findAll(
+    @Query('isActive') isActive = true,
+    @Query() pageOptions?: PageOptionsDto,
+    @Res() response?: Response,
+    @Req() request?: Request,
+  ) {
+    return response.json(
+      paginate<Card>(
+        request,
+        response,
+        await this.cardService.findAll(isActive, pageOptions),
+        pageOptions,
+      ),
+    );
   }
 
   @ApiOperation({ summary: 'Get card by id' })
-  @ApiResponse({ status: 200, description: 'Returned card by id' })
-  @ApiResponse({ status: 404, description: 'Card not found' })
+  @ApiOkResponse()
+  @ApiNotFoundResponse()
   @Get(':id')
   async findOne(@Param('id') id: string): Promise<Card> {
     return this.cardService.findOne(id);
   }
 
   @ApiOperation({ summary: 'Create card' })
-  @ApiResponse({ status: 201, description: 'Card created' })
-  @ApiResponse({ status: 400, description: 'Invalid card' })
-  @ApiResponse({ status: 409, description: 'Card already exists' })
+  @ApiCreatedResponse()
+  @ApiBadRequestResponse()
+  @ApiConflictResponse()
   @Post()
   async create(@Body() card: CreateCardDto): Promise<Card> {
     return this.cardService.create(card);
   }
 
   @ApiOperation({ summary: 'Update card' })
-  @ApiResponse({ status: 200, description: 'Card updated' })
-  @ApiResponse({ status: 400, description: 'Invalid card' })
-  @ApiResponse({ status: 404, description: 'Card not found' })
-  @ApiResponse({ status: 409, description: 'Card already exists' })
+  @ApiOkResponse()
+  @ApiBadRequestResponse()
+  @ApiNotFoundResponse()
+  @ApiConflictResponse()
   @Put(':id')
   async update(
     @Param('id') id: string,
@@ -57,8 +86,9 @@ export class CardController {
   }
 
   @ApiOperation({ summary: 'Delete card by id' })
-  @ApiResponse({ status: 200, description: 'Card deleted' })
-  @ApiResponse({ status: 404, description: 'Card not found' })
+  @ApiOkResponse()
+  @ApiNotFoundResponse()
+  @ApiConflictResponse()
   @Delete(':id')
   async delete(@Param('id') id: string): Promise<void> {
     return this.cardService.delete(id);

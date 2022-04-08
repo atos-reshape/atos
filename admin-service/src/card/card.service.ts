@@ -1,9 +1,15 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { EntityRepository } from '@mikro-orm/postgresql';
 import { InjectRepository } from '@mikro-orm/nestjs';
 import { Card } from './entities/card.entity';
 import { CreateCardDto } from './dtos/create-card.dto';
 import { wrap } from '@mikro-orm/core';
+import { PageOptionsDto } from './dtos/page-options.dto';
+import { PaginatedResult } from '../helpers/pagination.helper';
 
 @Injectable()
 export class CardService {
@@ -15,12 +21,21 @@ export class CardService {
   /**
    * Retrieve all cards from database.
    * @param isActive - Filter on the active cards, if false return all cards including deleted ones.
+   * @param pageOptions - Pagination options.
    * @returns An array of cards.
    */
-  async findAll(isActive: boolean): Promise<Card[]> {
-    return await this.cardRepository.findAll({
-      filters: { isActive },
-    });
+  async findAll(
+    isActive: boolean,
+    pageOptions: PageOptionsDto,
+  ): Promise<PaginatedResult<Card>> {
+    return await this.cardRepository.findAndCount(
+      {},
+      {
+        filters: { isActive },
+        limit: pageOptions.limit,
+        offset: pageOptions.offset,
+      },
+    );
   }
 
   /**
@@ -29,16 +44,18 @@ export class CardService {
    * @returns The card with the given id.
    */
   async findOne(id: string): Promise<Card> {
-    return await this.cardRepository.findOne(id);
+    return await this.cardRepository.findOne(id, {
+      filters: { isActive: false },
+    });
   }
 
   /**
    * Create a new card in the database.
-   * @param card - The data to create the card with.
+   * @param cardData - The data to create the card with.
    * @returns The created card.
    */
-  async create(card: CreateCardDto): Promise<Card> {
-    const newCard = this.cardRepository.create({ text: card.text });
+  async create(cardData: CreateCardDto): Promise<Card> {
+    const newCard = this.cardRepository.create({ text: cardData.text });
     await this.cardRepository.persistAndFlush(newCard);
     return newCard;
   }
@@ -66,6 +83,8 @@ export class CardService {
   async delete(id: string): Promise<void> {
     const card = await this.findOne(id);
     if (!card) throw new NotFoundException('Card not found');
+    if (card.deletedAt) throw new ConflictException('Card already deleted');
+
     wrap(card).assign({ ...card, deletedAt: new Date() } as Card);
 
     return await this.cardRepository.flush();

@@ -24,11 +24,5 @@ export const createCards = (
   cards: Partial<Card>[] = [],
   orm?: MikroORM,
 ): Card[] => {
-  const result = cards.map((c: Partial<Card>) => card(c, orm));
-
-  if (!!orm) {
-    result.forEach((c) => orm.em.persist(c));
-  }
-
-  return result;
+  return cards.map((c: Partial<Card>) => card(c, orm));
 };
