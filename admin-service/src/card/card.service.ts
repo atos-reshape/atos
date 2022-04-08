@@ -22,7 +22,6 @@ export class CardService {
    * Retrieve all cards from database.
    * @param isActive - Filter on the active cards, if false return all cards including deleted ones.
    * @param pageOptions - Pagination options.
-   *
    * @returns An array of cards.
    */
   async findAll(
