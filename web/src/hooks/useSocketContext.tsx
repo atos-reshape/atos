@@ -17,7 +17,7 @@ export const SocketProvider = ({ children, id }: any) => {
   const [state, setState] = useState<Lobby | undefined>(undefined);
   let socket: Socket = null as unknown as Socket;
   useEffect(() => {
-    socket = io('http://localhost:3001', {
+    socket = io('http://localhost:8000', {
       transports: ['websocket'],
       path: '/lobby/'
     });

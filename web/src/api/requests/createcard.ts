@@ -10,7 +10,7 @@ const useInvalidateCards = () => {
 
 export const useCreateCard = () => {
   const invalidateCards = useInvalidateCards();
-  return useCreate<any>('http://localhost:3002/api/cards', {
+  return useCreate<any>('http://localhost:8000/api/cards', {
     onSuccess: invalidateCards
   });
 };

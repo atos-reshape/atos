@@ -1,31 +1,57 @@
-import { useState } from 'react';
+import { useState, useContext } from 'react';
 import { useDrop } from 'react-dnd';
 import { Container, Group } from '@mantine/core';
 import CardTemplate from '../../components/Card/Card';
+import { PlayerGameContext } from '../../hooks/usePlayerGameContext';
 
 function SelectedCardsContainer() {
-  const [selectedCards, setSelectedCards] = useState([]);
+  // const [selectedCards, setSelectedCards] = useState([]);
+  const { carouselCards, selectedCards, setCarouselCards, setSelectedCards } =
+    useContext(PlayerGameContext);
+
   const [{ isOver }, dropRef] = useDrop({
     accept: 'card',
     drop: (item: any) => {
-      setSelectedCards((selectedCards: any) =>
-        !selectedCards.includes(item) ? [...selectedCards, item] : selectedCards
-      );
+      console.log(item);
+      const newCard = {
+        text: item.CardText
+      };
+      if (item.source === 'carousel') {
+        console.log(selectedCards);
+        setSelectedCards((selectedCards: any) =>
+          !selectedCards.includes(newCard)
+            ? [...selectedCards, newCard]
+            : selectedCards
+        );
+        setCarouselCards(
+          carouselCards.filter((card: any) => {
+            return card.text !== newCard.text;
+          })
+        );
+      }
+      if (item.source === 'selectedfield') {
+        return;
+      }
     },
     collect: (monitor) => ({
       isOver: !!monitor.isOver()
     })
   });
-  console.log(selectedCards);
   return (
     <Container size="md" className="selectedCards" ref={dropRef}>
       <h4>selected cards</h4>
 
-      <div>
+      <Group direction="row">
         {selectedCards?.map((card: any, index: number) => {
-          return <CardTemplate CardText={card.CardText} key={index} />;
+          return (
+            <CardTemplate
+              CardText={card.text}
+              key={index}
+              source="selectedfield"
+            />
+          );
         })}
-      </div>
+      </Group>
       {isOver && <div>Drop Here!</div>}
     </Container>
   );

@@ -3,17 +3,19 @@ import './Card.css';
 import { useDrag } from 'react-dnd';
 type CardProps = {
   CardText: string;
+  source: string;
 };
 
 function CardTemplate(props: CardProps) {
-  const { CardText } = props;
+  const { CardText, source } = props;
   const fontSize = CardText.split(' ').length > 20 ? '0.75rem' : '1rem';
 
   const [{ isDragging }, dragRef] = useDrag({
     type: 'card',
-    item: { CardText },
+    item: { CardText, source },
     collect: (monitor) => ({
-      isDragging: monitor.isDragging()
+      isDragging: monitor.isDragging(),
+      source: 'coming from here'
     })
   });
   return (

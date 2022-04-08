@@ -16,13 +16,6 @@
     }
 }
 
-
-@media screen and (max-width: 1024px){
-    .card{
-        width: 29vw;
-    }
-}
-
 .cardtext {
     margin-top: 15px;
 }
