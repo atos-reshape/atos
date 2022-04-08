@@ -109,3 +109,5 @@ psd
 thumb
 sketch
 **/.snapshot-*.json
+
+.history
