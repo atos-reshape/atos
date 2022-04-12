@@ -27,7 +27,7 @@ async function bootstrap() {
   // Ensure gracefully shutdown of plugins (like db connections)
   app.enableShutdownHooks();
 
-  //CORS for frontend
+  // CORS for frontend
   app.enableCors();
 
   // Start the app
