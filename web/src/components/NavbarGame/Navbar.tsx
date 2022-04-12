@@ -7,7 +7,7 @@ function Navbar() {
   const lobby = useContext(SocketContext);
   return (
     <Container fluid className="container">
-      <Container size="md">
+      <Container size="sm">
         <Group>
           <Text className="text">
             Lobby name :{' '}

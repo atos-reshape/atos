@@ -6,7 +6,7 @@ type CardProps = {
 
 function CardTemplate(props: CardProps) {
   const { CardText } = props;
-  const fontSize = CardText.split(' ').length > 20 ? '0.75rem' : '1rem';
+  const fontSize = CardText.split(' ').length > 20 ? '1rem' : '1.25rem';
 
   return (
     <>

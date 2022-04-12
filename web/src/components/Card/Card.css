@@ -23,6 +23,12 @@
     }
 }
 
+@media screen and (max-width: 4000px){
+    .card{
+        width: 50vw;
+    }
+}
+
 .cardtext {
     margin-top: 15px;
 }
