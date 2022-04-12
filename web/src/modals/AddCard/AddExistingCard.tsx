@@ -1,6 +1,6 @@
 import { useState, useContext } from 'react';
 import { Modal, Group, Button, TextInput, Select } from '@mantine/core';
-import Context from '../../pages/context/Context';
+import Context from '../../context/Context';
 
 function AddCard() {
   const [opened, setOpened] = useState(false);
