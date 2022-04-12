@@ -9,10 +9,23 @@ services:
     environment:
       GAME_SERVICE_HOST: game-service
       ADMIN_SERVICE_HOST: admin-service
+      FRONTEND_HOST: frontend-service
     ports:
       - "8000:3003"
     networks:
       - backend
+      - frontend
+    depends_on:
+      - admin-service
+      - game-service
+
+  frontend-service:
+    build: ./web
+    restart: always
+    hostname: frontend-service
+    networks:
+      - frontend
+
   admin-service:
     build: ./admin-service
     restart: always
@@ -83,6 +96,8 @@ services:
 
 networks:
   backend:
+    driver: bridge
+  frontend:
     driver: bridge
 
 volumes:

@@ -10,7 +10,7 @@ const useInvalidateCards = () => {
 
 export const useCreateCard = () => {
   const invalidateCards = useInvalidateCards();
-  return useCreate<any>(`${process.env.GATEWAY_BASE_URL}/api/cards`, {
+  return useCreate<any>('/api/cards', {
     onSuccess: invalidateCards
   });
 };

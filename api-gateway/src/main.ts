@@ -63,6 +63,16 @@ async function bootstrap() {
     }),
   );
 
+  app.use(
+    '*',
+    createProxyMiddleware({
+      target: `http://${process.env.FRONTEND_HOST}:${process.env.FRONTEND_PORT}`,
+      changeOrigin: true,
+      logLevel: 'debug',
+      logProvider: () => logProvider,
+    }),
+  );
+
   await app.listen(process.env.PORT);
 }
 
