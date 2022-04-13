@@ -6,10 +6,20 @@ import { Player } from './player.entity';
 @Entity()
 @Index({ properties: ['round', 'player'] })
 export class SelectedCards extends BaseEntity {
-  @ManyToOne({ entity: () => Round, wrappedReference: true, hidden: true, index: true })
+  @ManyToOne({
+    entity: () => Round,
+    wrappedReference: true,
+    hidden: true,
+    index: true,
+  })
   round!: Round;
 
-  @ManyToOne({ entity: () => Player, wrappedReference: true, hidden: true, index: true })
+  @ManyToOne({
+    entity: () => Player,
+    wrappedReference: true,
+    hidden: true,
+    index: true,
+  })
   player!: Player;
 
   @Property({ type: ArrayType, nullable: false })

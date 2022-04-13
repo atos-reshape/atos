@@ -65,7 +65,9 @@ export class RoundService {
 
     const round = this.roundRepository.create({ cards: settings.cards });
 
-    const selCardsService = new SelectedCardsService(this.selectedCardsRepository);
+    const selCardsService = new SelectedCardsService(
+      this.selectedCardsRepository,
+    );
     selCardsService.createSelectedCardsForPlayer(lobby, round);
 
     lobby.rounds.add(round);
