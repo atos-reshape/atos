@@ -9,6 +9,7 @@ import { EntityRepository } from '@mikro-orm/postgresql';
 import { Lobby } from '../lobby/lobby.entity';
 import { CreateRoundDto } from './dto';
 import { SelectedCards } from '../payer/selectedCards.entity';
+import { SelectedCardsService } from '../payer/selectedCards.service';
 
 @Injectable()
 export class RoundService {
@@ -64,14 +65,8 @@ export class RoundService {
 
     const round = this.roundRepository.create({ cards: settings.cards });
 
-    const players = lobby.players;
-    for (let i = 0; i < players.length; i++) {
-      const selectedCards = this.selectedCardsRepository.create({
-        player: lobby.players[i],
-        round: round,
-      });
-      await this.selectedCardsRepository.persistAndFlush(selectedCards);
-    }
+    const selCardsService = new SelectedCardsService(this.selectedCardsRepository);
+    selCardsService.createSelectedCardsForPlayer(lobby, round);
 
     lobby.rounds.add(round);
     await this.roundRepository.persistAndFlush(round);
@@ -163,7 +158,7 @@ export class RoundService {
     });
 
     if (!selectedCards)
-      throw new NotFoundException('Could not find selected cards of player!');
+      throw new NotFoundException('Could not find selected cards of player');
 
     selectedCards.cards.push(newCard);
     await this.selectedCardsRepository.flush();
@@ -189,7 +184,7 @@ export class RoundService {
     });
 
     if (!selectedCards)
-      throw new NotFoundException('Could not find selected cards of player!');
+      throw new NotFoundException('Could not find selected cards of player');
 
     const index = selectedCards.cards.indexOf(removedCard);
     if (index > -1) {

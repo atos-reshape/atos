@@ -80,7 +80,7 @@ export class RoundController {
     type: SelectedCardsResponseDto,
   })
   @ApiResponse({ status: 404, description: 'Selected cards not found' })
-  @Get('/:round_id/:player_id')
+  @Get('/:round_id/selected_cards/:player_id')
   async getPlayerSelectedCards(
     @Param('round_id') id: string,
     @Param('player_id') playerId: string,
@@ -97,7 +97,7 @@ export class RoundController {
     type: SelectedCardsResponseDto,
   })
   @ApiResponse({ status: 404, description: 'Player not found' })
-  @Get('/:round_id/selected-cards')
+  @Get('/:round_id/selected_cards')
   async getAllSelectedCards(
     @Param('round_id') roundId: string,
   ): Promise<SelectedCardsResponseDto[]> {
@@ -114,7 +114,7 @@ export class RoundController {
     type: SelectedCardsResponseDto,
   })
   @ApiResponse({ status: 400, description: 'New card could not be added' })
-  @Put('/:round_id/:player_id/add')
+  @Put('/:round_id/selected_cards/:player_id')
   async addSelectedCard(
     @Body() playerId: string,
     roundId: string,
