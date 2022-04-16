@@ -15,10 +15,16 @@ import { SelectedCards } from '../payer/selectedCards.entity';
 @Entity()
 export class Round extends BaseEntity {
   @Property({ type: ArrayType, nullable: false })
-  cards!: string[];
+  cards: string[] = [];
 
   @ManyToOne({ entity: () => Lobby, wrappedReference: true })
   lobby!: Lobby;
+
+  @Property({ nullable: true })
+  startedAt?: Date;
+
+  @Property({ nullable: true })
+  endedAt?: Date;
 
   @OneToOne(() => Lobby, (lobby) => lobby.currentRound, {
     hidden: true,
@@ -28,4 +34,16 @@ export class Round extends BaseEntity {
 
   @OneToMany({ entity: () => SelectedCards, mappedBy: 'round', hidden: true })
   selectedCards = new Collection<SelectedCards>(this);
+
+  public hasStarted(): boolean {
+    return !!this.startedAt;
+  }
+
+  public hasEnded(): boolean {
+    return !!this.endedAt;
+  }
+
+  public isActive(): boolean {
+    return this.hasStarted() && !this.hasEnded();
+  }
 }

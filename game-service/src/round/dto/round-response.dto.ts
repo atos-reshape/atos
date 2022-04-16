@@ -24,6 +24,14 @@ export class RoundResponseDto {
   @Expose()
   lobbyId: string;
 
+  @ApiProperty()
+  @Expose()
+  startedAt: Date;
+
+  @ApiProperty()
+  @Expose()
+  endedAt: Date;
+
   constructor(partial: Partial<Round>) {
     Object.assign(this, partial);
     this.lobbyId = partial.lobby.id;

@@ -5,6 +5,8 @@ import { Lobby } from './lobby.entity';
 import { CreateLobbyDto } from './dto';
 import { Round } from '../round/round.entity';
 
+type INCLUDES = 'currentRound' | 'rounds';
+
 @Injectable()
 export class LobbyService {
   constructor(
@@ -44,14 +46,15 @@ export class LobbyService {
   /**
    * Retrieve a specific lobby from the database.
    * @param id is the id of the lobby.
+   * @param populate are the relations that should be present.
    * @returns the lobby including the current round.
    * @exception NotFoundException if the given id does not match a lobby.
    */
-  async getById(id: string): Promise<Lobby> {
-    const lobby = await this.lobbyRepository.findOne(
-      { id: id },
-      { populate: ['currentRound'] },
-    );
+  async getById(
+    id: string,
+    populate: INCLUDES[] = ['currentRound'],
+  ): Promise<Lobby> {
+    const lobby = await this.lobbyRepository.findOne({ id: id }, { populate });
 
     if (!lobby) throw new NotFoundException('Lobby not found');
 

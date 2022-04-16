@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@mikro-orm/nestjs';
 import { Round } from './round.entity';
 import { EntityRepository } from '@mikro-orm/postgresql';
@@ -24,16 +28,37 @@ export class RoundService {
   }
 
   /**
+   * Retrieve a specific round from the database.
+   * @param id is the id of the round.
+   * @returns the round matching the given id.
+   * @exception NotFoundException if the given id does not match a round.
+   */
+
+  async findRound(id: string) {
+    const round = await this.roundRepository.findOne(id);
+
+    if (!round) throw new NotFoundException('Round not found');
+
+    return round;
+  }
+
+  /**
    * Create a new round.
-   * @param lobby_id is the id of the lobby this round belongs to.
+   * @param lobby that should get a new round.
    * @param settings are the properties of the new round.
    * @exception NotFoundException if the given lobby_id does not match a lobby.
+   * @exception BadRequestException if the lobby already has a round present / active.
    */
   async createNewRoundForLobby(
-    lobby_id: string,
+    lobby: Lobby,
     settings: CreateRoundDto,
   ): Promise<Round> {
-    const lobby = await this.findLobby(lobby_id);
+    if (lobby.currentRound !== undefined)
+      if (!lobby.currentRound.hasEnded())
+        throw new BadRequestException(
+          'Lobby already has an active or prepared round',
+        );
+
     const round = this.roundRepository.create({ cards: settings.cards });
 
     lobby.rounds.add(round);
@@ -45,19 +70,29 @@ export class RoundService {
   }
 
   /**
-   * Retrieve a specific lobby from the database.
-   * @param id is the id of the lobby.
-   * @returns the lobby including the associated rounds.
-   * @exception NotFoundException if the given id does not match a lobby.
+   * This method will handle the logic for starting a round.
+   * @param round is the round to start.
+   * @exception BadRequestException if the round already started.
    */
-  private async findLobby(id: string) {
-    const lobby = await this.lobbyRepository.findOne(
-      { id },
-      { populate: ['rounds'] },
-    );
+  async startRound(round: Round): Promise<void> {
+    if (round.hasStarted())
+      throw new BadRequestException('Round already started');
 
-    if (!lobby) throw new NotFoundException('Lobby not found');
+    round.startedAt = new Date();
 
-    return lobby;
+    await this.roundRepository.persistAndFlush(round);
+  }
+
+  /**
+   * This method will handle the logic for starting a round.
+   * @param round is the round to end.
+   * @exception BadRequestException if the round already ended.
+   */
+  async endRound(round: Round): Promise<void> {
+    if (!round.isActive()) throw new BadRequestException('Round is not active');
+
+    round.endedAt = new Date();
+
+    await this.roundRepository.persistAndFlush(round);
   }
 }
