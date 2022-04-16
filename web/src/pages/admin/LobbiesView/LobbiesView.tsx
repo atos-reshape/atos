@@ -61,7 +61,7 @@ export function LobbiesView(): JSX.Element {
                     <Menu.Item
                       icon={<Settings size={14} />}
                       component={Link}
-                      to={`/admin/participate/${lobby.id}`}
+                      to={`/admin/participate?id=${lobby.id}`}
                     >
                       Open Game
                     </Menu.Item>

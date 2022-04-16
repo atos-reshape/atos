@@ -16,6 +16,7 @@ import {
 } from '@nestjs/common';
 import { LobbyResponseDto } from './dto';
 import { ExceptionsFilter } from '../sockets/exceptionFilter';
+import { Joined } from '../sockets/joined.type';
 
 @WebSocketGateway({
   cors: {
@@ -36,14 +37,23 @@ export class LobbyGateway {
   @SerializeOptions({ groups: ['withCurrentRound'] })
   async joinLobby(
     @ConnectedSocket() socket: Socket,
-    @MessageBody() lobby_id: string,
+    @MessageBody() lobbyId: string,
   ): Promise<LobbyResponseDto> {
-    if (!lobby_id) throw new WsException('Lobby id is missing');
+    if (!lobbyId) throw new WsException('Lobby id is missing');
 
     // Should still check if this lobby exists / is still playing
-    const lobby = await this.lobbyService.getById(lobby_id);
+    const lobby = await this.lobbyService.getById(lobbyId);
 
-    socket.join(lobby_id);
+    socket.join(lobbyId);
+    socket['lobbyId'] = lobbyId;
+
+    return new LobbyResponseDto(lobby);
+  }
+
+  @SubscribeMessage('getLobby')
+  @SerializeOptions({ groups: ['withCurrentRound'] })
+  async getLobby(@ConnectedSocket() socket: Joined): Promise<LobbyResponseDto> {
+    const lobby = await this.lobbyService.getById(socket.lobbyId);
 
     return new LobbyResponseDto(lobby);
   }
