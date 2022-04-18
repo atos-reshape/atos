@@ -6,9 +6,9 @@ import {
 import { EntityRepository } from '@mikro-orm/postgresql';
 import { InjectRepository } from '@mikro-orm/nestjs';
 import { Card } from './entities/card.entity';
-import { CreateCardDto } from './dtos/create-card.dto';
+import { CreateCardDto } from './dtos';
 import { wrap } from '@mikro-orm/core';
-import { PageOptionsDto } from './dtos/page-options.dto';
+import { PageOptionsDto } from './dtos';
 import { PaginatedResult } from '../helpers/pagination.helper';
 
 @Injectable()
@@ -17,6 +17,25 @@ export class CardService {
     @InjectRepository(Card)
     private readonly cardRepository: EntityRepository<Card>,
   ) {}
+
+  private static flattenCard(card: Card): Card {
+    const translations = card.translations.getItems();
+    const defaultTranslationIndex = translations.findIndex(
+      (translation) => translation.isDefaultLanguage,
+    );
+
+    const flattenedCard = {
+      ...card,
+      // Make sure that this translation exists.
+      text: translations[defaultTranslationIndex]
+        ? translations[defaultTranslationIndex].text
+        : '',
+    };
+
+    delete flattenedCard.translations;
+
+    return flattenedCard;
+  }
 
   /**
    * Retrieve all cards from database.
@@ -28,14 +47,17 @@ export class CardService {
     isActive: boolean,
     pageOptions: PageOptionsDto,
   ): Promise<PaginatedResult<Card>> {
-    return await this.cardRepository.findAndCount(
+    const [cards, count] = await this.cardRepository.findAndCount(
       {},
       {
         filters: { isActive },
+        populate: ['translations'],
         limit: pageOptions.limit,
         offset: pageOptions.offset,
       },
     );
+
+    return [cards.map((card) => CardService.flattenCard(card)), count];
   }
 
   /**
