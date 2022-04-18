@@ -35,13 +35,27 @@ export class RoundService {
    * @returns the round matching the given id.
    * @exception NotFoundException if the given id does not match a round.
    */
-
   async findRound(id: string) {
     const round = await this.roundRepository.findOne(id);
 
     if (!round) throw new NotFoundException('Round not found');
 
     return round;
+  }
+
+  /**
+   * Updates the cards of a specific round.
+   * @param round is the round that should be updated.
+   * @param cards are the new cards of that round.
+   * @exception BadRequestException if the round already started.
+   */
+  async updateCards(round: Round, cards: string[]): Promise<void> {
+    if (round.hasStarted())
+      throw new BadRequestException('Round already started');
+
+    this.roundRepository.assign(round, { cards });
+
+    return this.roundRepository.persistAndFlush(round);
   }
 
   /**
@@ -55,7 +69,7 @@ export class RoundService {
     lobby: Lobby,
     settings: CreateRoundDto,
   ): Promise<Round> {
-    if (lobby.currentRound !== undefined)
+    if (!!lobby.currentRound)
       if (!lobby.currentRound.hasEnded())
         throw new BadRequestException(
           'Lobby already has an active or prepared round',

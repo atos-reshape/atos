@@ -19,6 +19,7 @@ import {
 import { RoundService } from './round.service';
 import { RoundResponseDto, CreateRoundDto } from './dto';
 import { RoundCommand } from './round.command';
+import { UpdateCardsDto } from './dto/update-cards.dto';
 import { SelectedCardsResponseDto } from '../payer/dto/selected-cards-response.dto';
 import { SelectedCardsService } from '../payer/selectedCards.service';
 
@@ -81,6 +82,19 @@ export class RoundController {
   @Put(':id/end')
   async endRound(@Param('id') id: string) {
     return this.roundCommand.endRound(id);
+  }
+
+  @ApiOperation({ summary: 'Update the cards of a round' })
+  @ApiOkResponse({ description: 'Successfully updated the cards of the round' })
+  @ApiNotFoundResponse({ description: 'Round was not found' })
+  @Put(':id/cards')
+  async updateCards(
+    @Param('id') id: string,
+    @Body() params: UpdateCardsDto,
+  ): Promise<RoundResponseDto> {
+    return new RoundResponseDto(
+      await this.roundCommand.updateCards(id, params),
+    );
   }
 
   @ApiOperation({ summary: 'Get selected cards of a player by id' })
