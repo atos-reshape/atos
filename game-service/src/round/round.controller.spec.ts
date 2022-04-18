@@ -22,6 +22,8 @@ import { SocketService } from '../lobby/socket.service';
 import { LobbyService } from '../lobby/lobby.service';
 import { RoundCommand } from './round.command';
 import { SelectedCards } from '../payer/selectedCards.entity';
+import { SelectedCardsService } from '../payer/selectedCards.service';
+import { SelectedCardsResponseDto } from '../payer/dto/selected-cards-response.dto';
 
 describe('RoundController', () => {
   let socketService: SocketService;
@@ -37,7 +39,13 @@ describe('RoundController', () => {
         MikroOrmModule.forFeature({ entities: [Lobby, Round, SelectedCards] }),
       ],
       controllers: [RoundController],
-      providers: [RoundService, SocketService, RoundCommand, LobbyService],
+      providers: [
+        RoundService,
+        SocketService,
+        RoundCommand,
+        LobbyService,
+        SelectedCardsService,
+      ],
     }).compile();
 
     socketService = app.get<SocketService>(SocketService);
@@ -81,6 +89,9 @@ describe('RoundController', () => {
         jest.spyOn(socketService, 'send').mockImplementation(() => undefined);
 
         const existingLobby: Lobby = lobby({}, orm);
+        const p = player({}, orm);
+        existingLobby.players.add(p);
+        orm.em.persistAndFlush(existingLobby);
         expect(
           await controller.createRound(existingLobby.id, request),
         ).toMatchObject({ cards: request.cards } as RoundResponseDto);
@@ -90,6 +101,12 @@ describe('RoundController', () => {
           'round.created',
           expect.any(Object),
         );
+
+        expect(
+          await controller.getAllSelectedCards(existingLobby.currentRound.id),
+        ).toMatchObject([
+          { playerId: p.id, cards: [] } as SelectedCardsResponseDto,
+        ]);
       });
     });
 
@@ -221,10 +238,16 @@ describe('RoundController', () => {
       );
 
       expect(
-        await controller.getPlayerSelectedCards(p.id, myRound.id),
+        await controller.getPlayerSelectedCards(myRound.id, p.id),
       ).toMatchObject({
         cards: playerSelectedCards.cards,
       });
+    });
+
+    it('should return not found', async () => {
+      await expect(
+        controller.getPlayerSelectedCards(v4(), v4()),
+      ).rejects.toThrow(NotFoundException);
     });
   });
 
@@ -264,6 +287,12 @@ describe('RoundController', () => {
         cards: playerSelectedCards.cards,
       });
     });
+
+    it('should return not found', async () => {
+      await expect(
+        controller.addSelectedCard(v4(), v4(), v4()),
+      ).rejects.toThrow(NotFoundException);
+    });
   });
 
   describe('removeSelectedCard', () => {
@@ -289,6 +318,12 @@ describe('RoundController', () => {
       ).toMatchObject({
         cards: playerSelectedCards.cards,
       });
+    });
+
+    it('should return not found', async () => {
+      await expect(
+        controller.removeSelectedCard(v4(), v4(), v4()),
+      ).rejects.toThrow(NotFoundException);
     });
   });
 });

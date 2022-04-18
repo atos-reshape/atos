@@ -1,9 +1,10 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@mikro-orm/nestjs';
 import { EntityRepository } from '@mikro-orm/postgresql';
-import { SelectedCards } from '../payer/selectedCards.entity';
+import { SelectedCards } from './selectedCards.entity';
 import { Lobby } from 'src/lobby/lobby.entity';
 import { Round } from 'src/round/round.entity';
+import { Player } from './player.entity';
 
 @Injectable()
 export class SelectedCardsService {
@@ -15,24 +16,100 @@ export class SelectedCardsService {
   /**
    * Create new selected cards entity for each player in the lobby.
    * @param lobby is the the lobby.
-   * @param currentRound is the current round of the game.
+   * @param round is the current round of the game.
    * @returns an array of selected cards.
    */
-  async createSelectedCardsForPlayer(
-    lobby: Lobby,
-    currentRound: Round,
-  ): Promise<SelectedCards[]> {
-    const players = lobby.players;
-    const selectedCardsArray = [];
-    for (let i = 0; i < players.length; i++) {
-      const selectedCards = this.selectedCardsRepository.create({
-        player: lobby.players[i],
-        round: currentRound,
-      });
-      selectedCardsArray.push(selectedCards);
-      await this.selectedCardsRepository.persistAndFlush(selectedCards);
-    }
+  async prepareSelectedCards(lobby: Lobby, round: Round): Promise<void> {
+    const entities = (await lobby.players.loadItems()).map((player: Player) =>
+      this.selectedCardsRepository.create({ player, round }),
+    );
 
-    return selectedCardsArray;
+    // Save the entire array of objects at once to save time XD
+    await this.selectedCardsRepository.persistAndFlush(entities);
+  }
+
+  /**
+   * Create new selected cards entity for a new player in the lobby.
+   * @param lobby is the lobby.
+   * @param player is the player.
+   * @returns The selected cards of the player.
+   */
+  async createForPlayer(lobby: Lobby, player: Player): Promise<void> {
+    const selected = this.selectedCardsRepository.create({
+      player: player,
+      round: lobby.currentRound.id,
+    });
+
+    await this.selectedCardsRepository.persistAndFlush(selected);
+  }
+
+  /**
+   * Get the selected cards of a player.
+   * @param playerId - The id of the player.
+   * @param roundId - The round.
+   * @returns The selected cards of the player.
+   */
+  async findSelectedCards(
+    playerId: string,
+    roundId: string,
+  ): Promise<SelectedCards> {
+    const selectedCards = await this.selectedCardsRepository.findOne({
+      player: playerId,
+      round: roundId,
+    });
+
+    if (!selectedCards)
+      throw new NotFoundException('Could not find selected cards of player');
+
+    return selectedCards;
+  }
+
+  /**
+   * Get all the selected cards.
+   * @param roundId - The id of the round.
+   * @returns The selected cards of the round.
+   */
+  async getAllSelectedCards(roundId: string): Promise<SelectedCards[]> {
+    return this.selectedCardsRepository.find({ round: roundId });
+  }
+
+  /**
+   * Update the selected cards.
+   * @param playerId - The id of the player to update.
+   * @param roundId - The round to update.
+   * @param newCard - The card to add to the selected cards.
+   * @returns The updated selected cards.
+   */
+  async addSelectedCard(
+    playerId: string,
+    roundId: string,
+    newCard: string,
+  ): Promise<SelectedCards> {
+    const selectedCards = await this.findSelectedCards(playerId, roundId);
+
+    selectedCards.cards.push(newCard);
+    await this.selectedCardsRepository.persistAndFlush(selectedCards);
+
+    return selectedCards;
+  }
+
+  /**
+   * Update the selected cards.
+   * @param playerId - The id of the player to update.
+   * @param roundId - The round to update.
+   * @param removedCard - The card to add to the selected cards.
+   * @returns The updated selected cards.
+   */
+  async removeSelectedCard(
+    playerId: string,
+    roundId: string,
+    removedCard: string,
+  ): Promise<SelectedCards> {
+    const selected = await this.findSelectedCards(playerId, roundId);
+
+    selected.cards = selected.cards.filter((id) => id !== removedCard);
+    await this.selectedCardsRepository.persistAndFlush(selected);
+
+    return selected;
   }
 }

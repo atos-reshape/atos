@@ -4,6 +4,7 @@ import { EntityRepository } from '@mikro-orm/postgresql';
 import { Lobby } from './lobby.entity';
 import { CreateLobbyDto } from './dto';
 import { Round } from '../round/round.entity';
+import { RoundService } from '../round/round.service';
 
 type INCLUDES = 'currentRound' | 'rounds';
 
@@ -14,6 +15,7 @@ export class LobbyService {
     private readonly lobbyRepository: EntityRepository<Lobby>,
     @InjectRepository(Round)
     private readonly roundRepository: EntityRepository<Round>,
+    private readonly roundService: RoundService,
   ) {}
 
   /**
@@ -31,14 +33,9 @@ export class LobbyService {
    */
   async createNewLobby(settings: CreateLobbyDto): Promise<Lobby> {
     const lobby = this.lobbyRepository.create({ title: settings.title });
-    const round = this.roundRepository.create({ cards: settings.cards });
-    lobby.rounds.add(round);
+    await this.lobbyRepository.persist(lobby);
 
-    await this.lobbyRepository.persistAndFlush(lobby);
-
-    // Now set this first round as the current round
-    lobby.currentRound = round;
-    await this.lobbyRepository.persistAndFlush(lobby);
+    await this.roundService.createNewRoundForLobby(lobby, settings);
 
     return lobby;
   }

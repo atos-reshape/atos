@@ -1,8 +1,6 @@
 import { Exclude, Expose } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
-import { Round } from '../../round/round.entity';
-import { Player } from '../player.entity';
-
+import { SelectedCards } from '../selectedCards.entity';
 @Exclude()
 export class SelectedCardsResponseDto {
   @ApiProperty()
@@ -11,11 +9,11 @@ export class SelectedCardsResponseDto {
 
   @ApiProperty()
   @Expose()
-  round: Round;
+  roundId: string;
 
   @ApiProperty()
   @Expose()
-  player: Player;
+  playerId: string;
 
   @ApiProperty()
   @Expose()
@@ -29,7 +27,9 @@ export class SelectedCardsResponseDto {
   @Expose()
   updatedAt: Date;
 
-  constructor(partial: Partial<Round>) {
+  constructor(partial: Partial<SelectedCards>) {
     Object.assign(this, partial);
+    this.roundId = partial.round.id;
+    this.playerId = partial.player.id;
   }
 }

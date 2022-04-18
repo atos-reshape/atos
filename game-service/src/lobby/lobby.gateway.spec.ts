@@ -14,6 +14,9 @@ import { v4 } from 'uuid';
 import { LobbyResponseDto } from './dto';
 import { NotFoundException } from '@nestjs/common';
 import { WsException } from '@nestjs/websockets';
+import { RoundService } from '../round/round.service';
+import { SelectedCardsService } from '../payer/selectedCards.service';
+import { SelectedCards } from '../payer/selectedCards.entity';
 
 describe('LobbyGateway', () => {
   let gateway: LobbyGateway;
@@ -25,10 +28,10 @@ describe('LobbyGateway', () => {
       imports: [
         ConfigModule.forRoot(),
         UseDatabaseTestConfig(),
-        MikroOrmModule.forFeature({ entities: [Lobby, Round] }),
+        MikroOrmModule.forFeature({ entities: [Lobby, Round, SelectedCards] }),
       ],
       controllers: [LobbyGateway],
-      providers: [LobbyService],
+      providers: [LobbyService, RoundService, SelectedCardsService],
     }).compile();
 
     gateway = app.get<LobbyGateway>(LobbyGateway);

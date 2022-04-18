@@ -13,6 +13,8 @@ import { JwtStrategy } from './jwt.strategy';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { SocketService } from '../lobby/socket.service';
 import { SelectedCards } from '../payer/selectedCards.entity';
+import { RoundService } from '../round/round.service';
+import { SelectedCardsService } from '../payer/selectedCards.service';
 
 @Module({
   imports: [
@@ -34,6 +36,8 @@ import { SelectedCards } from '../payer/selectedCards.entity';
     LobbyService,
     JwtStrategy,
     SocketService,
+    RoundService,
+    SelectedCardsService,
   ],
   exports: [AuthService],
 })

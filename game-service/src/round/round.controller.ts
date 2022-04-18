@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Param, Post, Put } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  Put,
+} from '@nestjs/common';
 import {
   ApiBadRequestResponse,
   ApiCreatedResponse,
@@ -12,6 +20,7 @@ import { RoundService } from './round.service';
 import { RoundResponseDto, CreateRoundDto } from './dto';
 import { RoundCommand } from './round.command';
 import { SelectedCardsResponseDto } from '../payer/dto/selected-cards-response.dto';
+import { SelectedCardsService } from '../payer/selectedCards.service';
 
 @ApiTags('Round')
 @Controller('lobbies/:lobby_id/rounds')
@@ -19,6 +28,7 @@ export class RoundController {
   constructor(
     private readonly roundService: RoundService,
     private readonly roundCommand: RoundCommand,
+    private readonly selectedService: SelectedCardsService,
   ) {}
 
   @ApiOperation({ summary: 'Get all rounds' })
@@ -80,13 +90,13 @@ export class RoundController {
     type: SelectedCardsResponseDto,
   })
   @ApiResponse({ status: 404, description: 'Selected cards not found' })
-  @Get('/:round_id/selected_cards/:player_id')
+  @Get('/:round_id/cards/:player_id')
   async getPlayerSelectedCards(
     @Param('round_id') id: string,
     @Param('player_id') playerId: string,
   ): Promise<SelectedCardsResponseDto> {
     return new SelectedCardsResponseDto(
-      await this.roundService.getPlayerSelectedCards(id, playerId),
+      await this.selectedService.findSelectedCards(playerId, id),
     );
   }
 
@@ -97,14 +107,12 @@ export class RoundController {
     type: SelectedCardsResponseDto,
   })
   @ApiResponse({ status: 404, description: 'Player not found' })
-  @Get('/:round_id/selected_cards')
+  @Get('/:round_id/cards')
   async getAllSelectedCards(
     @Param('round_id') roundId: string,
   ): Promise<SelectedCardsResponseDto[]> {
-    const selectedCards = await this.roundService.getAllSelectedCards(roundId);
-    return selectedCards.map(
-      (roundSelected) => new SelectedCardsResponseDto(roundSelected),
-    );
+    const selected = await this.selectedService.getAllSelectedCards(roundId);
+    return selected.map((cards) => new SelectedCardsResponseDto(cards));
   }
 
   @ApiOperation({ summary: 'Add a card to the selected cards of a player' })
@@ -114,14 +122,14 @@ export class RoundController {
     type: SelectedCardsResponseDto,
   })
   @ApiResponse({ status: 400, description: 'New card could not be added' })
-  @Put('/:round_id/selected_cards/:player_id')
+  @Put('/:round_id/cards/:player_id/:id')
   async addSelectedCard(
-    @Body() playerId: string,
-    roundId: string,
-    newCard: string,
+    @Param('player_id') playerId: string,
+    @Param('round_id') roundId: string,
+    @Param('id') id: string,
   ): Promise<SelectedCardsResponseDto> {
     return new SelectedCardsResponseDto(
-      await this.roundService.addSelectedCard(playerId, roundId, newCard),
+      await this.selectedService.addSelectedCard(playerId, roundId, id),
     );
   }
 
@@ -134,14 +142,14 @@ export class RoundController {
     type: SelectedCardsResponseDto,
   })
   @ApiResponse({ status: 400, description: 'Old card could not be removed' })
-  @Put('/:round_id/:player_id/remove')
+  @Delete('/:round_id/cards/:player_id/remove/:id')
   async removeSelectedCard(
-    @Body() playerId: string,
-    roundId: string,
-    newCard: string,
+    @Param('player_id') playerId: string,
+    @Param('round_id') roundId: string,
+    @Param('id') id: string,
   ): Promise<SelectedCardsResponseDto> {
     return new SelectedCardsResponseDto(
-      await this.roundService.removeSelectedCard(playerId, roundId, newCard),
+      await this.selectedService.removeSelectedCard(playerId, roundId, id),
     );
   }
 }
