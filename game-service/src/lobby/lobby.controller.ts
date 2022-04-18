@@ -7,13 +7,14 @@ import {
   SerializeOptions,
 } from '@nestjs/common';
 import { LobbyService } from './lobby.service';
-import { ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import {
   LobbyResponseDto,
   responseWithCurrentRound,
   CreateLobbyDto,
 } from './dto';
 
+@ApiTags('Lobby')
 @Controller('lobbies')
 export class LobbyController {
   constructor(private readonly lobbyService: LobbyService) {}

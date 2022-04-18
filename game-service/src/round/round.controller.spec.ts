@@ -7,13 +7,17 @@ import { Lobby } from '../lobby/lobby.entity';
 import { Round } from './round.entity';
 import { RoundController } from './round.controller';
 import { RoundService } from './round.service';
-import { round, lobby } from '@factories/index';
+import { round, lobby, lobbyWithRound } from '@factories/index';
 import { v4 } from 'uuid';
 import { CreateRoundDto, RoundResponseDto } from './dto';
 import { NotFoundException } from '@nestjs/common';
 import { validate } from 'class-validator';
+import { SocketService } from '../lobby/socket.service';
+import { LobbyService } from '../lobby/lobby.service';
+import { RoundCommand } from './round.command';
 
 describe('RoundController', () => {
+  let socketService: SocketService;
   let controller: RoundController;
   let app: TestingModule;
   let orm: MikroORM;
@@ -26,9 +30,10 @@ describe('RoundController', () => {
         MikroOrmModule.forFeature({ entities: [Lobby, Round] }),
       ],
       controllers: [RoundController],
-      providers: [RoundService],
+      providers: [RoundService, SocketService, RoundCommand, LobbyService],
     }).compile();
 
+    socketService = app.get<SocketService>(SocketService);
     controller = app.get<RoundController>(RoundController);
     orm = app.get<MikroORM>(MikroORM);
   });
@@ -61,19 +66,37 @@ describe('RoundController', () => {
 
   describe('createRound', () => {
     const request: CreateRoundDto = {
-      cards: ['id-1', 'id-2'],
+      cards: [v4(), v4()],
     };
 
     describe('for an existing lobby', () => {
       it('should create a new round and assign as current round', async () => {
+        jest.spyOn(socketService, 'send').mockImplementation(() => undefined);
+
         const existingLobby: Lobby = lobby({}, orm);
         expect(
           await controller.createRound(existingLobby.id, request),
         ).toMatchObject({ cards: request.cards } as RoundResponseDto);
+
+        expect(socketService.send).toBeCalledWith(
+          existingLobby.id,
+          'round.created',
+          expect.any(Object),
+        );
       });
     });
 
-    describe('for a non existing round', () => {
+    describe('for an lobby with active round', () => {
+      it('should return a BadRequestError', async () => {
+        const active: Lobby = lobbyWithRound({}, orm);
+
+        await expect(
+          controller.createRound(active.id, request),
+        ).rejects.toThrow('Lobby already has an active or prepared round');
+      });
+    });
+
+    describe('for a non existing lobby', () => {
       it('should return 404', async () => {
         await expect(
           controller.createRound(v4(), request),
@@ -94,13 +117,86 @@ describe('RoundController', () => {
           },
         ]);
       });
+    });
+  });
 
-      it('should return new validation error', async () => {
-        const existingLobby: Lobby = lobby({}, orm);
-        await expect(() =>
-          controller.createRound(existingLobby.id, request),
-        ).rejects.toThrow(
-          "Value for Round.cards is required, 'undefined' found",
+  describe('startRound', () => {
+    describe('for an lobby with active round', () => {
+      it('should return a BadRequestError', async () => {
+        const active: Lobby = lobbyWithRound({}, orm);
+
+        await expect(
+          controller.startRound(active.currentRound.id),
+        ).rejects.toThrow('Round already started');
+      });
+    });
+
+    describe('for an lobby with inactive round', () => {
+      it('should return a BadRequestError', async () => {
+        const inactive: Lobby = lobbyWithRound({}, orm, false);
+
+        expect(
+          await controller.startRound(inactive.currentRound.id),
+        ).toBeUndefined();
+
+        expect(socketService.send).toBeCalledWith(
+          inactive.id,
+          'round.started',
+          expect.any(Object),
+        );
+      });
+    });
+
+    describe('for a non existing lobby', () => {
+      it('should return 404', async () => {
+        await expect(controller.startRound(v4())).rejects.toThrowError(
+          NotFoundException,
+        );
+      });
+    });
+  });
+
+  describe('endRound', () => {
+    describe('for an lobby with inactive round', () => {
+      it('should return a BadRequestError', async () => {
+        const inactive: Lobby = lobbyWithRound({}, orm, false);
+
+        await expect(
+          controller.endRound(inactive.currentRound.id),
+        ).rejects.toThrow('Round is not active');
+      });
+    });
+
+    describe('for an lobby with active round', () => {
+      it('should return ok', async () => {
+        const active: Lobby = lobbyWithRound({}, orm);
+
+        expect(
+          await controller.endRound(active.currentRound.id),
+        ).toBeUndefined();
+
+        expect(socketService.send).toBeCalledWith(
+          active.id,
+          'round.ended',
+          expect.any(Object),
+        );
+      });
+    });
+
+    describe('for an lobby with ended round', () => {
+      it('should return a BadRequestError', async () => {
+        const ended: Lobby = lobbyWithRound({}, orm, true, true);
+
+        await expect(
+          controller.endRound(ended.currentRound.id),
+        ).rejects.toThrow('Round is not active');
+      });
+    });
+
+    describe('for a non existing lobby', () => {
+      it('should return 404', async () => {
+        await expect(controller.endRound(v4())).rejects.toThrowError(
+          NotFoundException,
         );
       });
     });

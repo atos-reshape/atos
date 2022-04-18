@@ -3,6 +3,7 @@ import { faker } from '@faker-js/faker';
 import { Lobby } from '../../lobby/lobby.entity';
 import { generateGameCode } from '@helpers/index';
 import { MikroORM } from '@mikro-orm/core';
+import { Round } from '../../round/round.entity';
 
 export const lobby = (data: Partial<Lobby> = {}, orm?: MikroORM): Lobby => {
   let lobby = {
@@ -33,4 +34,36 @@ export const createLobbies = (
   }
 
   return result;
+};
+
+export const lobbyWithRound = (
+  data: Partial<Lobby> = {},
+  orm: MikroORM,
+  started = true,
+  ended = false,
+): Lobby => {
+  const lobby: Lobby = orm.em.create(Lobby, {
+    id: v4(),
+    code: generateGameCode(),
+    createdAt: faker.date.recent(),
+    updatedAt: faker.date.recent(),
+    title: faker.lorem.sentence(5),
+    ...data,
+  });
+
+  const activeRound = orm.em.create(Round, {
+    id: v4(),
+    createdAt: faker.date.recent(),
+    updatedAt: faker.date.recent(),
+    startedAt: started ? faker.date.recent() : null,
+    endedAt: ended ? faker.date.recent() : null,
+  });
+
+  lobby.rounds.add(activeRound);
+  orm.em.persistAndFlush(lobby);
+
+  lobby.currentRound = activeRound;
+  orm.em.persistAndFlush(lobby);
+
+  return lobby;
 };
