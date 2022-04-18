@@ -1,8 +1,8 @@
 import { v4 } from 'uuid';
 import { faker } from '@faker-js/faker';
 import { Card } from '../../src/card/entities/card.entity';
-import { MikroORM, wrap } from '@mikro-orm/core';
-import { CardTranslation } from '../../dist/card/entities/card-translation.entity';
+import { MikroORM } from '@mikro-orm/core';
+import { CardTranslation } from '../../src/card/entities/card-translation.entity';
 
 export const card = (data: Partial<Card> = {}, orm?: MikroORM): Card => {
   let card = {

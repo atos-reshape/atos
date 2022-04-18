@@ -10,13 +10,11 @@ import {
   cardWithTranslation,
   createCards,
 } from '../../test/factories/card';
-import { Collection, MikroORM } from '@mikro-orm/core';
-import { CreateCardDto } from './dtos';
+import { MikroORM } from '@mikro-orm/core';
+import { CreateCardDto, PageOptionsDto } from './dtos';
 import { useDatabaseTestConfig } from '../../test/helpers/database';
 import { Request, Response } from 'express';
-import { PageOptionsDto } from './dtos';
 import { cardTranslation } from '../../test/factories/cardTranslation';
-import { CardTranslation } from './entities/card-translation.entity';
 
 describe('CardController', () => {
   let cardController: CardController;
@@ -165,14 +163,10 @@ describe('CardController', () => {
     });
 
     it('should return 404 if there is no card', async () => {
-      const translation = cardTranslation({}, orm);
-      const cardUpdate = new CreateCardDto();
-      cardUpdate.translations.push(translation);
-
       const nonExistingUUID = v4();
 
       try {
-        await cardController.update(nonExistingUUID, cardUpdate);
+        await cardController.update(nonExistingUUID, {} as CreateCardDto);
       } catch (e) {
         expect(e).toBeInstanceOf(NotFoundException);
       }
