@@ -1,7 +1,8 @@
 import { io, Socket } from 'socket.io-client';
 import { createContext, useEffect, useState } from 'react';
-import { Lobby } from './Lobby';
-import { Player } from './Player';
+import { Lobby } from '../../../../api/models/Lobby';
+import { Player } from '../../../../api/models/Player';
+import { Round } from '../../../../api/models/Round';
 
 interface Props {
   children: JSX.Element;
@@ -32,6 +33,10 @@ interface SocketContext {
 // These are manually typed receiver events for type safety.
 type ListenEvents = {
   'player.joined': (data: { player: Player }) => void;
+  'round.created': (round: Round) => void;
+  'round.started': (round: Round) => void;
+  'round.ended': (round: Round) => void;
+  'round.updated': (round: Round) => void;
 };
 
 // These are manually typed send events for type safety.

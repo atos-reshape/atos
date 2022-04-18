@@ -1,16 +1,32 @@
-import { SocketProvider } from './contexts/SocketProvider';
-import { useSearchParams } from 'react-router-dom';
-import { GameProvider } from './contexts/GameProvider';
+import { Container, Grid } from '@mantine/core';
+import { PlayerList } from './PlayerList';
+import { useContext } from 'react';
+import { GameContext } from './contexts/GameProvider';
+import { GameSettings } from './GameSettings';
+import { ActiveGame } from './ActiveGame';
 
 export function GameView(): JSX.Element {
-  const [searchParams] = useSearchParams();
-  const id = searchParams.get('id');
+  const { lobby } = useContext(GameContext);
 
-  return (
-    <SocketProvider id={id as string}>
-      <GameProvider>
-        <div>test</div>
-      </GameProvider>
-    </SocketProvider>
-  );
+  if (!lobby.currentRound.startedAt)
+    return (
+      <Container size={1000}>
+        <Grid justify="center" style={{ height: 600 }} gutter="xl">
+          <Grid.Col span={8}>
+            <GameSettings />
+          </Grid.Col>
+          <Grid.Col span={4}>
+            <PlayerList />
+          </Grid.Col>
+        </Grid>
+      </Container>
+    );
+
+  if (!!lobby.currentRound.startedAt && !lobby.currentRound.endedAt)
+    return <ActiveGame />;
+
+  if (!!lobby.currentRound.startedAt && !!lobby.currentRound.endedAt)
+    return <div>Has already started, and also ended</div>;
+
+  return <div>Undefined</div>;
 }
