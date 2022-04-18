@@ -12,6 +12,7 @@ export class CardTranslation extends BaseTranslation {
   @ManyToOne(() => Card, {
     hidden: true,
     wrappedReference: true,
+    index: true,
   })
   card!: Card;
 }

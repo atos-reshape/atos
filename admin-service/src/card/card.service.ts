@@ -56,9 +56,7 @@ export class CardService {
    * @returns The created card.
    */
   async create(card: CreateCardDto): Promise<Card> {
-    const newCard = this.cardRepository.create({
-      ...card,
-    });
+    const newCard = this.cardRepository.create(card);
     await this.cardRepository.persistAndFlush(newCard);
     return newCard;
   }
