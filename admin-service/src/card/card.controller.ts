@@ -44,16 +44,14 @@ export class CardController {
     @Query() pageOptions?: PageOptionsDto,
     @Query('language') language?: string,
     @Query('tag') tag?: string,
-    @Res() response?: Response,
+    @Res({ passthrough: true }) response?: Response,
     @Req() request?: Request,
-  ) {
-    return response.json(
-      paginate<Card>(
-        request,
-        response,
-        await this.cardService.findAll(isActive, pageOptions, language, tag),
-        pageOptions,
-      ),
+  ): Promise<Partial<Card[]>> {
+    return paginate<Card>(
+      request,
+      response,
+      await this.cardService.findAll(isActive, pageOptions, language, tag),
+      pageOptions,
     );
   }
 

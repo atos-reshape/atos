@@ -49,15 +49,12 @@ describe('CardController', () => {
   });
 
   describe('findAll', () => {
-    let request, response: Partial<Response>, responseObject;
+    let request, response: Partial<Response>;
 
     beforeEach(() => {
       request = {} as Request;
       response = {
         setHeader: jest.fn().mockImplementation(),
-        json: jest.fn().mockImplementation((result) => {
-          responseObject = result;
-        }),
       };
     });
 
@@ -65,7 +62,7 @@ describe('CardController', () => {
       'should return an array of cards with all translations',
       async (length) => {
         createCardsWithTranslation(new Array(length).fill({}), orm);
-        await cardController.findAll(
+        const responseObject = await cardController.findAll(
           true,
           new PageOptionsDto(),
           ALL_TRANSLATIONS,
@@ -86,7 +83,7 @@ describe('CardController', () => {
       'should return an array of cards with the default translation',
       async (length) => {
         createCardsWithTranslation(new Array(length).fill({}), orm);
-        await cardController.findAll(
+        const responseObject = await cardController.findAll(
           true,
           new PageOptionsDto(),
           undefined,
@@ -96,8 +93,7 @@ describe('CardController', () => {
         );
         expect(responseObject).toBeInstanceOf(Array);
         expect(responseObject).toHaveLength(length);
-        // Expect each object in the array to have a field called text that is any string.
-        responseObject.forEach((card) => {
+        responseObject.forEach((card: Partial<Card & { text: string }>) => {
           expect(typeof card.text).toBe('string');
         });
       },
@@ -107,7 +103,7 @@ describe('CardController', () => {
       'should return an array of cards with the specified translation',
       async (length) => {
         createCardsWithTranslation(new Array(length).fill({}), orm);
-        await cardController.findAll(
+        const responseObject = await cardController.findAll(
           true,
           new PageOptionsDto(),
           'en',
@@ -118,14 +114,15 @@ describe('CardController', () => {
         expect(responseObject).toBeInstanceOf(Array);
         expect(responseObject).toHaveLength(length);
         // Expect each object in the array to have a field called text that is any string.
-        responseObject.forEach((card) => {
+        console.log(responseObject);
+        responseObject.forEach((card: Partial<Card & { text: string }>) => {
           expect(typeof card.text).toBe('string');
         });
       },
     );
 
     it('should return an empty array if there are no cards', async () => {
-      await cardController.findAll(
+      const responseObject = await cardController.findAll(
         true,
         new PageOptionsDto(),
         ALL_TRANSLATIONS,
@@ -140,7 +137,7 @@ describe('CardController', () => {
 
     it('should return only the active cards', async () => {
       createCards([{ deletedAt: new Date() }, {}], orm);
-      await cardController.findAll(
+      const responseObject = await cardController.findAll(
         true,
         new PageOptionsDto(),
         ALL_TRANSLATIONS,
@@ -154,7 +151,7 @@ describe('CardController', () => {
 
     it('should return all cards if isActive is true', async () => {
       createCards([{ deletedAt: new Date() }, {}], orm);
-      await cardController.findAll(
+      const responseObject = await cardController.findAll(
         false,
         new PageOptionsDto(),
         ALL_TRANSLATIONS,
@@ -176,7 +173,7 @@ describe('CardController', () => {
         ],
         orm,
       );
-      await cardController.findAll(
+      const responseObject = await cardController.findAll(
         true,
         new PageOptionsDto(),
         ALL_TRANSLATIONS,
