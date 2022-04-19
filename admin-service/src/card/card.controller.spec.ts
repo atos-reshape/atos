@@ -4,7 +4,7 @@ import { CardController } from './card.controller';
 import { ALL_TRANSLATIONS, CardService } from './card.service';
 import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { Card } from './entities/card.entity';
-import { NotFoundException } from '@nestjs/common';
+import { ConflictException, NotFoundException } from '@nestjs/common';
 import {
   card,
   cardWithTranslation,
@@ -253,12 +253,17 @@ describe('CardController', () => {
       expect(cardFromRepository.deletedAt).toBeInstanceOf(Date);
     });
 
-    it('should return 404 if there is no card', async () => {
-      try {
-        await cardController.delete(v4());
-      } catch (e) {
-        expect(e).toBeInstanceOf(NotFoundException);
-      }
+    it('should throw a ConflictException if the card is already deleted', async () => {
+      const testCard = card({ deletedAt: new Date() }, orm);
+      await expect(cardController.delete(testCard.id)).rejects.toThrow(
+        ConflictException,
+      );
+    });
+
+    it('should throw a NotFoundException if no card is found', async () => {
+      await expect(cardController.delete(v4())).rejects.toThrow(
+        NotFoundException,
+      );
     });
   });
 });

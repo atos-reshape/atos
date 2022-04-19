@@ -94,7 +94,7 @@ jobs:
 
       - name: Test
         run: |
-          yarn test
+          yarn test:cov
         working-directory: ${{ env.working-directory }}
 
       - name: Teardown docker

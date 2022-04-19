@@ -9,7 +9,7 @@ import { Tag } from './entities/tag.entity';
 import { createTags, tag } from '../../test/factories/tag';
 import { CreateTagDto } from './dtos/create-tag.dto';
 import { faker } from '@faker-js/faker';
-import { NotFoundException } from '@nestjs/common';
+import { ConflictException, NotFoundException } from '@nestjs/common';
 
 describe('TagController', () => {
   let tagController: TagController;
@@ -99,12 +99,17 @@ describe('TagController', () => {
       expect(tagFromRepository.deletedAt).toBeInstanceOf(Date);
     });
 
-    it('should return null if no tag is found', async () => {
-      try {
-        await tagController.delete(v4());
-      } catch (e) {
-        expect(e).toBeInstanceOf(NotFoundException);
-      }
+    it('should throw a ConflictException if the tag is already deleted', async () => {
+      const testTag = tag({ deletedAt: new Date() }, orm);
+      await expect(tagController.delete(testTag.id)).rejects.toThrow(
+        ConflictException,
+      );
+    });
+
+    it('should throw a NotFoundException if no tag is found', async () => {
+      await expect(tagController.delete(v4())).rejects.toThrow(
+        NotFoundException,
+      );
     });
   });
 });

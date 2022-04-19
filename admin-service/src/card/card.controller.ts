@@ -39,9 +39,10 @@ export class CardController {
   @ApiOkResponse()
   @Get()
   async findAll(
+    /* istanbul ignore next */
     @Query('isActive') isActive = true,
     @Query() pageOptions?: PageOptionsDto,
-    @Query() language?: string,
+    @Query('language') language?: string,
     @Res() response?: Response,
     @Req() request?: Request,
   ) {
@@ -61,7 +62,7 @@ export class CardController {
   @Get(':id')
   async findOne(
     @Param('id') id: string,
-    @Query() language?: string,
+    @Query('language') language?: string,
   ): Promise<Card> {
     return this.cardService.findOne(id, language);
   }
