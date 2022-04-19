@@ -247,21 +247,57 @@ describe('CardController', () => {
     it('should return a card with the default translation', async () => {
       const testCard = card({}, orm);
 
+      createCardTranslations(
+        [
+          {
+            text: 'english',
+            language: 'en',
+            isDefaultLanguage: false,
+            card: testCard,
+          },
+          {
+            text: 'nederlands',
+            language: 'nl',
+            isDefaultLanguage: true,
+            card: testCard,
+          },
+        ],
+        orm,
+      );
+
       const findOneResult = await cardController.findOne(
         testCard.id,
         undefined,
       );
       expect(findOneResult).toMatchObject({
-        text: expect.any(String),
+        text: 'nederlands',
       });
     });
 
     it('should return a card with the specified translation', async () => {
       const testCard = card({}, orm);
 
+      createCardTranslations(
+        [
+          {
+            text: 'english',
+            language: 'en',
+            isDefaultLanguage: false,
+            card: testCard,
+          },
+          {
+            text: 'nederlands',
+            language: 'nl',
+            isDefaultLanguage: true,
+            card: testCard,
+          },
+        ],
+        orm,
+      );
+
       const findOneResult = await cardController.findOne(testCard.id, 'en');
       expect(findOneResult).toMatchObject({
-        text: expect.any(String),
+        text: 'english',
       });
     });
 

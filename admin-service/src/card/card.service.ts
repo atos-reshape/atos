@@ -34,12 +34,11 @@ export class CardService {
         ? translation.language === language
         : translation.isDefaultLanguage,
     );
+
     const flattenedCard = {
       ...card,
       // Make sure that this translation exists.
-      text: translations[translationIndex]
-        ? translations[translationIndex].text
-        : '',
+      text: translations[translationIndex].text,
     };
     delete flattenedCard.translations;
 
@@ -125,7 +124,7 @@ export class CardService {
 
     return language === ALL_TRANSLATIONS
       ? card
-      : card && CardService.flattenCard(card);
+      : card && CardService.flattenCard(card, language);
   }
 
   /**
