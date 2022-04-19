@@ -1,8 +1,9 @@
-import { Container, Group, Button } from '@mantine/core';
+import { Container, Group, Button, Text } from '@mantine/core';
 import CardTemplate from '../Card/Card';
 import { FaThumbsDown, FaThumbsUp } from 'react-icons/fa';
 import { useContext, useState } from 'react';
 import { PlayerGameContext } from '../../hooks/usePlayerGameContext';
+import styles from './PlayerGameView.module.css';
 
 function PlayerGameView2() {
   const { carouselCards, setCarouselCards } = useContext(PlayerGameContext);
@@ -28,10 +29,14 @@ function PlayerGameView2() {
       style={{
         justifyContent: 'center',
         marginTop: '100px',
-        marginInline: '33vw'
+        marginInline: '34vw'
       }}
     >
       <Group direction="column">
+        <Text className={styles.title}>Personal Color Phase</Text>
+        <Text className={styles.description}>
+          select the cards that best describe you as a person
+        </Text>
         <CardTemplate
           CardText={
             carouselCards[index] !== undefined
@@ -40,7 +45,7 @@ function PlayerGameView2() {
           }
         />
         <Group direction="row">
-          <Button style={{ marginLeft: '140px' }} onClick={dislike}>
+          <Button style={{ marginLeft: '138px' }} onClick={dislike}>
             <FaThumbsDown />
           </Button>
           <Button onClick={like}>

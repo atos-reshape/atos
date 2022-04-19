@@ -6,6 +6,7 @@ import RemoveCard from '../../modals/RemoveCard/RemoveCard';
 import Context from '../../context/Context';
 import AddExistingCard from '../../modals/AddCard/AddExistingCard';
 import { useGetCards } from '../../api/requests/card';
+import styles from './CardSettings.module.css';
 
 interface CardType {
   value: string;
@@ -21,9 +22,9 @@ function CardSettings() {
   });
   return (
     <Container>
-      <Group direction="column">
+      <Group direction="column" className={styles.container}>
         <Select
-          label="Cards"
+          label="Card sets"
           placeholder="Choose card"
           data={
             data?.map((card: any): CardType => {
@@ -35,7 +36,7 @@ function CardSettings() {
         />
 
         <Group>
-          <AddCard />
+          {/* <AddCard /> */}
           <AddExistingCard />
           <RemoveCard />
         </Group>
