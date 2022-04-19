@@ -1,6 +1,6 @@
 import { useContext, useEffect, useState } from 'react';
 import { Container, Group, Select } from '@mantine/core';
-import Card from '../../components/CardNoDrag/CardNoDrag';
+import Card from '../Card/Card';
 import AddCard from '../../modals/AddCard/AddCard';
 import RemoveCard from '../../modals/RemoveCard/RemoveCard';
 import Context from '../../context/Context';

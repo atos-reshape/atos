@@ -1,5 +1,5 @@
 import { Container, Group, TextInput, Button } from '@mantine/core';
-import { useContext } from 'react';
+import { useContext, useEffect } from 'react';
 import Context from '../../context/Context';
 import { useCreateLobby } from '../../api/requests/lobbies';
 import { useGetCards } from '../../api/requests/card';
@@ -24,6 +24,7 @@ function GameSettings() {
 
     return seconds;
   }
+
   return (
     <>
       <Container>
