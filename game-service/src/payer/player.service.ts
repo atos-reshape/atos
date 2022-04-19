@@ -5,6 +5,7 @@ import { Player } from './player.entity';
 import { InjectRepository } from '@mikro-orm/nestjs';
 import { JoinLobbyDto } from '../auth/dto/join-lobby.dto';
 import { SocketService } from '../lobby/socket.service';
+import { SelectedCardsService } from './selectedCards.service';
 
 @Injectable()
 export class PlayerService {
@@ -14,6 +15,7 @@ export class PlayerService {
     @InjectRepository(Player)
     private readonly playerRepository: EntityRepository<Player>,
     private readonly socketService: SocketService,
+    private readonly selectedService: SelectedCardsService,
   ) {}
 
   /**
@@ -48,6 +50,9 @@ export class PlayerService {
     const player = this.playerRepository.create({ lobby, name });
 
     await this.playerRepository.persistAndFlush(player);
+
+    if (!!lobby.currentRound)
+      await this.selectedService.createForPlayer(lobby, player);
 
     this.socketService.send(lobby.id, 'player.joined', { player });
 

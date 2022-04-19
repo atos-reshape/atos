@@ -13,6 +13,9 @@ import { v4 } from 'uuid';
 import { NotFoundException } from '@nestjs/common';
 import { validate } from 'class-validator';
 import { SocketService } from './socket.service';
+import { RoundService } from '../round/round.service';
+import { SelectedCardsService } from '../payer/selectedCards.service';
+import { SelectedCards } from '../payer/selectedCards.entity';
 
 describe('LobbyController', () => {
   let controller: LobbyController;
@@ -24,10 +27,15 @@ describe('LobbyController', () => {
       imports: [
         ConfigModule.forRoot(),
         UseDatabaseTestConfig(),
-        MikroOrmModule.forFeature({ entities: [Lobby, Round] }),
+        MikroOrmModule.forFeature({ entities: [Lobby, Round, SelectedCards] }),
       ],
       controllers: [LobbyController],
-      providers: [LobbyService, SocketService],
+      providers: [
+        LobbyService,
+        SocketService,
+        RoundService,
+        SelectedCardsService,
+      ],
     }).compile();
 
     controller = app.get<LobbyController>(LobbyController);

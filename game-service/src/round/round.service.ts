@@ -8,6 +8,7 @@ import { Round } from './round.entity';
 import { EntityRepository } from '@mikro-orm/postgresql';
 import { Lobby } from '../lobby/lobby.entity';
 import { CreateRoundDto } from './dto';
+import { SelectedCardsService } from '../payer/selectedCards.service';
 
 @Injectable()
 export class RoundService {
@@ -16,6 +17,7 @@ export class RoundService {
     private readonly lobbyRepository: EntityRepository<Lobby>,
     @InjectRepository(Round)
     private readonly roundRepository: EntityRepository<Round>,
+    private readonly selectedCardsService: SelectedCardsService,
   ) {}
 
   /**
@@ -62,9 +64,9 @@ export class RoundService {
     const round = this.roundRepository.create({ cards: settings.cards });
 
     lobby.rounds.add(round);
-    await this.roundRepository.persistAndFlush(round);
     lobby.currentRound = round;
-    await this.lobbyRepository.persistAndFlush(lobby);
+    await this.roundRepository.persistAndFlush(round);
+    await this.selectedCardsService.prepareSelectedCards(lobby, round);
 
     return round;
   }

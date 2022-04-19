@@ -6,10 +6,19 @@ import { Lobby } from './lobby.entity';
 import { Round } from '../round/round.entity';
 import { LobbyGateway } from './lobby.gateway';
 import { SocketService } from './socket.service';
+import { RoundService } from '../round/round.service';
+import { SelectedCardsService } from '../payer/selectedCards.service';
+import { SelectedCards } from '../payer/selectedCards.entity';
 
 @Module({
-  imports: [MikroOrmModule.forFeature([Lobby, Round])],
+  imports: [MikroOrmModule.forFeature([Lobby, Round, SelectedCards])],
   controllers: [LobbyController],
-  providers: [LobbyService, LobbyGateway, SocketService],
+  providers: [
+    LobbyService,
+    LobbyGateway,
+    SocketService,
+    RoundService,
+    SelectedCardsService,
+  ],
 })
 export class LobbyModule {}

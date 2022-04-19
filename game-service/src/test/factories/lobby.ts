@@ -60,10 +60,8 @@ export const lobbyWithRound = (
   });
 
   lobby.rounds.add(activeRound);
-  orm.em.persistAndFlush(lobby);
-
   lobby.currentRound = activeRound;
-  orm.em.persistAndFlush(lobby);
+  orm.em.persist([lobby, activeRound]);
 
   return lobby;
 };

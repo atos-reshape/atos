@@ -88,7 +88,10 @@
       "<rootDir>/database",
       "<rootDir>/main.ts",
       "<rootDir>/app.module.ts",
-      "<rootDir>/test"
+      "<rootDir>/test",
+      "<rootDir>/redis.adapter.ts",
+      "<rootDir>/auth/jwt-auth.guard.ts",
+      "<rootDir>/auth/dto/jwt-payload.dto.ts"
     ],
     "coverageThreshold": {
       "global": {

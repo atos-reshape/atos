@@ -25,8 +25,11 @@ export class LobbyResponseDto {
   @Expose()
   updatedAt: Date;
 
+  @Transform(
+    /* istanbul ignore next */
+    ({ value }) => (value ? new RoundResponseDto(value) : null),
+  )
   @Expose({ groups: ['withCurrentRound'] })
-  @Transform(({ value }) => (value ? new RoundResponseDto(value) : null))
   currentRound: RoundResponseDto;
 
   constructor(lobby: Lobby) {

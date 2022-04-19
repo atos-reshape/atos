@@ -12,6 +12,9 @@ import { PassportModule } from '@nestjs/passport';
 import { JwtStrategy } from './jwt.strategy';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { SocketService } from '../lobby/socket.service';
+import { SelectedCards } from '../payer/selectedCards.entity';
+import { RoundService } from '../round/round.service';
+import { SelectedCardsService } from '../payer/selectedCards.service';
 
 @Module({
   imports: [
@@ -24,7 +27,7 @@ import { SocketService } from '../lobby/socket.service';
         signOptions: { issuer: 'game-service' },
       }),
     }),
-    MikroOrmModule.forFeature([Lobby, Player, Round]),
+    MikroOrmModule.forFeature([Lobby, Player, Round, SelectedCards]),
   ],
   controllers: [AuthController],
   providers: [
@@ -33,6 +36,8 @@ import { SocketService } from '../lobby/socket.service';
     LobbyService,
     JwtStrategy,
     SocketService,
+    RoundService,
+    SelectedCardsService,
   ],
   exports: [AuthService],
 })

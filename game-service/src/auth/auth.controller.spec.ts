@@ -13,11 +13,14 @@ import { LobbyService } from '../lobby/lobby.service';
 import { JwtStrategy } from './jwt.strategy';
 import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
-import { lobby } from '@factories/lobby';
+import { lobby, lobbyWithRound } from '@factories/lobby';
 import { JoinResponseDto } from './dto/join-response.dto';
 import { NotFoundException } from '@nestjs/common';
 import { JoinLobbyDto } from './dto/join-lobby.dto';
 import { SocketService } from '../lobby/socket.service';
+import { SelectedCards } from '../payer/selectedCards.entity';
+import { RoundService } from '../round/round.service';
+import { SelectedCardsService } from '../payer/selectedCards.service';
 
 describe('AuthController', () => {
   let socketService: SocketService;
@@ -35,7 +38,9 @@ describe('AuthController', () => {
         }),
         ConfigModule.forRoot(),
         UseDatabaseTestConfig(),
-        MikroOrmModule.forFeature({ entities: [Lobby, Player, Round] }),
+        MikroOrmModule.forFeature({
+          entities: [Lobby, Player, Round, SelectedCards],
+        }),
       ],
       controllers: [AuthController],
       providers: [
@@ -44,6 +49,8 @@ describe('AuthController', () => {
         LobbyService,
         JwtStrategy,
         SocketService,
+        RoundService,
+        SelectedCardsService,
       ],
     }).compile();
 
@@ -68,7 +75,7 @@ describe('AuthController', () => {
   describe('joinLobby', () => {
     describe('with a valid lobby', () => {
       it('should return a valid response', async () => {
-        const l = lobby({}, orm);
+        const l = lobbyWithRound({}, orm);
         jest.spyOn(socketService, 'send').mockImplementation(() => undefined);
 
         expect(

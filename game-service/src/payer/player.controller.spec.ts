@@ -13,6 +13,8 @@ import { player } from '@factories/player';
 import { v4 } from 'uuid';
 import { NotFoundException } from '@nestjs/common';
 import { SocketService } from '../lobby/socket.service';
+import { SelectedCardsService } from './selectedCards.service';
+import { SelectedCards } from './selectedCards.entity';
 
 describe('PlayerController', () => {
   let controller: PlayerController;
@@ -24,10 +26,10 @@ describe('PlayerController', () => {
       imports: [
         ConfigModule.forRoot(),
         UseDatabaseTestConfig(),
-        MikroOrmModule.forFeature({ entities: [Lobby, Player] }),
+        MikroOrmModule.forFeature({ entities: [Lobby, Player, SelectedCards] }),
       ],
       controllers: [PlayerController],
-      providers: [PlayerService, SocketService],
+      providers: [PlayerService, SocketService, SelectedCardsService],
     }).compile();
 
     controller = app.get<PlayerController>(PlayerController);
