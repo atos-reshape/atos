@@ -1,4 +1,4 @@
-import { Card, Text } from '@mantine/core';
+import { Card } from '@mantine/core';
 import styles from './Card.module.css';
 type CardProps = {
   CardText: string;

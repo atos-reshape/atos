@@ -5,8 +5,7 @@ import { useContext, useState } from 'react';
 import { PlayerGameContext } from '../../hooks/usePlayerGameContext';
 
 function PlayerGameView2() {
-  const { carouselCards, selectedCards, setCarouselCards, setSelectedCards } =
-    useContext(PlayerGameContext);
+  const { carouselCards, setCarouselCards } = useContext(PlayerGameContext);
   const [index, setIndex] = useState(0);
 
   async function dislike() {
