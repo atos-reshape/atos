@@ -4,7 +4,7 @@ import {
   UseMutationOptions,
   useMutation
 } from 'react-query';
-import { defaultFetch, defaultCreate } from './requests';
+import { defaultFetch, defaultCreate, defaultUpdate } from './requests';
 
 export const useFetch = <TResponse = any>(
   path: string,
@@ -23,14 +23,29 @@ export const useFetch = <TResponse = any>(
   );
 };
 
-export const useCreate = <TResponse = any>(
+export const useCreate = <TResponse = any, TRequest = any>(
   path: string,
   options?: UseMutationOptions<TResponse, any, any>
 ) => {
   if (process.env.NODE_ENV === 'development')
     path = 'http://localhost:8000' + path;
 
-  return useMutation<TResponse, any, any>([path], defaultCreate(path), options);
+  return useMutation<TResponse, any, TRequest>(
+    [path],
+    defaultCreate(path),
+    options
+  );
+};
+
+export const useUpdate = <TResponse = any, TRequest = any>(
+  path: string,
+  options?: UseMutationOptions<TResponse, any, any>
+) => {
+  return useMutation<TResponse, any, TRequest>(
+    [path],
+    defaultUpdate(path),
+    options
+  );
 };
 
 export {};

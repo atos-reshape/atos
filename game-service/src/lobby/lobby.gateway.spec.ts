@@ -17,6 +17,7 @@ import { WsException } from '@nestjs/websockets';
 import { RoundService } from '../round/round.service';
 import { SelectedCardsService } from '../payer/selectedCards.service';
 import { SelectedCards } from '../payer/selectedCards.entity';
+import { Joined } from '../sockets/joined.type';
 
 describe('LobbyGateway', () => {
   let gateway: LobbyGateway;
@@ -78,6 +79,20 @@ describe('LobbyGateway', () => {
           WsException,
         );
       });
+    });
+  });
+
+  describe('getLobby', () => {
+    it('should return the lobby', async () => {
+      const defaultLobby = lobby({}, orm);
+      const socket = {
+        join: (data: any): void => data,
+        lobbyId: defaultLobby.id,
+      } as Joined & { lobbyId: string };
+      round({ lobby: defaultLobby }, orm);
+      expect(await gateway.getLobby(socket)).toEqual(
+        new LobbyResponseDto(defaultLobby),
+      );
     });
   });
 });

@@ -3,6 +3,7 @@ import { Injectable } from '@nestjs/common';
 import { SocketService } from '../lobby/socket.service';
 import { CreateRoundDto } from './dto';
 import { LobbyService } from '../lobby/lobby.service';
+import { UpdateCardsDto } from './dto/update-cards.dto';
 
 @Injectable()
 export class RoundCommand {
@@ -62,5 +63,22 @@ export class RoundCommand {
     this.socketService.send(lobby.id, 'round.created', newRound);
 
     return newRound;
+  }
+
+  /**
+   * Updated the cards of the already existing not yet started round.
+   * @param cards are the id's of the new cards.
+   * @param id is the id or the round.
+   * @exception NotFoundException if the lobby was not found.
+   * @exception BadRequestException if the round already started.
+   */
+  async updateCards(id: string, { cards }: UpdateCardsDto) {
+    const round = await this.roundService.findRound(id);
+
+    await this.roundService.updateCards(round, cards);
+
+    this.socketService.send(round.lobby.id, 'round.updated', round);
+
+    return round;
   }
 }

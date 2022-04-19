@@ -79,6 +79,47 @@ describe('RoundController', () => {
     });
   });
 
+  describe('updateCards', () => {
+    const request: CreateRoundDto = {
+      cards: [v4(), v4()],
+    };
+
+    describe('for an existing round', () => {
+      it('should update the cards of that round', async () => {
+        jest.spyOn(socketService, 'send').mockImplementation(() => undefined);
+
+        const inactive: Lobby = lobbyWithRound({}, orm, false);
+        expect(
+          await controller.updateCards(inactive.currentRound.id, request),
+        ).toMatchObject({ cards: request.cards } as RoundResponseDto);
+
+        expect(socketService.send).toBeCalledWith(
+          inactive.id,
+          'round.updated',
+          expect.any(Object),
+        );
+      });
+    });
+
+    describe('for an active round', () => {
+      it('should return a BadRequestError', async () => {
+        const active: Lobby = lobbyWithRound({}, orm);
+
+        await expect(
+          controller.updateCards(active.currentRound.id, request),
+        ).rejects.toThrow('Round already started');
+      });
+    });
+
+    describe('for a non existing round', () => {
+      it('should return 404', async () => {
+        await expect(
+          controller.updateCards(v4(), request),
+        ).rejects.toThrowError(NotFoundException);
+      });
+    });
+  });
+
   describe('createRound', () => {
     const request: CreateRoundDto = {
       cards: [v4(), v4()],

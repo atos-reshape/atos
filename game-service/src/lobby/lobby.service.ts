@@ -51,7 +51,10 @@ export class LobbyService {
     id: string,
     populate: INCLUDES[] = ['currentRound'],
   ): Promise<Lobby> {
-    const lobby = await this.lobbyRepository.findOne({ id: id }, { populate });
+    const lobby = await this.lobbyRepository.findOne(
+      { id: id },
+      { populate, refresh: true },
+    );
 
     if (!lobby) throw new NotFoundException('Lobby not found');
 
