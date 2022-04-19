@@ -3,8 +3,7 @@ import Navbar from '../../components/NavbarGame/Navbar';
 import { SocketProvider } from '../../hooks/useSocketContext';
 import { PlayerGameProvider } from '../../hooks/usePlayerGameContext';
 import './GameView.css';
-import PlayerGameView1 from '../../components/PlayerGameView1/PlayerGameView1';
-import PlayerGameView2 from '../../components/PlayerGameView2/PlayerGameView2';
+import PlayerGameView from '../../components/PlayerGameView/PlayerGameView';
 
 function GameView() {
   const [searchParams] = useSearchParams();
@@ -15,7 +14,7 @@ function GameView() {
       <PlayerGameProvider>
         <Navbar />
         {/* <PlayerGameView1 /> */}
-        <PlayerGameView2 />
+        <PlayerGameView />
       </PlayerGameProvider>
     </SocketProvider>
   );

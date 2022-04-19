@@ -1,21 +1,22 @@
 .card {
     background-color: white;
     font-weight: 600;
-    width: 20vw;
+    width: 50vw;
     max-width: 400px;
-    height: 15vh;
-    max-height: 20vh;
+    height: 40vh;
+    max-height: 80vh;
     padding: 30px;
     border: 1px solid black;
     text-align: center;
+    justify-content: center;
 }
 
 @media screen and (max-width: 564px){
     .card{
         width: 50vw;
+        font-size: 0.75rem;
     }
 }
-
 
 @media screen and (max-width: 1024px){
     .card{
@@ -23,12 +24,13 @@
     }
 }
 
-@media screen and (max-width: 4000px){
+/* @media screen and (max-width: 4000px){
     .card{
-        width: 50vw;
+        width: 600px;
     }
-}
+} */
 
 .cardtext {
-    margin-top: 15px;
+    /* margin-top: 10vh; */
+    padding: 20% 5% 5% 5%;
 }

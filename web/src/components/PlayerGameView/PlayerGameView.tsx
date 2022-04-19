@@ -1,5 +1,5 @@
 import { Container, Group, Button } from '@mantine/core';
-import CardTemplate from '../../components/CardNoDrag/CardNoDrag';
+import CardTemplate from '../Card/Card';
 import { FaThumbsDown, FaThumbsUp } from 'react-icons/fa';
 import { useContext, useState } from 'react';
 import { PlayerGameContext } from '../../hooks/usePlayerGameContext';
