@@ -12,6 +12,11 @@ import { PlayerGateway } from './player.gateway';
 @Module({
   imports: [MikroOrmModule.forFeature([Lobby, Player, SelectedCards])],
   controllers: [PlayerController],
-  providers: [PlayerService, SocketService, SelectedCardsService, PlayerGateway],
+  providers: [
+    PlayerService,
+    SocketService,
+    SelectedCardsService,
+    PlayerGateway,
+  ],
 })
 export class PlayerModule {}

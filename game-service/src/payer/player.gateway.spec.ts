@@ -12,6 +12,8 @@ import { Lobby } from '../lobby/lobby.entity';
 import { player } from '@factories/player';
 import { PlayerResponseDto } from './dto/player-response.dto';
 import { SocketService } from '../lobby/socket.service';
+import { SelectedCardsService } from './selectedCards.service';
+import { SelectedCards } from './selectedCards.entity';
 
 describe('PlayerGateway', () => {
   let gateway: PlayerGateway;
@@ -23,10 +25,10 @@ describe('PlayerGateway', () => {
       imports: [
         ConfigModule.forRoot(),
         UseDatabaseTestConfig(),
-        MikroOrmModule.forFeature({ entities: [Player, Lobby] }),
+        MikroOrmModule.forFeature({ entities: [Player, Lobby, SelectedCards] }),
       ],
       controllers: [PlayerGateway],
-      providers: [PlayerService, SocketService],
+      providers: [PlayerService, SocketService, SelectedCardsService],
     }).compile();
 
     gateway = app.get<PlayerGateway>(PlayerGateway);
