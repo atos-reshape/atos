@@ -154,7 +154,7 @@ export class CardService {
       card.translations.getItems(),
     );
 
-    wrap(card).assign(cardData);
+    this.cardRepository.assign(card, cardData);
     card.translations.set(cardData.translations);
     await this.cardRepository.flush();
 

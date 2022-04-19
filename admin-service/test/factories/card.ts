@@ -51,7 +51,7 @@ export const cardWithTranslation = (
   });
 
   card.translations.add(translation);
-  orm.em.persistAndFlush(card);
+  orm.em.persistAndFlush([card, translation]);
 
   return card;
 };
