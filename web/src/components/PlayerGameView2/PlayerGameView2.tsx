@@ -9,9 +9,15 @@ function PlayerGameView2() {
     useContext(PlayerGameContext);
   const [index, setIndex] = useState(0);
 
-  function dislike() {
-    if (carouselCards && index > 0) setIndex(index - 1);
-    else setIndex(carouselCards.length - 1);
+  async function dislike() {
+    if (carouselCards) {
+      setCarouselCards(
+        carouselCards.filter((card: unknown, localIndex: number) => {
+          return localIndex !== index;
+        })
+      );
+      if (index === carouselCards.length - 1) setIndex(index - 1);
+    }
   }
   function like() {
     if (carouselCards && index < carouselCards.length - 1) setIndex(index + 1);
