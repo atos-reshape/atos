@@ -1,5 +1,5 @@
 import { Container, Group, TextInput, Button } from '@mantine/core';
-import { useContext, useEffect } from 'react';
+import { useContext } from 'react';
 import Context from '../../context/Context';
 import { useCreateLobby } from '../../api/requests/lobbies';
 import { useGetCards } from '../../api/requests/card';
