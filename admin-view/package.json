@@ -5,18 +5,6 @@
   "dependencies": {
     "@mantine/core": "^4.0.4",
     "@mantine/hooks": "^4.0.4",
-    "@types/jest": "^27.4.0",
-    "@types/node": "^17.0.16",
-    "@types/react": "^17.0.39",
-    "@types/react-dom": "^17.0.11",
-    "@typescript-eslint/eslint-plugin": "^5.11.0",
-    "@typescript-eslint/parser": "^5.11.0",
-    "axios": "^0.26.1",
-    "eslint": "^8.8.0",
-    "eslint-plugin-import": "^2.25.4",
-    "eslint-plugin-prettier": "^4.0.0",
-    "eslint-plugin-react-hooks": "^4.3.0",
-    "prettier": "^2.5.1",
     "prop-types": "^15.8.1",
     "ra-data-json-server": "^3.19.11",
     "react": "^17.0.2",
@@ -51,6 +39,18 @@
     "eslint-config-prettier": "^8.5.0",
     "html-webpack-plugin": "^5.5.0",
     "webpack": "^5.70.0",
-    "webpack-dev-server": "^4.7.4"
+    "webpack-dev-server": "^4.7.4",
+    "@types/jest": "^27.4.0",
+    "@types/node": "^17.0.16",
+    "@types/react": "^17.0.39",
+    "@types/react-dom": "^17.0.11",
+    "@typescript-eslint/eslint-plugin": "^5.11.0",
+    "@typescript-eslint/parser": "^5.11.0",
+    "axios": "^0.26.1",
+    "eslint": "^8.8.0",
+    "eslint-plugin-import": "^2.25.4",
+    "eslint-plugin-prettier": "^4.0.0",
+    "eslint-plugin-react-hooks": "^4.3.0",
+    "prettier": "^2.5.1"
   }
 }
