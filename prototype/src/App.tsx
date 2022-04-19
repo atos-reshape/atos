@@ -4,20 +4,43 @@ import Quizzes from './quizzes.json';
 import AppNavbar from './components/navbar/AppNavbar';
 import AppHeader from './components/header/AppHeader';
 import Quiz from './components/quiz/Quiz';
-import QuizView from './components/quiz/QuizView';
-
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
 
 interface AppState {
   currentQuiz: number | undefined;
 }
 
 export default function App(): JSX.Element {
+  const [state, setState] = useState<AppState>({ currentQuiz: undefined });
+  const useChangeQuiz = (id: number) => {
+    return () => {
+      setState({ currentQuiz: id });
+    };
+  };
+
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route index element={<QuizView />} />
-      </Routes>
-    </BrowserRouter>
+    <AppShell
+      padding="md"
+      navbar={
+        <AppNavbar
+          useChangeQuiz={useChangeQuiz}
+          quizzes={Quizzes}
+          currentQuizId={state.currentQuiz}
+        />
+      }
+      header={<AppHeader />}
+      styles={(theme) => ({
+        main: {
+          backgroundColor:
+            theme.colorScheme === 'dark'
+              ? theme.colors.dark[8]
+              : theme.colors.gray[0]
+        }
+      })}
+    >
+      <Container>
+        {state.currentQuiz === undefined && <Text>Please select a quiz!</Text>}
+        {state.currentQuiz !== undefined && <Quiz id={state.currentQuiz} />}
+      </Container>
+    </AppShell>
   );
 }
