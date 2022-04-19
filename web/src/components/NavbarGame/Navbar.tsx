@@ -8,9 +8,9 @@ function Navbar() {
   return (
     <Container fluid className={styles.container}>
       <Container size="sm">
-        <Group grow>
+        <Group>
           <Text className={styles.text}>
-            Lobby Name :{' '}
+            Lobby name :{' '}
             {lobby.state !== undefined ? lobby.state.title : 'loading'}
           </Text>
           <Text className={styles.text}>
