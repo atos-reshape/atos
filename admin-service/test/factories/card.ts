@@ -29,6 +29,7 @@ export const createCards = (
 
 export const cardWithTranslation = (
   data: Partial<Card> = {},
+  translationData: Partial<CardTranslation> = {},
   orm?: MikroORM,
 ): Card => {
   const card: Card = orm.em.create(Card, {
@@ -46,6 +47,7 @@ export const cardWithTranslation = (
     language: 'en',
     isDefaultLanguage: true,
     card,
+    ...translationData,
   });
 
   card.translations.add(translation);
@@ -56,7 +58,10 @@ export const cardWithTranslation = (
 
 export const createCardsWithTranslation = (
   cards: Partial<Card>[] = [],
+  translations: Partial<CardTranslation>[] = [],
   orm?: MikroORM,
 ): Card[] => {
-  return cards.map((c: Partial<Card>) => cardWithTranslation(c, orm));
+  return cards.map((c: Partial<Card>, index) => {
+    return cardWithTranslation(c, translations[index], orm);
+  });
 };

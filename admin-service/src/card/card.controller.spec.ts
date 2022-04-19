@@ -61,7 +61,11 @@ describe('CardController', () => {
     it.each([...Array(10).keys()])(
       'should return an array of cards with all translations',
       async (length) => {
-        createCardsWithTranslation(new Array(length).fill({}), orm);
+        createCardsWithTranslation(
+          new Array(length).fill({}),
+          new Array(length).fill({}),
+          orm,
+        );
         const responseObject = await cardController.findAll(
           true,
           new PageOptionsDto(),
@@ -79,47 +83,82 @@ describe('CardController', () => {
       },
     );
 
-    it.each([...Array(10).keys()])(
-      'should return an array of cards with the default translation',
-      async (length) => {
-        createCardsWithTranslation(new Array(length).fill({}), orm);
-        const responseObject = await cardController.findAll(
-          true,
-          new PageOptionsDto(),
-          undefined,
-          undefined,
-          response as Response,
-          request,
-        );
-        expect(responseObject).toBeInstanceOf(Array);
-        expect(responseObject).toHaveLength(length);
-        responseObject.forEach((card: Partial<Card & { text: string }>) => {
-          expect(typeof card.text).toBe('string');
-        });
-      },
-    );
+    it('should return an array of cards with the default translation', async () => {
+      createCardsWithTranslation(
+        [{}, {}, {}],
+        [
+          {
+            text: 'english',
+            language: 'en',
+            isDefaultLanguage: false,
+          },
+          {
+            text: 'nederlands',
+            language: 'nl',
+            isDefaultLanguage: true,
+          },
+          {
+            text: 'français',
+            language: 'fr',
+            isDefaultLanguage: false,
+          },
+        ],
+        orm,
+      );
+      const responseObject = await cardController.findAll(
+        true,
+        new PageOptionsDto(),
+        undefined,
+        undefined,
+        response as Response,
+        request,
+      );
+      expect(responseObject).toBeInstanceOf(Array);
+      expect(responseObject).toHaveLength(1);
+      responseObject.forEach((card: Partial<Card & { text: string }>) => {
+        expect(typeof card.text).toBe('string');
+        expect(card.text).toBe('nederlands');
+      });
+    });
 
-    it.each([...Array(10).keys()])(
-      'should return an array of cards with the specified translation',
-      async (length) => {
-        createCardsWithTranslation(new Array(length).fill({}), orm);
-        const responseObject = await cardController.findAll(
-          true,
-          new PageOptionsDto(),
-          'en',
-          undefined,
-          response as Response,
-          request,
-        );
-        expect(responseObject).toBeInstanceOf(Array);
-        expect(responseObject).toHaveLength(length);
-        // Expect each object in the array to have a field called text that is any string.
-        console.log(responseObject);
-        responseObject.forEach((card: Partial<Card & { text: string }>) => {
-          expect(typeof card.text).toBe('string');
-        });
-      },
-    );
+    it('should return an array of cards with the specified translation', async () => {
+      createCardsWithTranslation(
+        [{}, {}, {}],
+        [
+          {
+            text: 'english',
+            language: 'en',
+            isDefaultLanguage: false,
+          },
+          {
+            text: 'nederlands',
+            language: 'nl',
+            isDefaultLanguage: true,
+          },
+          {
+            text: 'français',
+            language: 'fr',
+            isDefaultLanguage: false,
+          },
+        ],
+        orm,
+      );
+      const responseObject = await cardController.findAll(
+        true,
+        new PageOptionsDto(),
+        'en',
+        undefined,
+        response as Response,
+        request,
+      );
+      expect(responseObject).toBeInstanceOf(Array);
+      expect(responseObject).toHaveLength(1);
+      // Expect each object in the array to have a field called text that is any string.
+      responseObject.forEach((card: Partial<Card & { text: string }>) => {
+        expect(typeof card.text).toBe('string');
+        expect(card.text).toBe('english');
+      });
+    });
 
     it('should return an empty array if there are no cards', async () => {
       const responseObject = await cardController.findAll(
@@ -271,7 +310,7 @@ describe('CardController', () => {
 
   describe('delete', () => {
     it('should delete a card', async () => {
-      const testCard = cardWithTranslation({}, orm);
+      const testCard = cardWithTranslation({}, {}, orm);
 
       const deleteResult = await cardController.delete(testCard.id);
       expect(deleteResult).toBeUndefined();

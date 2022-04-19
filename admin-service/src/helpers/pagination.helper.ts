@@ -64,7 +64,7 @@ export function paginate<T = unknown>(
   response: Response,
   [items, total]: PaginatedResult<T>,
   pageOptions: PageOptionsDto,
-) {
+): T[] {
   response.setHeader(
     'Link',
     getLink(request.path, pageOptions.limit, pageOptions.offset, total),

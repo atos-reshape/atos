@@ -71,7 +71,19 @@ export class CardService {
     // If language is *, return all translations. Otherwise, flatten the cards.
     return language === ALL_TRANSLATIONS
       ? [cards, count]
-      : [cards.map((card) => CardService.flattenCard(card, language)), count];
+      : [
+          cards
+            .filter((card) =>
+              card.translations.getItems().some((translation) =>
+                // If language is defined, only return the translation for the given language, otherwise pick the default.
+                language
+                  ? translation.language === language
+                  : translation.isDefaultLanguage,
+              ),
+            )
+            .map((card) => CardService.flattenCard(card, language)),
+          count,
+        ];
   }
 
   /**
