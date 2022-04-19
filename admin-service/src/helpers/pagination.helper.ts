@@ -69,6 +69,7 @@ export function paginate<T = unknown>(
     'Link',
     getLink(request.path, pageOptions.limit, pageOptions.offset, total),
   );
-  response.setHeader('total-count', String(total));
+  response.setHeader('Access-Control-Expose-Headers', 'X-Total-Count');
+  response.setHeader('X-Total-Count', String(total));
   return items;
 }
