@@ -1,8 +1,10 @@
-import { IsNotEmpty } from 'class-validator';
+import { ArrayNotEmpty, IsArray } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+import { CardTranslation } from '../entities/card-translation.entity';
 
 export class CreateCardDto {
-  @ApiProperty()
-  @IsNotEmpty()
-  text: string;
+  @ApiProperty({ type: [CardTranslation] })
+  @IsArray()
+  @ArrayNotEmpty()
+  translations: CardTranslation[] = [];
 }

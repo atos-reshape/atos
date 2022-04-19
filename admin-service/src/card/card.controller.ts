@@ -7,8 +7,8 @@ import {
   Post,
   Put,
   Query,
-  Res,
   Req,
+  Res,
 } from '@nestjs/common';
 import { CardService } from './card.service';
 import {
@@ -21,11 +21,10 @@ import {
   ApiQuery,
   ApiTags,
 } from '@nestjs/swagger';
-import { CreateCardDto } from './dtos/create-card.dto';
+import { CreateCardDto, PageOptionsDto } from './dtos';
 import { Card } from './entities/card.entity';
 import { paginate } from '../helpers/pagination.helper';
-import { Response, Request } from 'express';
-import { PageOptionsDto } from './dtos/page-options.dto';
+import { Request, Response } from 'express';
 
 /**
  * The REST API controller for the card service.
@@ -40,18 +39,19 @@ export class CardController {
   @ApiOkResponse()
   @Get()
   async findAll(
+    /* istanbul ignore next */
     @Query('isActive') isActive = true,
     @Query() pageOptions?: PageOptionsDto,
-    @Res() response?: Response,
+    @Query('language') language = '',
+    @Query('tag') tag?: string,
+    @Res({ passthrough: true }) response?: Response,
     @Req() request?: Request,
   ) {
-    return response.json(
-      paginate<Card>(
-        request,
-        response,
-        await this.cardService.findAll(isActive, pageOptions),
-        pageOptions,
-      ),
+    return paginate<Card>(
+      request,
+      response,
+      await this.cardService.findAll(isActive, pageOptions, language, tag),
+      pageOptions,
     );
   }
 
@@ -59,8 +59,11 @@ export class CardController {
   @ApiOkResponse()
   @ApiNotFoundResponse()
   @Get(':id')
-  async findOne(@Param('id') id: string): Promise<Card> {
-    return this.cardService.findOne(id);
+  async findOne(
+    @Param('id') id: string,
+    @Query('language') language?: string,
+  ): Promise<Card> {
+    return this.cardService.findOne(id, language);
   }
 
   @ApiOperation({ summary: 'Create card' })

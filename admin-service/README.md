@@ -2,7 +2,8 @@
 
 ## Description
 
-This is the admin microservice that will handle all admin operators for the Atos game RESHAPE.
+This is the admin microservice that will handle all admin operators for the Atos game RESHAPE. This application contains
+the CRUD functionality of cards and their sets, complete with tags and translations.
 
 ## Installation
 
@@ -28,9 +29,6 @@ $ yarn start:prod
 ```bash
 # unit tests
 $ yarn test
-
-# e2e tests
-$ yarn test:e2e
 
 # test coverage
 $ yarn:cov
