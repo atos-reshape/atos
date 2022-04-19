@@ -1,44 +1,37 @@
-import { Container, Group, Button, Text, Drawer, Card } from '@mantine/core';
+import { Container, Group, Button, Text } from '@mantine/core';
 import CardTemplate from '../Card/Card';
-import { FaGrinAlt, FaRegFrown } from 'react-icons/fa';
+import { FaThumbsDown, FaThumbsUp } from 'react-icons/fa';
 import { useContext, useState } from 'react';
 import { PlayerGameContext } from '../../hooks/usePlayerGameContext';
 import styles from './PlayerGameView.module.css';
-import DrawerComponent from '../Drawer/Drawer';
 
 function PlayerGameView2() {
-  const { carouselCards, selectedCards, setSelectedCards } =
-    useContext(PlayerGameContext);
+  const { carouselCards, setCarouselCards } = useContext(PlayerGameContext);
   const [index, setIndex] = useState(0);
 
-  const renderedCards = carouselCards.filter(
-    (card: any) => !selectedCards.includes(card)
-  );
-  function dislike() {
-    setIndex(index + 1);
-  }
-  function like() {
-    if (renderedCards && index < renderedCards.length) {
-      setSelectedCards((selectedCards: any) => [
-        ...selectedCards,
-        renderedCards[index]
-      ]);
+  async function dislike() {
+    if (carouselCards) {
+      setCarouselCards(
+        carouselCards.filter((card: unknown, localIndex: number) => {
+          return localIndex !== index;
+        })
+      );
+      if (index === carouselCards.length - 1) setIndex(index - 1);
     }
   }
-
-  function removeDrawerCard(deletedCardText: string) {
-    setSelectedCards((selectedCards: any) => {
-      return selectedCards.filter((card: any) => card.text !== deletedCardText);
-    });
-  }
-
-  function submitAnswer() {
-    window.location.href = `/results`;
+  function like() {
+    if (carouselCards && index < carouselCards.length - 1) setIndex(index + 1);
+    else setIndex(0);
   }
   return (
-    <Container size="xs" className={styles.container}>
-      <Text className={styles.counter}>{selectedCards.length}</Text>
-
+    <Container
+      size="xs"
+      style={{
+        justifyContent: 'center',
+        marginTop: '100px',
+        marginInline: '34vw'
+      }}
+    >
       <Group direction="column">
         <Text className={styles.title}>Personal Color Phase</Text>
         <Text className={styles.description}>
@@ -46,24 +39,19 @@ function PlayerGameView2() {
         </Text>
         <CardTemplate
           CardText={
-            renderedCards[index] !== undefined
-              ? renderedCards[index].text
-              : 'You ran out of cards!'
+            carouselCards[index] !== undefined
+              ? carouselCards[index].text
+              : 'loading'
           }
         />
         <Group direction="row">
-          <Button className={styles.likeButton} onClick={like}>
-            <FaGrinAlt />
+          <Button style={{ marginLeft: '138px' }} onClick={dislike}>
+            <FaThumbsDown />
           </Button>
-          <Button className={styles.dislikeButton} onClick={dislike}>
-            <FaRegFrown />
+          <Button onClick={like}>
+            <FaThumbsUp />
           </Button>
         </Group>
-
-        <DrawerComponent
-          removeDrawerCard={removeDrawerCard}
-          submitAnswer={submitAnswer}
-        />
       </Group>
     </Container>
   );
