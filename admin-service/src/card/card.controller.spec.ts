@@ -4,7 +4,11 @@ import { CardController } from './card.controller';
 import { ALL_TRANSLATIONS, CardService } from './card.service';
 import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { Card } from './entities/card.entity';
-import { ConflictException, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  NotFoundException,
+} from '@nestjs/common';
 import {
   card,
   cardWithTranslation,
@@ -15,7 +19,10 @@ import { MikroORM } from '@mikro-orm/core';
 import { CreateCardDto, PageOptionsDto } from './dtos';
 import { useDatabaseTestConfig } from '../../test/helpers/database';
 import { Request, Response } from 'express';
-import { cardTranslation } from '../../test/factories/cardTranslation';
+import {
+  cardTranslation,
+  createCardTranslations,
+} from '../../test/factories/cardTranslation';
 import { tag } from '../../test/factories/tag';
 
 describe('CardController', () => {
@@ -273,6 +280,38 @@ describe('CardController', () => {
       const createResult = await cardController.create(testCard);
       expect(createResult.translations).toHaveLength(
         testCard.translations.length,
+      );
+    });
+
+    it('should throw a BadRequestException if no translation is set as default', async () => {
+      const testCard = new CreateCardDto();
+      const translation = cardTranslation({
+        card: testCard as unknown as Card,
+        isDefaultLanguage: false,
+      });
+      testCard.translations.push(translation);
+
+      await expect(cardController.create(testCard)).rejects.toThrow(
+        BadRequestException,
+      );
+    });
+
+    it('should throw a ConflictException if one or more translation is set as default', async () => {
+      const testCard = new CreateCardDto();
+      const translation = createCardTranslations([
+        {
+          card: testCard as unknown as Card,
+          isDefaultLanguage: true,
+        },
+        {
+          card: testCard as unknown as Card,
+          isDefaultLanguage: true,
+        },
+      ]);
+      testCard.translations.push(...translation);
+
+      await expect(cardController.create(testCard)).rejects.toThrow(
+        ConflictException,
       );
     });
   });

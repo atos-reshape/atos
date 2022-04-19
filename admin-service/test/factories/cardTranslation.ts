@@ -24,3 +24,10 @@ export const cardTranslation = (
 
   return cardTranslation;
 };
+
+export const createCardTranslations = (
+  translations: Partial<CardTranslation>[],
+  orm?: MikroORM,
+): CardTranslation[] => {
+  return translations.map((translation) => cardTranslation(translation, orm));
+};

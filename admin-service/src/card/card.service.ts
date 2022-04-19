@@ -64,7 +64,7 @@ export class CardService {
       translations.filter((translation) => translation.isDefaultLanguage)
         .length > 1
     )
-      throw new BadRequestException(
+      throw new ConflictException(
         'Only one translation can be set as default.',
       );
   }
