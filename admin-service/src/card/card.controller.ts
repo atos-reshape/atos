@@ -42,7 +42,7 @@ export class CardController {
     /* istanbul ignore next */
     @Query('isActive') isActive = true,
     @Query() pageOptions?: PageOptionsDto,
-    @Query('language') language: string = '',
+    @Query('language') language = '',
     @Query('tag') tag?: string,
     @Res({ passthrough: true }) response?: Response,
     @Req() request?: Request,

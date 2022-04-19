@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   ConflictException,
   Injectable,
   NotFoundException,
@@ -9,6 +10,7 @@ import { Card } from './entities/card.entity';
 import { CreateCardDto, PageOptionsDto } from './dtos';
 import { wrap } from '@mikro-orm/core';
 import { PaginatedResult } from '../helpers/pagination.helper';
+import { CardTranslation } from './entities/card-translation.entity';
 
 export const ALL_TRANSLATIONS = '*';
 
@@ -42,6 +44,29 @@ export class CardService {
     delete flattenedCard.translations;
 
     return flattenedCard;
+  }
+
+  /**
+   * Makes sure that at least and at most one translation is marked as default.
+   * @param translations - The translations that need to be checked.
+   */
+  private static hasAtLeastAndAtMostOneDefaultLanguage(
+    translations: CardTranslation[],
+  ): void {
+    // Make sure that at least one of the translations is set as the default.
+    if (!translations.some((translation) => translation.isDefaultLanguage))
+      throw new BadRequestException(
+        'At least one translation must be set as default.',
+      );
+
+    // Make sure that not more than one translation is set as the default.
+    if (
+      translations.filter((translation) => translation.isDefaultLanguage)
+        .length > 1
+    )
+      throw new BadRequestException(
+        'Only one translation can be set as default.',
+      );
   }
 
   /**
@@ -109,6 +134,7 @@ export class CardService {
    * @returns The created card.
    */
   async create(card: CreateCardDto): Promise<Card> {
+    CardService.hasAtLeastAndAtMostOneDefaultLanguage(card.translations);
     const newCard = this.cardRepository.create(card);
     await this.cardRepository.persistAndFlush(newCard);
     return newCard;
@@ -123,6 +149,11 @@ export class CardService {
   async update(id: string, cardData: CreateCardDto): Promise<Card> {
     const card = await this.findOne(id, ALL_TRANSLATIONS);
     if (!card) throw new NotFoundException('Card not found');
+
+    CardService.hasAtLeastAndAtMostOneDefaultLanguage(
+      card.translations.getItems(),
+    );
+
     wrap(card).assign(cardData);
     card.translations.set(cardData.translations);
     await this.cardRepository.flush();
