@@ -13,7 +13,6 @@ function GameView() {
     <SocketProvider id={id}>
       <PlayerGameProvider>
         <Navbar />
-        {/* <PlayerGameView1 /> */}
         <PlayerGameView />
       </PlayerGameProvider>
     </SocketProvider>
