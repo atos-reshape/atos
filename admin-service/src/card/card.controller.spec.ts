@@ -16,6 +16,7 @@ import { CreateCardDto, PageOptionsDto } from './dtos';
 import { useDatabaseTestConfig } from '../../test/helpers/database';
 import { Request, Response } from 'express';
 import { cardTranslation } from '../../test/factories/cardTranslation';
+import { tag } from '../../test/factories/tag';
 
 describe('CardController', () => {
   let cardController: CardController;
@@ -68,6 +69,7 @@ describe('CardController', () => {
           true,
           new PageOptionsDto(),
           ALL_TRANSLATIONS,
+          undefined,
           response as Response,
           request,
         );
@@ -87,6 +89,7 @@ describe('CardController', () => {
         await cardController.findAll(
           true,
           new PageOptionsDto(),
+          undefined,
           undefined,
           response as Response,
           request,
@@ -108,6 +111,7 @@ describe('CardController', () => {
           true,
           new PageOptionsDto(),
           'en',
+          undefined,
           response as Response,
           request,
         );
@@ -125,6 +129,7 @@ describe('CardController', () => {
         true,
         new PageOptionsDto(),
         ALL_TRANSLATIONS,
+        undefined,
         response as Response,
         request,
       );
@@ -139,6 +144,7 @@ describe('CardController', () => {
         true,
         new PageOptionsDto(),
         ALL_TRANSLATIONS,
+        undefined,
         response as Response,
         request,
       );
@@ -152,11 +158,35 @@ describe('CardController', () => {
         false,
         new PageOptionsDto(),
         ALL_TRANSLATIONS,
+        undefined,
         response as Response,
         request,
       );
       expect(responseObject).toBeInstanceOf(Array);
       expect(responseObject).toHaveLength(2);
+    });
+
+    it('should return all cards that have a certain tag', async () => {
+      const tagName = 'this is a tag';
+      createCards(
+        [
+          { tag: tag({ name: tagName }) },
+          { tag: tag({ name: 'a different tag' }) },
+          {},
+        ],
+        orm,
+      );
+      await cardController.findAll(
+        true,
+        new PageOptionsDto(),
+        ALL_TRANSLATIONS,
+        tagName,
+        response as Response,
+        request,
+      );
+      expect(responseObject).toBeInstanceOf(Array);
+      expect(responseObject).toHaveLength(1);
+      expect(responseObject[0].tag.name).toBe(tagName);
     });
   });
 

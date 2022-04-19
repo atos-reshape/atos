@@ -43,6 +43,7 @@ export class CardController {
     @Query('isActive') isActive = true,
     @Query() pageOptions?: PageOptionsDto,
     @Query('language') language?: string,
+    @Query('tag') tag?: string,
     @Res() response?: Response,
     @Req() request?: Request,
   ) {
@@ -50,7 +51,7 @@ export class CardController {
       paginate<Card>(
         request,
         response,
-        await this.cardService.findAll(isActive, pageOptions, language),
+        await this.cardService.findAll(isActive, pageOptions, language, tag),
         pageOptions,
       ),
     );

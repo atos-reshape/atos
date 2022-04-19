@@ -49,17 +49,19 @@ export class CardService {
    * @param isActive - Filter on the active cards, if false return all cards including deleted ones.
    * @param pageOptions - Pagination options.
    * @param language - The language that needs to be used for the translation. Should be ISO 639-1. * for all translations.
+   * @param tag - If defined, only return cards with this tag.
    * @returns An array of cards.
    */
   async findAll(
     isActive: boolean,
     pageOptions: PageOptionsDto,
     language?: string,
+    tag?: string,
   ): Promise<PaginatedResult<Card>> {
     const [cards, count] = await this.cardRepository.findAndCount(
       {},
       {
-        filters: { isActive },
+        filters: { isActive, hasTag: { name: tag } },
         populate: ['translations'],
         limit: pageOptions.limit,
         offset: pageOptions.offset,
