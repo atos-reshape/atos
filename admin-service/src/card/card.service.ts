@@ -6,10 +6,11 @@ import {
 import { EntityRepository } from '@mikro-orm/postgresql';
 import { InjectRepository } from '@mikro-orm/nestjs';
 import { Card } from './entities/card.entity';
-import { CreateCardDto } from './dtos';
+import { CreateCardDto, PageOptionsDto } from './dtos';
 import { wrap } from '@mikro-orm/core';
-import { PageOptionsDto } from './dtos';
 import { PaginatedResult } from '../helpers/pagination.helper';
+
+export const ALL_TRANSLATIONS = '*';
 
 @Injectable()
 export class CardService {
@@ -18,20 +19,26 @@ export class CardService {
     private readonly cardRepository: EntityRepository<Card>,
   ) {}
 
-  private static flattenCard(card: Card): Card {
+  /**
+   * It flattens the response from the database to be returned to the client.
+   * @param card - The card that needs to be flattened.
+   * @param language - The language that needs to be used for the translation. Should be ISO 639-1.
+   * @returns The flattened card.
+   */
+  private static flattenCard(card: Card, language?: string): Card {
     const translations = card.translations.getItems();
-    const defaultTranslationIndex = translations.findIndex(
-      (translation) => translation.isDefaultLanguage,
+    const translationIndex = translations.findIndex((translation) =>
+      language && translation.language
+        ? translation.language === language
+        : translation.isDefaultLanguage,
     );
-
     const flattenedCard = {
       ...card,
       // Make sure that this translation exists.
-      text: translations[defaultTranslationIndex]
-        ? translations[defaultTranslationIndex].text
+      text: translations[translationIndex]
+        ? translations[translationIndex].text
         : '',
     };
-
     delete flattenedCard.translations;
 
     return flattenedCard;
@@ -41,11 +48,13 @@ export class CardService {
    * Retrieve all cards from database.
    * @param isActive - Filter on the active cards, if false return all cards including deleted ones.
    * @param pageOptions - Pagination options.
+   * @param language - The language that needs to be used for the translation. Should be ISO 639-1. * for all translations.
    * @returns An array of cards.
    */
   async findAll(
     isActive: boolean,
     pageOptions: PageOptionsDto,
+    language?: string,
   ): Promise<PaginatedResult<Card>> {
     const [cards, count] = await this.cardRepository.findAndCount(
       {},
@@ -57,19 +66,27 @@ export class CardService {
       },
     );
 
-    return [cards.map((card) => CardService.flattenCard(card)), count];
+    // If language is *, return all translations. Otherwise, flatten the cards.
+    return language === ALL_TRANSLATIONS
+      ? [cards, count]
+      : [cards.map((card) => CardService.flattenCard(card, language)), count];
   }
 
   /**
    * Retrieve a card from database.
    * @param id - The id of the card to retrieve.
+   * @param language - The language that needs to be used for the translation. Should be ISO 639-1. * for all translations.
    * @returns The card with the given id.
    */
-  async findOne(id: string): Promise<Card> {
-    return await this.cardRepository.findOne(id, {
+  async findOne(id: string, language?: string): Promise<Card> {
+    const card = await this.cardRepository.findOne(id, {
       filters: { isActive: false },
       populate: ['translations'],
     });
+
+    return language === ALL_TRANSLATIONS
+      ? card
+      : card && CardService.flattenCard(card);
   }
 
   /**
@@ -90,7 +107,7 @@ export class CardService {
    * @returns The updated card.
    */
   async update(id: string, cardData: CreateCardDto): Promise<Card> {
-    const card = await this.findOne(id);
+    const card = await this.findOne(id, ALL_TRANSLATIONS);
     if (!card) throw new NotFoundException('Card not found');
     wrap(card).assign(cardData);
     card.translations.set(cardData.translations);
@@ -105,7 +122,7 @@ export class CardService {
    * @returns The deleted card.
    */
   async delete(id: string): Promise<void> {
-    const card = await this.findOne(id);
+    const card = await this.findOne(id, ALL_TRANSLATIONS);
     if (!card) throw new NotFoundException('Card not found');
     if (card.deletedAt) throw new ConflictException('Card already deleted');
 

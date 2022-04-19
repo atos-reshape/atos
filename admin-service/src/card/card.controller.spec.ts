@@ -1,7 +1,7 @@
 import { v4 } from 'uuid';
 import { Test, TestingModule } from '@nestjs/testing';
 import { CardController } from './card.controller';
-import { CardService } from './card.service';
+import { ALL_TRANSLATIONS, CardService } from './card.service';
 import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { Card } from './entities/card.entity';
 import { NotFoundException } from '@nestjs/common';
@@ -9,6 +9,7 @@ import {
   card,
   cardWithTranslation,
   createCards,
+  createCardsWithTranslation,
 } from '../../test/factories/card';
 import { MikroORM } from '@mikro-orm/core';
 import { CreateCardDto, PageOptionsDto } from './dtos';
@@ -60,17 +61,62 @@ describe('CardController', () => {
     });
 
     it.each([...Array(10).keys()])(
-      'should return an array of cards',
+      'should return an array of cards with all translations',
       async (length) => {
-        createCards(new Array(length).fill({}), orm);
+        createCardsWithTranslation(new Array(length).fill({}), orm);
         await cardController.findAll(
           true,
           new PageOptionsDto(),
+          ALL_TRANSLATIONS,
           response as Response,
           request,
         );
         expect(responseObject).toBeInstanceOf(Array);
         expect(responseObject).toHaveLength(length);
+        // Expect each object in the array to have an array called translations.
+        responseObject.forEach((card) => {
+          expect(card.translations.getItems()).toBeInstanceOf(Array);
+        });
+      },
+    );
+
+    it.each([...Array(10).keys()])(
+      'should return an array of cards with the default translation',
+      async (length) => {
+        createCardsWithTranslation(new Array(length).fill({}), orm);
+        await cardController.findAll(
+          true,
+          new PageOptionsDto(),
+          undefined,
+          response as Response,
+          request,
+        );
+        expect(responseObject).toBeInstanceOf(Array);
+        expect(responseObject).toHaveLength(length);
+        // Expect each object in the array to have a field called text that is any string.
+        responseObject.forEach((card) => {
+          expect(typeof card.text).toBe('string');
+        });
+      },
+    );
+
+    it.each([...Array(10).keys()])(
+      'should return an array of cards with the specified translation',
+      async (length) => {
+        createCardsWithTranslation(new Array(length).fill({}), orm);
+        await cardController.findAll(
+          true,
+          new PageOptionsDto(),
+          'en',
+          response as Response,
+          request,
+        );
+        expect(responseObject).toBeInstanceOf(Array);
+        expect(responseObject).toHaveLength(length);
+        // Expect each object in the array to have a field called text that is any string.
+        responseObject.forEach((card) => {
+          expect(typeof card.text).toBe('string');
+        });
       },
     );
 
@@ -78,6 +124,7 @@ describe('CardController', () => {
       await cardController.findAll(
         true,
         new PageOptionsDto(),
+        ALL_TRANSLATIONS,
         response as Response,
         request,
       );
@@ -91,6 +138,7 @@ describe('CardController', () => {
       await cardController.findAll(
         true,
         new PageOptionsDto(),
+        ALL_TRANSLATIONS,
         response as Response,
         request,
       );
@@ -103,6 +151,7 @@ describe('CardController', () => {
       await cardController.findAll(
         false,
         new PageOptionsDto(),
+        ALL_TRANSLATIONS,
         response as Response,
         request,
       );
@@ -112,11 +161,35 @@ describe('CardController', () => {
   });
 
   describe('findOne', () => {
-    it('should return a card', async () => {
+    it('should return a card with all translations', async () => {
       const testCard = card({}, orm);
 
-      const findOneResult = await cardController.findOne(testCard.id);
+      const findOneResult = await cardController.findOne(
+        testCard.id,
+        ALL_TRANSLATIONS,
+      );
       expect(findOneResult).toMatchObject(testCard);
+    });
+
+    it('should return a card with the default translation', async () => {
+      const testCard = card({}, orm);
+
+      const findOneResult = await cardController.findOne(
+        testCard.id,
+        undefined,
+      );
+      expect(findOneResult).toMatchObject({
+        text: expect.any(String),
+      });
+    });
+
+    it('should return a card with the specified translation', async () => {
+      const testCard = card({}, orm);
+
+      const findOneResult = await cardController.findOne(testCard.id, 'en');
+      expect(findOneResult).toMatchObject({
+        text: expect.any(String),
+      });
     });
 
     it('should return 404 if there is no card', async () => {

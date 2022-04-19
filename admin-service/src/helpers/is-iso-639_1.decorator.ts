@@ -1,8 +1,4 @@
-import {
-  registerDecorator,
-  ValidationArguments,
-  ValidationOptions,
-} from 'class-validator';
+import { registerDecorator, ValidationOptions } from 'class-validator';
 import { getAll639_1 } from 'all-iso-language-codes';
 
 function isValidISO639_1(value: string) {
@@ -20,7 +16,7 @@ export function IsISO639_1(
       constraints: [],
       options: validationOptions,
       validator: {
-        validate(value: any, args: ValidationArguments) {
+        validate(value: any) {
           return typeof value === 'string' && isValidISO639_1(value);
         },
       },

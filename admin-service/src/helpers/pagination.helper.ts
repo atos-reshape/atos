@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { PageOptionsDto } from '../card/dtos/page-options.dto';
+import { PageOptionsDto } from '../card/dtos';
 
 export type PaginatedResult<T = unknown> = [T[], number];
 type Relation = 'first' | 'next' | 'prev' | 'last';

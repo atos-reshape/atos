@@ -21,11 +21,10 @@ import {
   ApiQuery,
   ApiTags,
 } from '@nestjs/swagger';
-import { CreateCardDto } from './dtos/create-card.dto';
+import { CreateCardDto, PageOptionsDto } from './dtos';
 import { Card } from './entities/card.entity';
 import { paginate } from '../helpers/pagination.helper';
 import { Request, Response } from 'express';
-import { PageOptionsDto } from './dtos/page-options.dto';
 
 /**
  * The REST API controller for the card service.
@@ -42,6 +41,7 @@ export class CardController {
   async findAll(
     @Query('isActive') isActive = true,
     @Query() pageOptions?: PageOptionsDto,
+    @Query() language?: string,
     @Res() response?: Response,
     @Req() request?: Request,
   ) {
@@ -49,7 +49,7 @@ export class CardController {
       paginate<Card>(
         request,
         response,
-        await this.cardService.findAll(isActive, pageOptions),
+        await this.cardService.findAll(isActive, pageOptions, language),
         pageOptions,
       ),
     );
@@ -59,8 +59,11 @@ export class CardController {
   @ApiOkResponse()
   @ApiNotFoundResponse()
   @Get(':id')
-  async findOne(@Param('id') id: string): Promise<Card> {
-    return this.cardService.findOne(id);
+  async findOne(
+    @Param('id') id: string,
+    @Query() language?: string,
+  ): Promise<Card> {
+    return this.cardService.findOne(id, language);
   }
 
   @ApiOperation({ summary: 'Create card' })

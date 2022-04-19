@@ -53,3 +53,10 @@ export const cardWithTranslation = (
 
   return card;
 };
+
+export const createCardsWithTranslation = (
+  cards: Partial<Card>[] = [],
+  orm?: MikroORM,
+): Card[] => {
+  return cards.map((c: Partial<Card>) => cardWithTranslation(c, orm));
+};
