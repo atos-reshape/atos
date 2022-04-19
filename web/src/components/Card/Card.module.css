@@ -24,13 +24,6 @@
     }
 }
 
-/* @media screen and (max-width: 4000px){
-    .card{
-        width: 600px;
-    }
-} */
-
 .cardtext {
-    /* margin-top: 10vh; */
     padding: 20% 5% 5% 5%;
 }

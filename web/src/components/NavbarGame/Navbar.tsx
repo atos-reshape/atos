@@ -1,7 +1,7 @@
 import { Container, Group, Text } from '@mantine/core';
 import { SocketContext } from '../../hooks/useSocketContext';
 import { useContext } from 'react';
-import './Navbar.css';
+import { text } from './Navbar.module.css';
 
 function Navbar() {
   const lobby = useContext(SocketContext);
@@ -9,11 +9,11 @@ function Navbar() {
     <Container fluid className="container">
       <Container size="sm">
         <Group>
-          <Text className="text">
+          <Text className={text}>
             Lobby name :{' '}
             {lobby.state !== undefined ? lobby.state.title : 'loading'}
           </Text>
-          <Text className="text">
+          <Text className={text}>
             Code: {lobby.state !== undefined ? lobby.state.code : 'loading'}
           </Text>
         </Group>

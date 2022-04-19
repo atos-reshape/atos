@@ -1,5 +1,5 @@
 import { Card, Text } from '@mantine/core';
-import './Card.css';
+import styles from './Card.module.css';
 type CardProps = {
   CardText: string;
 };
@@ -11,8 +11,8 @@ function CardTemplate(props: CardProps) {
   return (
     <>
       {CardText.length > 0 && (
-        <Card p="xl" className="card" style={{ fontSize: fontSize }}>
-          <Card.Section className="cardtext">{CardText}</Card.Section>
+        <Card p="xl" className={styles.card} style={{ fontSize: fontSize }}>
+          <Card.Section className={styles.cardtext}>{CardText}</Card.Section>
         </Card>
       )}
     </>
