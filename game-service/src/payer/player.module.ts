@@ -5,8 +5,8 @@ import { Lobby } from '../lobby/lobby.entity';
 import { PlayerController } from './player.controller';
 import { PlayerService } from './player.service';
 import { SocketService } from '../lobby/socket.service';
-import { SelectedCards } from './selectedCards.entity';
-import { SelectedCardsService } from './selectedCards.service';
+import { SelectedCards } from '../selectedCards/selectedCards.entity';
+import { SelectedCardsService } from '../selectedCards/selectedCards.service';
 import { PlayerGateway } from './player.gateway';
 
 @Module({

@@ -10,7 +10,7 @@ import {
 } from '@mikro-orm/core';
 import { BaseEntity } from '../database/entities/base-entity.entity';
 import { Lobby } from '../lobby/lobby.entity';
-import { SelectedCards } from '../payer/selectedCards.entity';
+import { SelectedCards } from '../selectedCards/selectedCards.entity';
 
 @Entity()
 export class Round extends BaseEntity {

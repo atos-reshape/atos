@@ -12,9 +12,9 @@ import { PassportModule } from '@nestjs/passport';
 import { JwtStrategy } from './jwt.strategy';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { SocketService } from '../lobby/socket.service';
-import { SelectedCards } from '../payer/selectedCards.entity';
+import { SelectedCards } from '../selectedCards/selectedCards.entity';
 import { RoundService } from '../round/round.service';
-import { SelectedCardsService } from '../payer/selectedCards.service';
+import { SelectedCardsService } from '../selectedCards/selectedCards.service';
 
 @Module({
   imports: [

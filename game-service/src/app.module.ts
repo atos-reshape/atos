@@ -6,6 +6,7 @@ import { MikroORM } from '@mikro-orm/core';
 import { RoundModule } from './round/round.module';
 import { PlayerModule } from './payer/player.module';
 import { AuthModule } from './auth/auth.module';
+import { SelectedCardsModule } from './selectedCards/selectedCards.module';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { AuthModule } from './auth/auth.module';
     RoundModule,
     PlayerModule,
     AuthModule,
+    SelectedCardsModule,
   ],
 })
 export class AppModule implements OnModuleInit {

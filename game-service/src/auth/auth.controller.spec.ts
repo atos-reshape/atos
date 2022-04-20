@@ -18,9 +18,9 @@ import { JoinResponseDto } from './dto/join-response.dto';
 import { NotFoundException } from '@nestjs/common';
 import { JoinLobbyDto } from './dto/join-lobby.dto';
 import { SocketService } from '../lobby/socket.service';
-import { SelectedCards } from '../payer/selectedCards.entity';
+import { SelectedCards } from '../selectedCards/selectedCards.entity';
 import { RoundService } from '../round/round.service';
-import { SelectedCardsService } from '../payer/selectedCards.service';
+import { SelectedCardsService } from '../selectedCards/selectedCards.service';
 
 describe('AuthController', () => {
   let socketService: SocketService;

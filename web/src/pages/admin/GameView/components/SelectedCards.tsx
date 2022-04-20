@@ -11,7 +11,7 @@ export const SelectedCards = () => {
     addCard
   } = useContext(GameContext);
   const { data } = useGetCards();
-  const update = useUpdateCardsOfRound(round.id, round.lobbyId);
+  const update = useUpdateCardsOfRound(round.id);
   const [content, setContent] = useState<string | null>('');
 
   const selectables =

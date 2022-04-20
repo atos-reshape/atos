@@ -15,8 +15,8 @@ import { LobbyResponseDto } from './dto';
 import { NotFoundException } from '@nestjs/common';
 import { WsException } from '@nestjs/websockets';
 import { RoundService } from '../round/round.service';
-import { SelectedCardsService } from '../payer/selectedCards.service';
-import { SelectedCards } from '../payer/selectedCards.entity';
+import { SelectedCardsService } from '../selectedCards/selectedCards.service';
+import { SelectedCards } from '../selectedCards/selectedCards.entity';
 import { Joined } from '../sockets/joined.type';
 
 describe('LobbyGateway', () => {

@@ -5,7 +5,7 @@ import { Player } from './player.entity';
 import { InjectRepository } from '@mikro-orm/nestjs';
 import { JoinLobbyDto } from '../auth/dto/join-lobby.dto';
 import { SocketService } from '../lobby/socket.service';
-import { SelectedCardsService } from './selectedCards.service';
+import { SelectedCardsService } from '../selectedCards/selectedCards.service';
 
 @Injectable()
 export class PlayerService {

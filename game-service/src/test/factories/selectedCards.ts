@@ -1,7 +1,7 @@
 import { v4 } from 'uuid';
 import { faker } from '@faker-js/faker';
 import { MikroORM } from '@mikro-orm/core';
-import { SelectedCards } from '../../payer/selectedCards.entity';
+import { SelectedCards } from '../../selectedCards/selectedCards.entity';
 
 export const selectedCards = (
   data: Partial<SelectedCards> = {},
