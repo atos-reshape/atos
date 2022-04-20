@@ -12,8 +12,8 @@ import { Lobby } from '../lobby/lobby.entity';
 import { player } from '@factories/player';
 import { PlayerResponseDto } from './dto/player-response.dto';
 import { SocketService } from '../lobby/socket.service';
-import { SelectedCardsService } from './selectedCards.service';
-import { SelectedCards } from './selectedCards.entity';
+import { SelectedCardsService } from '../selectedCards/selectedCards.service';
+import { SelectedCards } from '../selectedCards/selectedCards.entity';
 
 describe('PlayerGateway', () => {
   let gateway: PlayerGateway;

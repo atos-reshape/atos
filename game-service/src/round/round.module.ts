@@ -7,8 +7,8 @@ import { Lobby } from '../lobby/lobby.entity';
 import { RoundCommand } from './round.command';
 import { SocketService } from '../lobby/socket.service';
 import { LobbyService } from '../lobby/lobby.service';
-import { SelectedCards } from '../payer/selectedCards.entity';
-import { SelectedCardsService } from '../payer/selectedCards.service';
+import { SelectedCards } from '../selectedCards/selectedCards.entity';
+import { SelectedCardsService } from '../selectedCards/selectedCards.service';
 
 @Module({
   imports: [MikroOrmModule.forFeature([Round, Lobby, SelectedCards])],

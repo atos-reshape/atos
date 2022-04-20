@@ -7,7 +7,7 @@ import {
   Property,
 } from '@mikro-orm/core';
 import { Lobby } from '../lobby/lobby.entity';
-import { SelectedCards } from './selectedCards.entity';
+import { SelectedCards } from '../selectedCards/selectedCards.entity';
 
 @Entity()
 export class Player extends BaseEntity {
