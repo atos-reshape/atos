@@ -13,10 +13,6 @@ export default function GameSetup(): JSX.Element {
           <Tabs.Tab label="Game Settings">
             <GameSettings />
           </Tabs.Tab>
-
-          {/* <Tabs.Tab label="Card Settings">
-            <CardSettings />
-          </Tabs.Tab> */}
         </Tabs>
       </Container>
     </Context.Provider>

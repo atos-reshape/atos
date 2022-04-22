@@ -10,10 +10,6 @@ services:
       GAME_SERVICE_HOST: game-service
       ADMIN_SERVICE_HOST: admin-service
       FRONTEND_HOST: frontend-service
-      PORT: ${PORT:-3003}
-      GAME_SERVICE_PORT: ${GAME_SERVICE_PORT:-3001}
-      ADMIN_SERVICE_PORT: ${ADMIN_SERVICE_PORT:-3002}
-      FRONTEND_PORT: ${FRONTEND_PORT:-80}
     ports:
       - "8000:3003"
     networks:
@@ -37,17 +33,10 @@ services:
     env_file:
       - ./admin-service/.env
     environment:
-      JWT_SECRET: ${JWT_SECRET:-MyRandomSecret}
-      OAUTH_REDIRECT_URL: http://localhost:8000/api/login/openid/return
-      AD_TENANT_ID: e2dd5dd5-cd84-46b3-a607-518b52272bb7
-      AD_CLIENT_ID: c64a4147-29bc-403a-918b-178a85e2d7dc
-      AD_CLIENT_SECRET: d22a4643-e119-40e6-85f6-eda46711dfe6
       DB_HOST: postgres
       DB_USER: ${DB_USER:-postgres}
       DB_PASSWORD: ${DB_PASSWORD:-postgres}
       DB_NAME: ${DB_NAME:-admin-service}
-      DB_NAME_TEST: ${DB_NAME_TEST:-admin-service-test}
-      PORT: ${PORT:-3002}
     networks:
       - backend
     links:
@@ -67,8 +56,6 @@ services:
       DB_USER: ${DB_USER:-postgres}
       DB_PASSWORD: ${DB_PASSWORD:-postgres}
       DB_NAME: ${DB_NAME:-game-service}
-      JWT_SECRET: ${JWT_SECRET:-MyRandomSecret}
-      PORT: ${PORT:-3001}
     networks:
       - backend
     links:
@@ -96,7 +83,6 @@ services:
   redis:
     container_name: redis
     image: redis:alpine
-    restart: unless-stopped
     command: redis-server # --requirepass ....
     ports:
       - ${REDIS_PORT:-6379}:6379
