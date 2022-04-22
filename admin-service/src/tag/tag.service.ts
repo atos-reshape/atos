@@ -39,6 +39,16 @@ export class TagService {
   }
 
   /**
+   * Retrieve a tag from database by name.
+   * @param name - The name of the tag to retrieve.
+   * @returns The tag with the given name.
+   *
+   */
+  async findOneByName(name: string): Promise<Tag> {
+    return await this.tagRepository.findOne({ name });
+  }
+
+  /**
    * Create a new tag in the database.
    * @param tagData - The data to create the card with.
    * @returns The created card.

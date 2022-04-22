@@ -13,6 +13,9 @@ import { PaginatedResult } from '../helpers/pagination.helper';
 import { CardTranslation } from './entities/card-translation.entity';
 import { FindAllOptionsDto } from './dtos/find-all-options.dto';
 import { isValidISO639_1 } from '../helpers/is-iso-639_1.decorator';
+import { TagService } from '../tag/tag.service';
+import { CreateTagDto } from '../tag/dtos/create-tag.dto';
+import { Tag } from '../tag/entities/tag.entity';
 
 export const ALL_TRANSLATIONS = '*';
 
@@ -21,6 +24,7 @@ export class CardService {
   constructor(
     @InjectRepository(Card)
     private readonly cardRepository: EntityRepository<Card>,
+    private readonly tagService: TagService,
   ) {}
 
   /**
@@ -83,6 +87,17 @@ export class CardService {
     translations.forEach((translation) =>
       CardService.isValidLanguage(translation.language),
     );
+  }
+
+  private async createTagIfNotExists(tagName: string): Promise<string> {
+    let tag = await this.tagService.findOneByName(tagName);
+
+    // Check if the tag exists, if not create it.
+    if (tagName && !tag) {
+      tag = await this.tagService.create({ name: tagName } as CreateTagDto);
+    }
+
+    return tag.id;
   }
 
   /**
@@ -150,6 +165,11 @@ export class CardService {
   async create(card: CreateCardDto): Promise<Card> {
     CardService.hasAtLeastAndAtMostOneDefaultLanguage(card.translations);
     CardService.isValidLanguageOnTranslation(card.translations);
+
+    if (card.tag) {
+      // Set the tag to its id.
+      card.tag = await this.createTagIfNotExists(card.tag);
+    }
     const newCard = this.cardRepository.create(card);
     await this.cardRepository.persistAndFlush(newCard);
     return newCard;
@@ -169,6 +189,10 @@ export class CardService {
       card.translations.getItems(),
     );
     CardService.isValidLanguageOnTranslation(card.translations.getItems());
+    if (cardData.tag) {
+      // Set the tag to its id.
+      cardData.tag = await this.createTagIfNotExists(cardData.tag);
+    }
 
     this.cardRepository.assign(card, cardData);
     card.translations.set(cardData.translations);

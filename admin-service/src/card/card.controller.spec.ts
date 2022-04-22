@@ -25,6 +25,8 @@ import {
 } from '../../test/factories/cardTranslation';
 import { tag } from '../../test/factories/tag';
 import { FindAllOptionsDto } from './dtos/find-all-options.dto';
+import { TagModule } from '../tag/tag.module';
+import { TagService } from '../tag/tag.service';
 
 describe('CardController', () => {
   let cardController: CardController;
@@ -37,6 +39,7 @@ describe('CardController', () => {
       imports: [
         useDatabaseTestConfig(),
         MikroOrmModule.forFeature({ entities: [Card] }),
+        TagModule,
       ],
       controllers: [CardController],
       providers: [CardService],
@@ -324,14 +327,43 @@ describe('CardController', () => {
 
   describe('create', () => {
     it('should create a card', async () => {
-      const translation = cardTranslation({}, orm);
-      const testCard = new CreateCardDto();
-      testCard.translations.push(translation);
+      const translation = cardTranslation({});
+      const testCard = new CreateCardDto({ translations: [translation] });
 
       const createResult = await cardController.create(testCard);
       expect(createResult.translations).toHaveLength(
         testCard.translations.length,
       );
+    });
+
+    it('should create a card with an existing tag', async () => {
+      const translation = cardTranslation({});
+      const testTag = tag({ name: 'existing tag' }, orm);
+      const testCard = new CreateCardDto({
+        tag: testTag.name,
+        translations: [translation],
+      });
+
+      const createResult = await cardController.create(testCard);
+      expect(createResult.translations).toHaveLength(
+        testCard.translations.length,
+      );
+      expect(createResult.tag.name).toBe(testTag.name);
+    });
+
+    it('should create a card with a new tag', async () => {
+      const translation = cardTranslation({});
+      const tagName = 'new tag';
+      const testCard = new CreateCardDto({
+        tag: tagName,
+        translations: [translation],
+      });
+
+      const createResult = await cardController.create(testCard);
+      expect(createResult.translations).toHaveLength(
+        testCard.translations.length,
+      );
+      expect(createResult.tag.name).toBe(tagName);
     });
 
     it('should throw a BadRequestException if no translation is set as default', async () => {
@@ -397,6 +429,49 @@ describe('CardController', () => {
       const updateResult = await cardController.update(testCard.id, cardUpdate);
 
       expect(updateResult).toMatchObject(testCard);
+    });
+
+    it('should update a card with an existing tag', async () => {
+      const testTag = tag({ name: 'existing tag' }, orm);
+      const testCard = card({ tag: testTag }, orm);
+      const translation = cardTranslation(
+        {
+          card: testCard,
+        },
+        orm,
+      );
+      const cardUpdate = new CreateCardDto();
+      cardUpdate.translations.push(translation);
+      cardUpdate.tag = testTag.name;
+
+      // Update the card
+      testCard.translations.add(translation);
+      testCard.tag = testTag;
+      const updateResult = await cardController.update(testCard.id, cardUpdate);
+
+      expect(updateResult).toMatchObject(testCard);
+      expect(updateResult.tag.name).toBe(testTag.name);
+    });
+
+    it('should update a card with a new tag', async () => {
+      const testCard = card({}, orm);
+      const tagName = 'new tag';
+      const translation = cardTranslation(
+        {
+          card: testCard,
+        },
+        orm,
+      );
+      const cardUpdate = new CreateCardDto();
+      cardUpdate.translations.push(translation);
+      cardUpdate.tag = tagName;
+
+      // Update the card
+      testCard.translations.add(translation);
+      const updateResult = await cardController.update(testCard.id, cardUpdate);
+
+      expect(updateResult).toMatchObject(testCard);
+      expect(updateResult.tag.name).toBe(tagName);
     });
 
     it('should return 404 if there is no card', async () => {

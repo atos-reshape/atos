@@ -4,6 +4,7 @@ import { Card } from './entities/card.entity';
 import { CardController } from './card.controller';
 import { CardService } from './card.service';
 import { useDatabaseTestConfig } from '../../test/helpers/database';
+import { TagModule } from '../tag/tag.module';
 
 describe('CardModule', () => {
   let module: TestingModule;
@@ -13,6 +14,7 @@ describe('CardModule', () => {
       imports: [
         useDatabaseTestConfig(),
         MikroOrmModule.forFeature({ entities: [Card] }),
+        TagModule,
       ],
       controllers: [CardController],
       providers: [CardService],
@@ -27,5 +29,6 @@ describe('CardModule', () => {
     expect(module).toBeDefined();
     expect(module.get(CardController)).toBeInstanceOf(CardController);
     expect(module.get(CardService)).toBeInstanceOf(CardService);
+    expect(module.get(TagModule)).toBeInstanceOf(TagModule);
   });
 });
