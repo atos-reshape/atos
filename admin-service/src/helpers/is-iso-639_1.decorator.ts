@@ -1,6 +1,6 @@
 import { registerDecorator, ValidationOptions } from 'class-validator';
 import { getAll639_1 } from 'all-iso-language-codes';
-import { ALL_TRANSLATIONS } from '../card/card.service';
+import { ALL_TRANSLATIONS } from '../card/constants';
 
 export function isValidISO639_1(value: string) {
   return [ALL_TRANSLATIONS, ...getAll639_1()].includes(value);

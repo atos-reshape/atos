@@ -1,7 +1,7 @@
 import { v4 } from 'uuid';
 import { Test, TestingModule } from '@nestjs/testing';
 import { CardController } from './card.controller';
-import { ALL_TRANSLATIONS, CardService } from './card.service';
+import { CardService } from './card.service';
 import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { Card } from './entities/card.entity';
 import {
@@ -27,6 +27,7 @@ import { tag } from '../../test/factories/tag';
 import { FindAllOptionsDto } from './dtos/find-all-options.dto';
 import { TagModule } from '../tag/tag.module';
 import { FindOneOptionsDto } from './dtos/find-one-options.dto';
+import { ALL_TRANSLATIONS } from './constants';
 
 describe('CardController', () => {
   let cardController: CardController;
