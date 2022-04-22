@@ -26,7 +26,7 @@ import {
 import { tag } from '../../test/factories/tag';
 import { FindAllOptionsDto } from './dtos/find-all-options.dto';
 import { TagModule } from '../tag/tag.module';
-import { TagService } from '../tag/tag.service';
+import { FindOneOptionsDto } from './dtos/find-one-options.dto';
 
 describe('CardController', () => {
   let cardController: CardController;
@@ -255,10 +255,9 @@ describe('CardController', () => {
     it('should return a card with all translations', async () => {
       const testCard = card({}, orm);
 
-      const findOneResult = await cardController.findOne(
-        testCard.id,
-        ALL_TRANSLATIONS,
-      );
+      const findOneResult = await cardController.findOne(testCard.id, {
+        language: ALL_TRANSLATIONS,
+      });
       expect(findOneResult).toMatchObject(testCard);
     });
 
@@ -285,7 +284,7 @@ describe('CardController', () => {
 
       const findOneResult = await cardController.findOne(
         testCard.id,
-        undefined,
+        new FindOneOptionsDto(),
       );
       expect(findOneResult).toMatchObject({
         text: 'nederlands',
@@ -313,15 +312,18 @@ describe('CardController', () => {
         orm,
       );
 
-      const findOneResult = await cardController.findOne(testCard.id, 'en');
+      const findOneResult = await cardController.findOne(testCard.id, {
+        language: 'en',
+      });
       expect(findOneResult).toMatchObject({
         text: 'english',
       });
     });
 
-    it('should return 404 if there is no card', async () => {
-      const findOneResult = await cardController.findOne(v4());
-      expect(findOneResult).toBeNull();
+    it('should return null if there is no card', async () => {
+      await expect(
+        cardController.findOne(v4(), new FindOneOptionsDto()),
+      ).rejects.toThrow(NotFoundException);
     });
   });
 
@@ -474,14 +476,10 @@ describe('CardController', () => {
       expect(updateResult.tag.name).toBe(tagName);
     });
 
-    it('should return 404 if there is no card', async () => {
-      const nonExistingUUID = v4();
-
-      try {
-        await cardController.update(nonExistingUUID, {} as CreateCardDto);
-      } catch (e) {
-        expect(e).toBeInstanceOf(NotFoundException);
-      }
+    it('should throw NotFoundException if there is no card', async () => {
+      await expect(
+        cardController.update(v4(), {} as CreateCardDto),
+      ).rejects.toThrow(NotFoundException);
     });
 
     it('should throw a BadRequest if the language is not ISO639-1', async () => {
@@ -493,11 +491,9 @@ describe('CardController', () => {
       const cardUpdate = new CreateCardDto();
       cardUpdate.translations.push(translation);
 
-      try {
-        await cardController.update(testCard.id, cardUpdate);
-      } catch (e) {
-        expect(e).toBeInstanceOf(BadRequestException);
-      }
+      await expect(
+        cardController.update(testCard.id, cardUpdate),
+      ).rejects.toThrow(BadRequestException);
     });
   });
 
@@ -508,7 +504,10 @@ describe('CardController', () => {
       const deleteResult = await cardController.delete(testCard.id);
       expect(deleteResult).toBeUndefined();
 
-      const cardFromRepository = await cardService.findOne(testCard.id);
+      const cardFromRepository = await cardService.findOne(
+        testCard.id,
+        new FindOneOptionsDto(),
+      );
       expect(cardFromRepository.deletedAt).toBeInstanceOf(Date);
     });
 

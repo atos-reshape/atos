@@ -15,7 +15,7 @@ import { FindAllOptionsDto } from './dtos/find-all-options.dto';
 import { isValidISO639_1 } from '../helpers/is-iso-639_1.decorator';
 import { TagService } from '../tag/tag.service';
 import { CreateTagDto } from '../tag/dtos/create-tag.dto';
-import { Tag } from '../tag/entities/tag.entity';
+import { FindOneOptionsDto } from './dtos/find-one-options.dto';
 
 export const ALL_TRANSLATIONS = '*';
 
@@ -143,18 +143,21 @@ export class CardService {
   /**
    * Retrieve a card from database.
    * @param id - The id of the card to retrieve.
-   * @param language - The language that needs to be used for the translation. Should be ISO 639-1. * for all translations.
+   * @param findOneOptions - The options for the query.
    * @returns The card with the given id.
    */
-  async findOne(id: string, language?: string): Promise<Card> {
+  async findOne(id: string, findOneOptions: FindOneOptionsDto): Promise<Card> {
+    const { language } = findOneOptions;
     const card = await this.cardRepository.findOne(id, {
       filters: { isActive: false },
       populate: ['translations'],
     });
 
+    if (!card) throw new NotFoundException(`Card with id '${id}' not found.`);
+
     return language === ALL_TRANSLATIONS
       ? card
-      : card && CardService.flattenCard(card, language);
+      : CardService.flattenCard(card, language);
   }
 
   /**
@@ -182,8 +185,7 @@ export class CardService {
    * @returns The updated card.
    */
   async update(id: string, cardData: CreateCardDto): Promise<Card> {
-    const card = await this.findOne(id, ALL_TRANSLATIONS);
-    if (!card) throw new NotFoundException('Card not found');
+    const card = await this.findOne(id, { language: ALL_TRANSLATIONS });
 
     CardService.hasAtLeastAndAtMostOneDefaultLanguage(
       card.translations.getItems(),
@@ -207,8 +209,7 @@ export class CardService {
    * @returns The deleted card.
    */
   async delete(id: string): Promise<void> {
-    const card = await this.findOne(id, ALL_TRANSLATIONS);
-    if (!card) throw new NotFoundException('Card not found');
+    const card = await this.findOne(id, { language: ALL_TRANSLATIONS });
     if (card.deletedAt) throw new ConflictException('Card already deleted');
 
     wrap(card).assign({ ...card, deletedAt: new Date() } as Card);
