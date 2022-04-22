@@ -4,16 +4,6 @@
     margin-inline-start: 35vw;
     height: 100%;
 }
-.drawer{
-    height: 100%;
-    overflow-y: scroll;
-    /* background-color: gray; */
-
-}
-.submitbtn{
-    margin-left: 32%;
-}
-
 .counter{
     position: absolute;
     left:40px;
@@ -21,13 +11,7 @@
     width:20px;
     height: 20px;
 }
-.drawerarrow{
-    position: absolute;
-    left:30px;
-    top:45vh;
-    width:20px;
-    height: 50px;
-}
+
 .title{
     font-size: 1.25rem;
     margin-left: 20%;

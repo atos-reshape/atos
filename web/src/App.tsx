@@ -12,7 +12,6 @@ export default function App(): JSX.Element {
     <QueryClientProvider client={queryClient}>
       <Router>
         <Routes>
-          <Route path="/" element={<GameSetup />} />
           <Route path="/game" element={<GameView />} />
           <Route path="/join" element={<JoinGame />} />
           <Route path="/results" element={<IndividualResults />} />

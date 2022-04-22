@@ -36,7 +36,7 @@ services:
       DB_HOST: postgres
       DB_USER: ${DB_USER:-postgres}
       DB_PASSWORD: ${DB_PASSWORD:-postgres}
-      DB_NAME: ${DB_NAME}
+      DB_NAME: ${DB_NAME:-admin-service}
     networks:
       - backend
     links:
@@ -55,7 +55,7 @@ services:
       REDIS_PORT: 6379
       DB_USER: ${DB_USER:-postgres}
       DB_PASSWORD: ${DB_PASSWORD:-postgres}
-      DB_NAME: ${DB_NAME}
+      DB_NAME: ${DB_NAME:-game-service}
     networks:
       - backend
     links:
