@@ -1,11 +1,11 @@
 import { Module } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { JwtModule } from '@nestjs/jwt';
-import { PlayerService } from '../payer/player.service';
+import { PlayerService } from '../player/player.service';
 import { LobbyService } from '../lobby/lobby.service';
 import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { Lobby } from '../lobby/lobby.entity';
-import { Player } from '../payer/player.entity';
+import { Player } from '../player/player.entity';
 import { AuthController } from './auth.controller';
 import { Round } from '../round/round.entity';
 import { PassportModule } from '@nestjs/passport';

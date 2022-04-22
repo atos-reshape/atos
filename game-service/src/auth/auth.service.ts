@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { PlayerService } from '../payer/player.service';
+import { PlayerService } from '../player/player.service';
 import { JwtService } from '@nestjs/jwt';
 import { JoinResponseDto } from './dto/join-response.dto';
 import { JwtPayloadDto } from './dto/jwt-payload.dto';
