@@ -24,6 +24,7 @@ import {
   createCardTranslations,
 } from '../../test/factories/cardTranslation';
 import { tag } from '../../test/factories/tag';
+import { FindAllOptionsDto } from './dtos/find-all-options.dto';
 
 describe('CardController', () => {
   let cardController: CardController;
@@ -74,10 +75,12 @@ describe('CardController', () => {
           orm,
         );
         const responseObject = await cardController.findAll(
-          true,
+          new FindAllOptionsDto({
+            isActive: true,
+            language: ALL_TRANSLATIONS,
+            tag: undefined,
+          }),
           new PageOptionsDto(),
-          ALL_TRANSLATIONS,
-          undefined,
           response as Response,
           request,
         );
@@ -113,10 +116,12 @@ describe('CardController', () => {
         orm,
       );
       const responseObject = await cardController.findAll(
-        true,
+        new FindAllOptionsDto({
+          isActive: true,
+          language: undefined,
+          tag: undefined,
+        }),
         new PageOptionsDto(),
-        undefined,
-        undefined,
         response as Response,
         request,
       );
@@ -151,10 +156,12 @@ describe('CardController', () => {
         orm,
       );
       const responseObject = await cardController.findAll(
-        true,
+        new FindAllOptionsDto({
+          isActive: true,
+          language: 'en',
+          tag: undefined,
+        }),
         new PageOptionsDto(),
-        'en',
-        undefined,
         response as Response,
         request,
       );
@@ -169,10 +176,12 @@ describe('CardController', () => {
 
     it('should return an empty array if there are no cards', async () => {
       const responseObject = await cardController.findAll(
-        true,
+        new FindAllOptionsDto({
+          isActive: true,
+          language: ALL_TRANSLATIONS,
+          tag: undefined,
+        }),
         new PageOptionsDto(),
-        ALL_TRANSLATIONS,
-        undefined,
         response as Response,
         request,
       );
@@ -184,10 +193,12 @@ describe('CardController', () => {
     it('should return only the active cards', async () => {
       createCards([{ deletedAt: new Date() }, {}], orm);
       const responseObject = await cardController.findAll(
-        true,
+        new FindAllOptionsDto({
+          isActive: true,
+          language: ALL_TRANSLATIONS,
+          tag: undefined,
+        }),
         new PageOptionsDto(),
-        ALL_TRANSLATIONS,
-        undefined,
         response as Response,
         request,
       );
@@ -198,10 +209,12 @@ describe('CardController', () => {
     it('should return all cards if isActive is true', async () => {
       createCards([{ deletedAt: new Date() }, {}], orm);
       const responseObject = await cardController.findAll(
-        false,
+        new FindAllOptionsDto({
+          isActive: false,
+          language: ALL_TRANSLATIONS,
+          tag: undefined,
+        }),
         new PageOptionsDto(),
-        ALL_TRANSLATIONS,
-        undefined,
         response as Response,
         request,
       );
@@ -220,10 +233,12 @@ describe('CardController', () => {
         orm,
       );
       const responseObject = await cardController.findAll(
-        true,
+        new FindAllOptionsDto({
+          isActive: true,
+          language: ALL_TRANSLATIONS,
+          tag: tagName,
+        }),
         new PageOptionsDto(),
-        ALL_TRANSLATIONS,
-        tagName,
         response as Response,
         request,
       );

@@ -11,6 +11,7 @@ import { CreateCardDto, PageOptionsDto } from './dtos';
 import { wrap } from '@mikro-orm/core';
 import { PaginatedResult } from '../helpers/pagination.helper';
 import { CardTranslation } from './entities/card-translation.entity';
+import { FindAllOptionsDto } from './dtos/find-all-options.dto';
 
 export const ALL_TRANSLATIONS = '*';
 
@@ -70,18 +71,16 @@ export class CardService {
 
   /**
    * Retrieve all cards from database.
-   * @param isActive - Filter on the active cards, if false return all cards including deleted ones.
+   * @param findAllOptions - The options for the query.
    * @param pageOptions - Pagination options.
-   * @param language - The language that needs to be used for the translation. Should be ISO 639-1. * for all translations.
-   * @param tag - If defined, only return cards with this tag.
    * @returns An array of cards.
    */
   async findAll(
-    isActive: boolean,
+    findAllOptions: FindAllOptionsDto,
     pageOptions: PageOptionsDto,
-    language?: string,
-    tag?: string,
   ): Promise<PaginatedResult<Card>> {
+    const { isActive, language, tag } = findAllOptions;
+
     const [cards, count] = await this.cardRepository.findAndCount(
       {},
       {
