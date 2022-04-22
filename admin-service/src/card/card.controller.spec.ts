@@ -354,7 +354,7 @@ describe('CardController', () => {
       expect(createResult.tag.name).toBe(testTag.name);
     });
 
-    it('should create a card with a new tag', async () => {
+    it('should throw a NotFoundException when creating a card with a new tag', async () => {
       const translation = cardTranslation({});
       const tagName = 'new tag';
       const testCard = new CreateCardDto({
@@ -362,11 +362,9 @@ describe('CardController', () => {
         translations: [translation],
       });
 
-      const createResult = await cardController.create(testCard);
-      expect(createResult.translations).toHaveLength(
-        testCard.translations.length,
+      await expect(cardController.create(testCard)).rejects.toThrow(
+        NotFoundException,
       );
-      expect(createResult.tag.name).toBe(tagName);
     });
 
     it('should throw a BadRequestException if no translation is set as default', async () => {
@@ -456,7 +454,7 @@ describe('CardController', () => {
       expect(updateResult.tag.name).toBe(testTag.name);
     });
 
-    it('should update a card with a new tag', async () => {
+    it('should throw a NotFoundException when updating a card with a new tag', async () => {
       const testCard = card({}, orm);
       const tagName = 'new tag';
       const translation = cardTranslation(
@@ -470,11 +468,9 @@ describe('CardController', () => {
       cardUpdate.tag = tagName;
 
       // Update the card
-      testCard.translations.add(translation);
-      const updateResult = await cardController.update(testCard.id, cardUpdate);
-
-      expect(updateResult).toMatchObject(testCard);
-      expect(updateResult.tag.name).toBe(tagName);
+      await expect(
+        cardController.update(testCard.id, cardUpdate),
+      ).rejects.toThrow(NotFoundException);
     });
 
     it('should throw NotFoundException if there is no card', async () => {

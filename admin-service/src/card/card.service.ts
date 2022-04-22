@@ -73,6 +73,10 @@ export class CardService {
       );
   }
 
+  /**
+   * Check if the language is a valid ISO 639-1 language code and throw an error if it isn't.
+   * @param language - The language that needs to be checked.
+   */
   private static isValidLanguage(language: string): void {
     if (!isValidISO639_1(language))
       throw new BadRequestException(
@@ -80,23 +84,16 @@ export class CardService {
       );
   }
 
+  /**
+   * Check for each translation if it's language is a valid ISO 639-1 language code and throw an error if it isn't.
+   * @param translations - The translations that need to be checked.
+   */
   private static isValidLanguageOnTranslation(
     translations: CardTranslation[],
   ): void {
     translations.forEach((translation) =>
       CardService.isValidLanguage(translation.language),
     );
-  }
-
-  private async createTagIfNotExists(tagName: string): Promise<string> {
-    let tag = await this.tagService.findOneByName(tagName);
-
-    // Check if the tag exists, if not create it.
-    if (tagName && !tag) {
-      tag = await this.tagService.create({ name: tagName } as CreateTagDto);
-    }
-
-    return tag.id;
   }
 
   /**
@@ -167,11 +164,11 @@ export class CardService {
   async create(card: CreateCardDto): Promise<Card> {
     CardService.hasAtLeastAndAtMostOneDefaultLanguage(card.translations);
     CardService.isValidLanguageOnTranslation(card.translations);
-
     if (card.tag) {
       // Set the tag to its id.
-      card.tag = await this.createTagIfNotExists(card.tag);
+      card.tag = (await this.tagService.findOneByName(card.tag)).id;
     }
+
     const newCard = this.cardRepository.create(card);
     await this.cardRepository.persistAndFlush(newCard);
     return newCard;
@@ -192,7 +189,7 @@ export class CardService {
     CardService.isValidLanguageOnTranslation(card.translations.getItems());
     if (cardData.tag) {
       // Set the tag to its id.
-      cardData.tag = await this.createTagIfNotExists(cardData.tag);
+      cardData.tag = (await this.tagService.findOneByName(cardData.tag)).id;
     }
 
     this.cardRepository.assign(card, cardData);

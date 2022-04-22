@@ -35,7 +35,9 @@ export class TagService {
    * @returns The tag with the given id.
    */
   async findOne(id: string): Promise<Tag> {
-    return await this.tagRepository.findOne(id);
+    const tag = await this.tagRepository.findOne(id);
+    if (!tag) throw new NotFoundException(`Tag with id '${id}' not found.`);
+    return tag;
   }
 
   /**
@@ -45,7 +47,9 @@ export class TagService {
    *
    */
   async findOneByName(name: string): Promise<Tag> {
-    return await this.tagRepository.findOne({ name });
+    const tag = await this.tagRepository.findOne({ name });
+    if (!tag) throw new NotFoundException(`Tag with name '${name}' not found.`);
+    return tag;
   }
 
   /**
