@@ -97,7 +97,7 @@ describe('LobbyController', () => {
       const request: CreateLobbyDto = {
         title: 'some-title',
         cards: ['card-id'],
-        selectableCards: 5
+        selectableCards: 5,
       };
 
       it('should create a new lobby including a new round', async () => {

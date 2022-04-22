@@ -31,12 +31,19 @@ export class SelectedCardsCommand {
     return selected;
   }
 
-  async finishedSelecting(roundId: string, playerId: string): Promise<SelectedCards> {
+  async finishedSelecting(
+    roundId: string,
+    playerId: string,
+  ): Promise<SelectedCards> {
     const round = await this.roundService.findRound(roundId);
 
     const selected = this.selectedService.finishedSelecting(round, playerId);
 
-    this.socketService.send(round.lobby.id, 'cards.selected.finished', selected);
+    this.socketService.send(
+      round.lobby.id,
+      'cards.selected.finished',
+      selected,
+    );
 
     return selected;
   }

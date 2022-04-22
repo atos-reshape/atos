@@ -77,7 +77,7 @@ describe('RoundController', () => {
   describe('updateCards', () => {
     const request: CreateRoundDto = {
       cards: [v4(), v4()],
-      selectableCards: 5
+      selectableCards: 5,
     };
 
     describe('for an existing round', () => {
@@ -119,7 +119,7 @@ describe('RoundController', () => {
   describe('createRound', () => {
     const request: CreateRoundDto = {
       cards: [v4(), v4()],
-      selectableCards: 5
+      selectableCards: 5,
     };
 
     describe('for an existing lobby', () => {
