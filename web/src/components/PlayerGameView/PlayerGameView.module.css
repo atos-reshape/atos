@@ -13,6 +13,14 @@
 .submitbtn{
     margin-left: 32%;
 }
+
+.counter{
+    position: absolute;
+    left:40px;
+    top:44vh;
+    width:20px;
+    height: 20px;
+}
 .drawerarrow{
     position: absolute;
     left:30px;

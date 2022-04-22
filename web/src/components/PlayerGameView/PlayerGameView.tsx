@@ -39,6 +39,7 @@ function PlayerGameView2() {
   }
   return (
     <Container size="xs" className={styles.container}>
+      <Text className={styles.counter}>{selectedCards.length}</Text>
       <FaGreaterThan
         className={styles.drawerarrow}
         onClick={() => setOpened(true)}
