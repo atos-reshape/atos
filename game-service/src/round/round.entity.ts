@@ -26,6 +26,9 @@ export class Round extends BaseEntity {
   @Property({ nullable: true })
   endedAt?: Date;
 
+  @Property({ nullable: true })
+  selectableCards?: number = 5;
+
   @OneToOne(() => Lobby, (lobby) => lobby.currentRound, {
     hidden: true,
     wrappedReference: true,

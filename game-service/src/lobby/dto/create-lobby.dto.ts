@@ -10,6 +10,9 @@ export class CreateLobbyDto {
   @IsArray()
   cards: string[] = [];
 
+  @ApiProperty({ type: 'number' })
+  selectableCards: number = 5;
+
   constructor(partial: Partial<CreateLobbyDto>) {
     Object.assign(this, partial);
   }

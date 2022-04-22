@@ -135,6 +135,12 @@ describe('SelectedCardsController', () => {
         NotFoundException,
       );
     });
+
+    it('should return error adding extra card', async () => {
+      await expect(controller.addCardToLiked(v4(), v4(), v4())).rejects.toThrow(
+        Error,
+      );
+    });
   });
 
   describe('removeSelectedCard', () => {

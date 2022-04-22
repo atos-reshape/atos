@@ -12,7 +12,7 @@ export class SelectedCardsService {
   constructor(
     @InjectRepository(SelectedCards)
     public readonly selectedCardsRepository: EntityRepository<SelectedCards>,
-  ) {}
+  ) { }
 
   /**
    * Create new selected cards entity for each player in the lobby.
@@ -109,6 +109,22 @@ export class SelectedCardsService {
     const selected = await this.findSelectedCards(playerId, roundId);
 
     selected.cards = selected.cards.filter((id) => id !== cardId);
+    await this.selectedCardsRepository.persistAndFlush(selected);
+
+    return selected;
+  }
+
+  /**
+ * Update the selected cards.
+ * @param roundId - The id of the player to update.
+ * @param playerId - The round to update.
+ * @returns The updated selected cards.
+ */
+  async finishedSelecting(round: Round, playerId: string): Promise<SelectedCards> {
+    const selected = await this.findSelectedCards(playerId, round.id);
+    if (round.selectableCards != selected.cards.length) { throw new Error('You need to have selected the exact number of cards for this round') };
+
+    selected.finishedSelecting = new Date();
     await this.selectedCardsRepository.persistAndFlush(selected);
 
     return selected;

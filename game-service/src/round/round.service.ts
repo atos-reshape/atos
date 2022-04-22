@@ -75,7 +75,7 @@ export class RoundService {
           'Lobby already has an active or prepared round',
         );
 
-    const round = this.roundRepository.create({ cards: settings.cards });
+    const round = this.roundRepository.create({ cards: settings.cards, selectableCards: settings.selectableCards });
 
     lobby.rounds.add(round);
     lobby.currentRound = round;

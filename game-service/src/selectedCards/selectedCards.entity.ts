@@ -34,4 +34,7 @@ export class SelectedCards extends BaseEntity {
 
   @Property({ type: ArrayType, nullable: false })
   cards: string[] = [];
+
+  @Property({ nullable: true })
+  finishedSelecting?: Date;
 }
