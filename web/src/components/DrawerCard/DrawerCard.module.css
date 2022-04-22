@@ -2,14 +2,34 @@
     background-color: white;
     font-weight: 600;
     width: 50vw;
-    max-width: 400px;
+    max-width: 300px;
     height: 40vh;
-    max-height: 80vh;
+    max-height: 180px;
     padding: 30px;
+    margin-left: 65px;
     margin-bottom: 20px;
     border: 1px solid black;
     text-align: center;
     justify-content: center;
+}
+
+.trashcan{
+    position: absolute;
+    width: 25px;
+    height: 25px;
+    left: 250px;
+    top:15px;
+    transition: 0.15s;
+}
+
+.trashcan:hover{
+    transition: 0.15s 0.15s ease-in-out;
+    background-color: red;
+    border-radius: 25%;
+    padding: 5px;
+    left:245px;
+    top:10px;
+    color:white;
 }
 
 @media screen and (max-width: 564px){
@@ -26,5 +46,5 @@
 }
 
 .cardtext {
-    padding: 31% 5% 5% 5%;
+    padding: 25% 5% 5% 5%;
 }

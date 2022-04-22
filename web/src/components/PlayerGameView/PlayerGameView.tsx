@@ -1,37 +1,48 @@
-import { Container, Group, Button, Text } from '@mantine/core';
+import { Container, Group, Button, Text, Drawer, Card } from '@mantine/core';
 import CardTemplate from '../Card/Card';
-import { FaThumbsDown, FaThumbsUp } from 'react-icons/fa';
-import { useContext, useState } from 'react';
+import DrawerCard from '../DrawerCard/DrawerCard';
+import { FaThumbsDown, FaThumbsUp, FaGreaterThan } from 'react-icons/fa';
+
+import { useContext, useEffect, useState } from 'react';
 import { PlayerGameContext } from '../../hooks/usePlayerGameContext';
 import styles from './PlayerGameView.module.css';
 
 function PlayerGameView2() {
-  const { carouselCards, setCarouselCards } = useContext(PlayerGameContext);
+  const { carouselCards, selectedCards, setSelectedCards } =
+    useContext(PlayerGameContext);
   const [index, setIndex] = useState(0);
+  const [opened, setOpened] = useState(false);
 
-  async function dislike() {
-    if (carouselCards) {
-      setCarouselCards(
-        carouselCards.filter((card: unknown, localIndex: number) => {
-          return localIndex !== index;
-        })
-      );
-      if (index === carouselCards.length - 1) setIndex(index - 1);
-    }
+  const renderedCards = carouselCards.filter(
+    (card: any) => !selectedCards.includes(card)
+  );
+  function dislike() {
+    setIndex(index + 1);
   }
   function like() {
-    if (carouselCards && index < carouselCards.length - 1) setIndex(index + 1);
-    else setIndex(0);
+    if (renderedCards && index < renderedCards.length) {
+      setSelectedCards((selectedCards: any) => [
+        ...selectedCards,
+        renderedCards[index]
+      ]);
+    }
+  }
+
+  function removeDrawerCard(deletedCardText: string) {
+    setSelectedCards((selectedCards: any) => {
+      return selectedCards.filter((card: any) => card.text !== deletedCardText);
+    });
+  }
+
+  function submitAnswer() {
+    window.location.href = `/results`;
   }
   return (
-    <Container
-      size="xs"
-      style={{
-        justifyContent: 'center',
-        marginTop: '100px',
-        marginInline: '34vw'
-      }}
-    >
+    <Container size="xs" className={styles.container}>
+      <FaGreaterThan
+        className={styles.drawerarrow}
+        onClick={() => setOpened(true)}
+      />
       <Group direction="column">
         <Text className={styles.title}>Personal Color Phase</Text>
         <Text className={styles.description}>
@@ -39,9 +50,9 @@ function PlayerGameView2() {
         </Text>
         <CardTemplate
           CardText={
-            carouselCards[index] !== undefined
-              ? carouselCards[index].text
-              : 'loading'
+            renderedCards[index] !== undefined
+              ? renderedCards[index].text
+              : 'You ran out of cards!'
           }
         />
         <Group direction="row">
@@ -52,6 +63,32 @@ function PlayerGameView2() {
             <FaThumbsUp />
           </Button>
         </Group>
+
+        <Drawer
+          opened={opened}
+          onClose={() => setOpened(false)}
+          title="Selected Cards"
+          padding="xl"
+          size="xl"
+          transition="rotate-left"
+          transitionDuration={250}
+          transitionTimingFunction="ease"
+          lockScroll={false}
+          className={styles.drawer}
+        >
+          {selectedCards?.map((card: any) => {
+            return (
+              <DrawerCard
+                CardText={card.text}
+                deleteCard={removeDrawerCard}
+                key={card.id}
+              />
+            );
+          })}
+          <Button className={styles.submitbtn} onClick={() => submitAnswer()}>
+            Submit Answer
+          </Button>
+        </Drawer>
       </Group>
     </Container>
   );
