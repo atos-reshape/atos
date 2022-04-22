@@ -8,15 +8,9 @@
     padding: 30px;
     margin-left: 65px;
     margin-bottom: 20px;
-    margin-top: 40px;
+    border: 1px solid black;
     text-align: center;
     justify-content: center;
-    background: linear-gradient(to bottom right, rgb(18, 132, 66), rgb(29, 28, 28));
-}
-
-.cardtext {
-    padding: 25% 5% 5% 5%;
-    color: white;
 }
 
 .trashcan{
@@ -26,12 +20,11 @@
     left: 250px;
     top:15px;
     transition: 0.15s;
-    color: rgb(255, 82, 105);
 }
 
 .trashcan:hover{
-    transition: 0.15s ease-in-out;
-    background-color: rgb(255, 82, 105);
+    transition: 0.15s 0.15s ease-in-out;
+    background-color: red;
     border-radius: 25%;
     padding: 5px;
     left:245px;
@@ -50,4 +43,8 @@
     .card{
         width: 29vw;
     }
+}
+
+.cardtext {
+    padding: 25% 5% 5% 5%;
 }
