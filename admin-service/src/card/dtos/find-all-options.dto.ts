@@ -15,7 +15,7 @@ export class FindAllOptionsDto {
   readonly isActive?: boolean = true;
 
   @ApiPropertyOptional({
-    enum: getAll639_1(),
+    enum: ['*', ...getAll639_1()],
   })
   @Type(
     /* istanbul ignore next */

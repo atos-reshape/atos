@@ -365,6 +365,18 @@ describe('CardController', () => {
         ConflictException,
       );
     });
+
+    it('should throw a BadRequest if the language is not ISO639-1', async () => {
+      const translation = cardTranslation({
+        language: 'not an ISO639-1 language code',
+      });
+      const testCard = new CreateCardDto();
+      testCard.translations.push(translation);
+
+      await expect(cardController.create(testCard)).rejects.toThrow(
+        BadRequestException,
+      );
+    });
   });
 
   describe('update', () => {
@@ -394,6 +406,22 @@ describe('CardController', () => {
         await cardController.update(nonExistingUUID, {} as CreateCardDto);
       } catch (e) {
         expect(e).toBeInstanceOf(NotFoundException);
+      }
+    });
+
+    it('should throw a BadRequest if the language is not ISO639-1', async () => {
+      const testCard = card({}, orm);
+
+      const translation = cardTranslation({
+        language: 'not an ISO639-1 language code',
+      });
+      const cardUpdate = new CreateCardDto();
+      cardUpdate.translations.push(translation);
+
+      try {
+        await cardController.update(testCard.id, cardUpdate);
+      } catch (e) {
+        expect(e).toBeInstanceOf(BadRequestException);
       }
     });
   });

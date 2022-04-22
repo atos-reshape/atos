@@ -12,6 +12,7 @@ import { wrap } from '@mikro-orm/core';
 import { PaginatedResult } from '../helpers/pagination.helper';
 import { CardTranslation } from './entities/card-translation.entity';
 import { FindAllOptionsDto } from './dtos/find-all-options.dto';
+import { isValidISO639_1 } from '../helpers/is-iso-639_1.decorator';
 
 export const ALL_TRANSLATIONS = '*';
 
@@ -67,6 +68,21 @@ export class CardService {
       throw new ConflictException(
         'Only one translation can be set as default.',
       );
+  }
+
+  private static isValidLanguage(language: string): void {
+    if (!isValidISO639_1(language))
+      throw new BadRequestException(
+        `The language '${language}' is not a valid ISO 639-1 language code.`,
+      );
+  }
+
+  private static isValidLanguageOnTranslation(
+    translations: CardTranslation[],
+  ): void {
+    translations.forEach((translation) =>
+      CardService.isValidLanguage(translation.language),
+    );
   }
 
   /**
@@ -133,6 +149,7 @@ export class CardService {
    */
   async create(card: CreateCardDto): Promise<Card> {
     CardService.hasAtLeastAndAtMostOneDefaultLanguage(card.translations);
+    CardService.isValidLanguageOnTranslation(card.translations);
     const newCard = this.cardRepository.create(card);
     await this.cardRepository.persistAndFlush(newCard);
     return newCard;
@@ -151,6 +168,7 @@ export class CardService {
     CardService.hasAtLeastAndAtMostOneDefaultLanguage(
       card.translations.getItems(),
     );
+    CardService.isValidLanguageOnTranslation(card.translations.getItems());
 
     this.cardRepository.assign(card, cardData);
     card.translations.set(cardData.translations);

@@ -38,7 +38,6 @@ export class CardController {
   constructor(private readonly cardService: CardService) {}
 
   @ApiOperation({ summary: 'Get all cards' })
-  @ApiQuery({ name: 'isActive' })
   @ApiOkResponse()
   @Get()
   async findAll(
