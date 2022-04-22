@@ -4,7 +4,7 @@ import { EntityRepository } from '@mikro-orm/postgresql';
 import { SelectedCards } from './selectedCards.entity';
 import { Lobby } from 'src/lobby/lobby.entity';
 import { Round } from 'src/round/round.entity';
-import { Player } from '../payer/player.entity';
+import { Player } from '../player/player.entity';
 import { LikeCardCmd } from './dto/like-card.cmd';
 
 @Injectable()

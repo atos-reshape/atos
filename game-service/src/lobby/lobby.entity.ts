@@ -10,7 +10,7 @@ import {
 import { BaseEntity } from '../database/entities/base-entity.entity';
 import { Round } from '../round/round.entity';
 import { generateGameCode } from '@helpers/index';
-import { Player } from '../payer/player.entity';
+import { Player } from '../player/player.entity';
 
 @Entity()
 export class Lobby extends BaseEntity {

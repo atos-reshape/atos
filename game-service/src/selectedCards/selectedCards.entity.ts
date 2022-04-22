@@ -8,7 +8,7 @@ import {
   Unique,
 } from '@mikro-orm/core';
 import { Round } from '../round/round.entity';
-import { Player } from '../payer/player.entity';
+import { Player } from '../player/player.entity';
 
 @Entity()
 @Index({ properties: ['round', 'player'] })

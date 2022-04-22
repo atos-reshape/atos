@@ -1,7 +1,7 @@
 import { MikroORM } from '@mikro-orm/core';
 import { faker } from '@faker-js/faker';
 import { v4 } from 'uuid';
-import { Player } from '../../payer/player.entity';
+import { Player } from '../../player/player.entity';
 
 export const player = (data: Partial<Player> = {}, orm?: MikroORM): Player => {
   let player = {
