@@ -6,6 +6,7 @@ import {
 } from '@nestjs/websockets';
 import {
   ClassSerializerInterceptor,
+  UnauthorizedException,
   UseFilters,
   UseInterceptors,
 } from '@nestjs/common';
@@ -34,6 +35,8 @@ export class PlayerGateway {
   async getPlayers(
     @ConnectedSocket() socket: Joined,
   ): Promise<PlayerResponseDto[]> {
+    if (!socket.lobbyId) throw new UnauthorizedException();
+
     const players = await this.playerService.getAllPlayersForLobby(
       socket.lobbyId,
     );

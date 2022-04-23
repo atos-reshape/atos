@@ -9,9 +9,21 @@ import { SocketService } from './socket.service';
 import { RoundService } from '../round/round.service';
 import { SelectedCardsService } from '../selectedCards/selectedCards.service';
 import { SelectedCards } from '../selectedCards/selectedCards.entity';
+import { JwtModule } from '@nestjs/jwt';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 
 @Module({
-  imports: [MikroOrmModule.forFeature([Lobby, Round, SelectedCards])],
+  imports: [
+    JwtModule.registerAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: async (config: ConfigService) => ({
+        secret: config.get<string>('JWT_SECRET'),
+        signOptions: { issuer: 'game-service' },
+      }),
+    }),
+    MikroOrmModule.forFeature([Lobby, Round, SelectedCards]),
+  ],
   controllers: [LobbyController],
   providers: [
     LobbyService,

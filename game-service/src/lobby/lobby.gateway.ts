@@ -12,11 +12,15 @@ import {
   ClassSerializerInterceptor,
   SerializeOptions,
   UseFilters,
+  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { LobbyResponseDto } from './dto';
 import { ExceptionsFilter } from '../sockets/exceptionFilter';
 import { Joined } from '../sockets/joined.type';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { JwtService } from '@nestjs/jwt';
+import { JwtPayloadDto } from '../auth/dto/jwt-payload.dto';
 
 @WebSocketGateway({
   cors: {
@@ -31,10 +35,28 @@ export class LobbyGateway {
   @WebSocketServer()
   server: Server;
 
-  constructor(private readonly lobbyService: LobbyService) {}
+  constructor(
+    private readonly lobbyService: LobbyService,
+    private readonly jwtService: JwtService,
+  ) {}
+
+  async handleConnection(socket: Socket) {
+    try {
+      const payload: JwtPayloadDto = this.jwtService.verify(
+        socket.handshake.auth.token,
+      );
+      if (payload.playerId) {
+        socket['userId'] = payload.playerId;
+        console.log(payload);
+      }
+    } catch (e) {
+      socket.disconnect();
+    }
+  }
 
   @SubscribeMessage('joinLobby')
   @SerializeOptions({ groups: ['withCurrentRound'] })
+  @UseGuards(JwtAuthGuard)
   async joinLobby(
     @ConnectedSocket() socket: Socket,
     @MessageBody() lobbyId: string,
