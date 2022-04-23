@@ -4,13 +4,20 @@ import { MikroORM } from '@mikro-orm/core';
 import { CardModule } from './card/card.module';
 import { CardSetModule } from './card-set/card-set.module';
 import { TagModule } from './tag/tag.module';
+import { AuthModule } from './auth/auth.module';
 import {
   ActiveDirectoryStrategy,
   AppController,
 } from './auth/active-directory.strategy';
 
 @Module({
-  imports: [MikroOrmModule.forRoot(), CardModule, CardSetModule, TagModule],
+  imports: [
+    MikroOrmModule.forRoot(),
+    CardModule,
+    CardSetModule,
+    TagModule,
+    AuthModule,
+  ],
   providers: [ActiveDirectoryStrategy],
   controllers: [AppController],
 })
