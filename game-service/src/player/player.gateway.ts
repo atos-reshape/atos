@@ -8,6 +8,7 @@ import {
   ClassSerializerInterceptor,
   UnauthorizedException,
   UseFilters,
+  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { ExceptionsFilter } from '../sockets/exceptionFilter';
@@ -15,6 +16,8 @@ import { Server } from 'socket.io';
 import { PlayerService } from './player.service';
 import { Joined } from '../sockets/joined.type';
 import { PlayerResponseDto } from './dto/player-response.dto';
+import { ROLES, Roles } from '../auth/roles/roles.decorator';
+import { SocketRolesGuard } from '../auth/roles/socket-roles.guard';
 
 @WebSocketGateway({
   cors: {
@@ -25,6 +28,7 @@ import { PlayerResponseDto } from './dto/player-response.dto';
 })
 @UseInterceptors(ClassSerializerInterceptor)
 @UseFilters(new ExceptionsFilter())
+@UseGuards(SocketRolesGuard)
 export class PlayerGateway {
   @WebSocketServer()
   server: Server;
@@ -32,6 +36,7 @@ export class PlayerGateway {
   constructor(private readonly playerService: PlayerService) {}
 
   @SubscribeMessage('getPlayers')
+  @Roles(ROLES.PLAYER, ROLES.ADMIN)
   async getPlayers(
     @ConnectedSocket() socket: Joined,
   ): Promise<PlayerResponseDto[]> {

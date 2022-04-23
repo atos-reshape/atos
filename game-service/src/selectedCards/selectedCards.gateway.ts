@@ -7,6 +7,7 @@ import {
   ClassSerializerInterceptor,
   UnauthorizedException,
   UseFilters,
+  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { ExceptionsFilter } from '../sockets/exceptionFilter';
@@ -15,6 +16,8 @@ import { Joined } from '../sockets/joined.type';
 import { LobbyService } from '../lobby/lobby.service';
 import { PlayerSelectedCardsDto } from './dto/player-selected-cards.dto';
 import { SelectedCardsResponseDto } from './dto/selected-cards-response.dto';
+import { SocketRolesGuard } from '../auth/roles/socket-roles.guard';
+import { ROLES, Roles } from '../auth/roles/roles.decorator';
 
 @WebSocketGateway({
   cors: {
@@ -25,12 +28,14 @@ import { SelectedCardsResponseDto } from './dto/selected-cards-response.dto';
 })
 @UseInterceptors(ClassSerializerInterceptor)
 @UseFilters(new ExceptionsFilter())
+@UseGuards(SocketRolesGuard)
 export class SelectedCardsGateway {
   constructor(
     private readonly selectedService: SelectedCardsService,
     private readonly lobbyService: LobbyService,
   ) {}
 
+  @Roles(ROLES.ADMIN)
   @SubscribeMessage('getSelectedCards')
   async getSelectedCards(
     @ConnectedSocket() socket: Joined,
@@ -42,19 +47,15 @@ export class SelectedCardsGateway {
       lobby.currentRound.id,
     );
 
-    const response: PlayerSelectedCardsDto = {};
-    selected.map(
-      (selected) =>
-        (response[selected.player.id] = new SelectedCardsResponseDto(selected)),
-    );
-    return response;
+    return new PlayerSelectedCardsDto(selected);
   }
 
+  @Roles(ROLES.PLAYER)
   @SubscribeMessage('getMySelectedCards')
   async getMySelectedCards(
     @ConnectedSocket() socket: Joined,
   ): Promise<SelectedCardsResponseDto> {
-    if (!socket.lobbyId) throw new UnauthorizedException();
+    if (!socket.lobbyId || !socket.playerId) throw new UnauthorizedException();
 
     const lobby = await this.lobbyService.getById(socket.lobbyId);
     const selected = await this.selectedService.findSelectedCards(

@@ -39,6 +39,7 @@ function loadOpenAPI(app: INestApplication) {
     .setTitle('Game service API')
     .setDescription('This service is responsible for managing games')
     .setVersion('pre-alpha')
+    .addBearerAuth()
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
