@@ -14,7 +14,6 @@ import { CardTranslation } from './entities/card-translation.entity';
 import { FindAllOptionsDto } from './dtos/find-all-options.dto';
 import { isValidISO639_1 } from '../helpers/is-iso-639_1.decorator';
 import { TagService } from '../tag/tag.service';
-import { CreateTagDto } from '../tag/dtos/create-tag.dto';
 import { FindOneOptionsDto } from './dtos/find-one-options.dto';
 import { ALL_TRANSLATIONS } from './constants';
 
@@ -42,7 +41,6 @@ export class CardService {
 
     const flattenedCard = {
       ...card,
-      // Make sure that this translation exists.
       text: translations[translationIndex].text,
     };
     delete flattenedCard.translations;
