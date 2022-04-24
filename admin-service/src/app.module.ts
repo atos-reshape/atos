@@ -5,21 +5,17 @@ import { CardModule } from './card/card.module';
 import { CardSetModule } from './card-set/card-set.module';
 import { TagModule } from './tag/tag.module';
 import { AuthModule } from './auth/auth.module';
-import {
-  ActiveDirectoryStrategy,
-  AppController,
-} from './auth/active-directory.strategy';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [
     MikroOrmModule.forRoot(),
+    ConfigModule.forRoot(),
     CardModule,
     CardSetModule,
     TagModule,
     AuthModule,
   ],
-  providers: [ActiveDirectoryStrategy],
-  controllers: [AppController],
 })
 export class AppModule implements OnModuleInit {
   constructor(private readonly orm: MikroORM) {}

@@ -6,6 +6,7 @@ import {
   Res,
   UseGuards,
   Req,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { AuthGuard } from '@nestjs/passport';
@@ -28,6 +29,8 @@ export class AuthController {
 
   @Get('login/openid/refresh')
   handeRefresh(@Res({ passthrough: true }) res: Response, @Req() req: Request) {
+    if (!req.cookies.refresh) throw new UnauthorizedException();
+
     return this.authService.createAccessToken(req.cookies.refresh);
   }
 }

@@ -1,8 +1,7 @@
 import { io, Socket } from 'socket.io-client';
 import { createContext, useEffect, useState } from 'react';
-import { Lobby } from '../../../../api/models/Lobby';
-import { Player } from '../../../../api/models/Player';
-import { Round } from '../../../../api/models/Round';
+import { Lobby, Player, Round } from '../../../../api/models';
+import { AtosLoadingScreen } from '../../../../components/AtosLoadingScreen/AtosLoadingScreen';
 
 interface Props {
   children: JSX.Element;
@@ -58,7 +57,7 @@ const SocketProvider = ({ children, id }: Props) => {
     const socket = io('', {
       transports: ['websocket'],
       path: '/lobby/',
-      auth: { token: localStorage.getItem('accessTokenAtos') }
+      auth: { token: localStorage.getItem('accessToken') }
     });
 
     socket.on('connect', () => {
@@ -90,10 +89,7 @@ const SocketProvider = ({ children, id }: Props) => {
     });
   }, []);
 
-  if (!state.connected) {
-    // TODO create a nice connecting screen...
-    return <div>loading</div>;
-  }
+  if (!state.connected) return <AtosLoadingScreen />;
 
   return (
     <SocketContext.Provider value={{ socket: state.socket }}>

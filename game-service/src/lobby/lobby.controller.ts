@@ -5,16 +5,25 @@ import {
   Param,
   Post,
   SerializeOptions,
+  UseGuards,
 } from '@nestjs/common';
 import { LobbyService } from './lobby.service';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import {
   LobbyResponseDto,
   responseWithCurrentRound,
   CreateLobbyDto,
 } from './dto';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
 @ApiTags('Lobby')
+@UseGuards(JwtAuthGuard)
+@ApiBearerAuth()
 @Controller('lobbies')
 export class LobbyController {
   constructor(private readonly lobbyService: LobbyService) {}
