@@ -11,14 +11,18 @@ import { CreateCardDto, PageOptionsDto } from './dtos';
 import { wrap } from '@mikro-orm/core';
 import { PaginatedResult } from '../helpers/pagination.helper';
 import { CardTranslation } from './entities/card-translation.entity';
-
-export const ALL_TRANSLATIONS = '*';
+import { FindAllOptionsDto } from './dtos/find-all-options.dto';
+import { isValidISO639_1 } from '../helpers/is-iso-639_1.decorator';
+import { TagService } from '../tag/tag.service';
+import { FindOneOptionsDto } from './dtos/find-one-options.dto';
+import { ALL_TRANSLATIONS } from './constants';
 
 @Injectable()
 export class CardService {
   constructor(
     @InjectRepository(Card)
     private readonly cardRepository: EntityRepository<Card>,
+    private readonly tagService: TagService,
   ) {}
 
   /**
@@ -37,7 +41,6 @@ export class CardService {
 
     const flattenedCard = {
       ...card,
-      // Make sure that this translation exists.
       text: translations[translationIndex].text,
     };
     delete flattenedCard.translations;
@@ -69,19 +72,40 @@ export class CardService {
   }
 
   /**
+   * Check if the language is a valid ISO 639-1 language code and throw an error if it isn't.
+   * @param language - The language that needs to be checked.
+   */
+  private static isValidLanguage(language: string): void {
+    if (!isValidISO639_1(language))
+      throw new BadRequestException(
+        `The language '${language}' is not a valid ISO 639-1 language code.`,
+      );
+  }
+
+  /**
+   * Check for each translation if it's language is a valid ISO 639-1 language code and throw an error if it isn't.
+   * @param translations - The translations that need to be checked.
+   */
+  private static isValidLanguageOnTranslation(
+    translations: CardTranslation[],
+  ): void {
+    translations.forEach((translation) =>
+      CardService.isValidLanguage(translation.language),
+    );
+  }
+
+  /**
    * Retrieve all cards from database.
-   * @param isActive - Filter on the active cards, if false return all cards including deleted ones.
+   * @param findAllOptions - The options for the query.
    * @param pageOptions - Pagination options.
-   * @param language - The language that needs to be used for the translation. Should be ISO 639-1. * for all translations.
-   * @param tag - If defined, only return cards with this tag.
    * @returns An array of cards.
    */
   async findAll(
-    isActive: boolean,
+    findAllOptions: FindAllOptionsDto,
     pageOptions: PageOptionsDto,
-    language?: string,
-    tag?: string,
   ): Promise<PaginatedResult<Card>> {
+    const { isActive, language, tag } = findAllOptions;
+
     const [cards, count] = await this.cardRepository.findAndCount(
       {},
       {
@@ -113,18 +137,21 @@ export class CardService {
   /**
    * Retrieve a card from database.
    * @param id - The id of the card to retrieve.
-   * @param language - The language that needs to be used for the translation. Should be ISO 639-1. * for all translations.
+   * @param findOneOptions - The options for the query.
    * @returns The card with the given id.
    */
-  async findOne(id: string, language?: string): Promise<Card> {
+  async findOne(id: string, findOneOptions: FindOneOptionsDto): Promise<Card> {
+    const { language } = findOneOptions;
     const card = await this.cardRepository.findOne(id, {
       filters: { isActive: false },
       populate: ['translations'],
     });
 
+    if (!card) throw new NotFoundException(`Card with id '${id}' not found.`);
+
     return language === ALL_TRANSLATIONS
       ? card
-      : card && CardService.flattenCard(card, language);
+      : CardService.flattenCard(card, language);
   }
 
   /**
@@ -134,6 +161,12 @@ export class CardService {
    */
   async create(card: CreateCardDto): Promise<Card> {
     CardService.hasAtLeastAndAtMostOneDefaultLanguage(card.translations);
+    CardService.isValidLanguageOnTranslation(card.translations);
+    if (card.tag) {
+      // Set the tag to its id.
+      card.tag = (await this.tagService.findOneByName(card.tag)).id;
+    }
+
     const newCard = this.cardRepository.create(card);
     await this.cardRepository.persistAndFlush(newCard);
     return newCard;
@@ -146,12 +179,16 @@ export class CardService {
    * @returns The updated card.
    */
   async update(id: string, cardData: CreateCardDto): Promise<Card> {
-    const card = await this.findOne(id, ALL_TRANSLATIONS);
-    if (!card) throw new NotFoundException('Card not found');
+    const card = await this.findOne(id, { language: ALL_TRANSLATIONS });
 
     CardService.hasAtLeastAndAtMostOneDefaultLanguage(
       card.translations.getItems(),
     );
+    CardService.isValidLanguageOnTranslation(card.translations.getItems());
+    if (cardData.tag) {
+      // Set the tag to its id.
+      cardData.tag = (await this.tagService.findOneByName(cardData.tag)).id;
+    }
 
     this.cardRepository.assign(card, cardData);
     card.translations.set(cardData.translations);
@@ -166,8 +203,7 @@ export class CardService {
    * @returns The deleted card.
    */
   async delete(id: string): Promise<void> {
-    const card = await this.findOne(id, ALL_TRANSLATIONS);
-    if (!card) throw new NotFoundException('Card not found');
+    const card = await this.findOne(id, { language: ALL_TRANSLATIONS });
     if (card.deletedAt) throw new ConflictException('Card already deleted');
 
     wrap(card).assign({ ...card, deletedAt: new Date() } as Card);

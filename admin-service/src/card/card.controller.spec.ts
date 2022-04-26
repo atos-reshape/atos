@@ -1,7 +1,7 @@
 import { v4 } from 'uuid';
 import { Test, TestingModule } from '@nestjs/testing';
 import { CardController } from './card.controller';
-import { ALL_TRANSLATIONS, CardService } from './card.service';
+import { CardService } from './card.service';
 import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { Card } from './entities/card.entity';
 import {
@@ -24,6 +24,10 @@ import {
   createCardTranslations,
 } from '../../test/factories/cardTranslation';
 import { tag } from '../../test/factories/tag';
+import { FindAllOptionsDto } from './dtos/find-all-options.dto';
+import { TagModule } from '../tag/tag.module';
+import { FindOneOptionsDto } from './dtos/find-one-options.dto';
+import { ALL_TRANSLATIONS } from './constants';
 
 describe('CardController', () => {
   let cardController: CardController;
@@ -36,6 +40,7 @@ describe('CardController', () => {
       imports: [
         useDatabaseTestConfig(),
         MikroOrmModule.forFeature({ entities: [Card] }),
+        TagModule,
       ],
       controllers: [CardController],
       providers: [CardService],
@@ -74,10 +79,12 @@ describe('CardController', () => {
           orm,
         );
         const responseObject = await cardController.findAll(
-          true,
+          new FindAllOptionsDto({
+            isActive: true,
+            language: ALL_TRANSLATIONS,
+            tag: undefined,
+          }),
           new PageOptionsDto(),
-          ALL_TRANSLATIONS,
-          undefined,
           response as Response,
           request,
         );
@@ -113,10 +120,12 @@ describe('CardController', () => {
         orm,
       );
       const responseObject = await cardController.findAll(
-        true,
+        new FindAllOptionsDto({
+          isActive: true,
+          language: undefined,
+          tag: undefined,
+        }),
         new PageOptionsDto(),
-        undefined,
-        undefined,
         response as Response,
         request,
       );
@@ -151,10 +160,12 @@ describe('CardController', () => {
         orm,
       );
       const responseObject = await cardController.findAll(
-        true,
+        new FindAllOptionsDto({
+          isActive: true,
+          language: 'en',
+          tag: undefined,
+        }),
         new PageOptionsDto(),
-        'en',
-        undefined,
         response as Response,
         request,
       );
@@ -169,10 +180,12 @@ describe('CardController', () => {
 
     it('should return an empty array if there are no cards', async () => {
       const responseObject = await cardController.findAll(
-        true,
+        new FindAllOptionsDto({
+          isActive: true,
+          language: ALL_TRANSLATIONS,
+          tag: undefined,
+        }),
         new PageOptionsDto(),
-        ALL_TRANSLATIONS,
-        undefined,
         response as Response,
         request,
       );
@@ -184,10 +197,12 @@ describe('CardController', () => {
     it('should return only the active cards', async () => {
       createCards([{ deletedAt: new Date() }, {}], orm);
       const responseObject = await cardController.findAll(
-        true,
+        new FindAllOptionsDto({
+          isActive: true,
+          language: ALL_TRANSLATIONS,
+          tag: undefined,
+        }),
         new PageOptionsDto(),
-        ALL_TRANSLATIONS,
-        undefined,
         response as Response,
         request,
       );
@@ -198,10 +213,12 @@ describe('CardController', () => {
     it('should return all cards if isActive is true', async () => {
       createCards([{ deletedAt: new Date() }, {}], orm);
       const responseObject = await cardController.findAll(
-        false,
+        new FindAllOptionsDto({
+          isActive: false,
+          language: ALL_TRANSLATIONS,
+          tag: undefined,
+        }),
         new PageOptionsDto(),
-        ALL_TRANSLATIONS,
-        undefined,
         response as Response,
         request,
       );
@@ -220,10 +237,12 @@ describe('CardController', () => {
         orm,
       );
       const responseObject = await cardController.findAll(
-        true,
+        new FindAllOptionsDto({
+          isActive: true,
+          language: ALL_TRANSLATIONS,
+          tag: tagName,
+        }),
         new PageOptionsDto(),
-        ALL_TRANSLATIONS,
-        tagName,
         response as Response,
         request,
       );
@@ -237,10 +256,9 @@ describe('CardController', () => {
     it('should return a card with all translations', async () => {
       const testCard = card({}, orm);
 
-      const findOneResult = await cardController.findOne(
-        testCard.id,
-        ALL_TRANSLATIONS,
-      );
+      const findOneResult = await cardController.findOne(testCard.id, {
+        language: ALL_TRANSLATIONS,
+      });
       expect(findOneResult).toMatchObject(testCard);
     });
 
@@ -267,7 +285,7 @@ describe('CardController', () => {
 
       const findOneResult = await cardController.findOne(
         testCard.id,
-        undefined,
+        new FindOneOptionsDto(),
       );
       expect(findOneResult).toMatchObject({
         text: 'nederlands',
@@ -295,27 +313,57 @@ describe('CardController', () => {
         orm,
       );
 
-      const findOneResult = await cardController.findOne(testCard.id, 'en');
+      const findOneResult = await cardController.findOne(testCard.id, {
+        language: 'en',
+      });
       expect(findOneResult).toMatchObject({
         text: 'english',
       });
     });
 
-    it('should return 404 if there is no card', async () => {
-      const findOneResult = await cardController.findOne(v4());
-      expect(findOneResult).toBeNull();
+    it('should return null if there is no card', async () => {
+      await expect(
+        cardController.findOne(v4(), new FindOneOptionsDto()),
+      ).rejects.toThrow(NotFoundException);
     });
   });
 
   describe('create', () => {
     it('should create a card', async () => {
-      const translation = cardTranslation({}, orm);
-      const testCard = new CreateCardDto();
-      testCard.translations.push(translation);
+      const translation = cardTranslation({});
+      const testCard = new CreateCardDto({ translations: [translation] });
 
       const createResult = await cardController.create(testCard);
       expect(createResult.translations).toHaveLength(
         testCard.translations.length,
+      );
+    });
+
+    it('should create a card with an existing tag', async () => {
+      const translation = cardTranslation({});
+      const testTag = tag({ name: 'existing tag' }, orm);
+      const testCard = new CreateCardDto({
+        tag: testTag.name,
+        translations: [translation],
+      });
+
+      const createResult = await cardController.create(testCard);
+      expect(createResult.translations).toHaveLength(
+        testCard.translations.length,
+      );
+      expect(createResult.tag.name).toBe(testTag.name);
+    });
+
+    it('should throw a NotFoundException when creating a card with a new tag', async () => {
+      const translation = cardTranslation({});
+      const tagName = 'new tag';
+      const testCard = new CreateCardDto({
+        tag: tagName,
+        translations: [translation],
+      });
+
+      await expect(cardController.create(testCard)).rejects.toThrow(
+        NotFoundException,
       );
     });
 
@@ -350,6 +398,18 @@ describe('CardController', () => {
         ConflictException,
       );
     });
+
+    it('should throw a BadRequest if the language is not ISO639-1', async () => {
+      const translation = cardTranslation({
+        language: 'not an ISO639-1 language code',
+      });
+      const testCard = new CreateCardDto();
+      testCard.translations.push(translation);
+
+      await expect(cardController.create(testCard)).rejects.toThrow(
+        BadRequestException,
+      );
+    });
   });
 
   describe('update', () => {
@@ -372,14 +432,65 @@ describe('CardController', () => {
       expect(updateResult).toMatchObject(testCard);
     });
 
-    it('should return 404 if there is no card', async () => {
-      const nonExistingUUID = v4();
+    it('should update a card with an existing tag', async () => {
+      const testTag = tag({ name: 'existing tag' }, orm);
+      const testCard = card({ tag: testTag }, orm);
+      const translation = cardTranslation(
+        {
+          card: testCard,
+        },
+        orm,
+      );
+      const cardUpdate = new CreateCardDto();
+      cardUpdate.translations.push(translation);
+      cardUpdate.tag = testTag.name;
 
-      try {
-        await cardController.update(nonExistingUUID, {} as CreateCardDto);
-      } catch (e) {
-        expect(e).toBeInstanceOf(NotFoundException);
-      }
+      // Update the card
+      testCard.translations.add(translation);
+      testCard.tag = testTag;
+      const updateResult = await cardController.update(testCard.id, cardUpdate);
+
+      expect(updateResult).toMatchObject(testCard);
+      expect(updateResult.tag.name).toBe(testTag.name);
+    });
+
+    it('should throw a NotFoundException when updating a card with a new tag', async () => {
+      const testCard = card({}, orm);
+      const tagName = 'new tag';
+      const translation = cardTranslation(
+        {
+          card: testCard,
+        },
+        orm,
+      );
+      const cardUpdate = new CreateCardDto();
+      cardUpdate.translations.push(translation);
+      cardUpdate.tag = tagName;
+
+      // Update the card
+      await expect(
+        cardController.update(testCard.id, cardUpdate),
+      ).rejects.toThrow(NotFoundException);
+    });
+
+    it('should throw NotFoundException if there is no card', async () => {
+      await expect(
+        cardController.update(v4(), {} as CreateCardDto),
+      ).rejects.toThrow(NotFoundException);
+    });
+
+    it('should throw a BadRequest if the language is not ISO639-1', async () => {
+      const testCard = card({}, orm);
+
+      const translation = cardTranslation({
+        language: 'not an ISO639-1 language code',
+      });
+      const cardUpdate = new CreateCardDto();
+      cardUpdate.translations.push(translation);
+
+      await expect(
+        cardController.update(testCard.id, cardUpdate),
+      ).rejects.toThrow(BadRequestException);
     });
   });
 
@@ -390,7 +501,10 @@ describe('CardController', () => {
       const deleteResult = await cardController.delete(testCard.id);
       expect(deleteResult).toBeUndefined();
 
-      const cardFromRepository = await cardService.findOne(testCard.id);
+      const cardFromRepository = await cardService.findOne(
+        testCard.id,
+        new FindOneOptionsDto(),
+      );
       expect(cardFromRepository.deletedAt).toBeInstanceOf(Date);
     });
 

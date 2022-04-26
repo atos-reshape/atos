@@ -8,5 +8,6 @@ import { TagController } from './tag.controller';
   imports: [MikroOrmModule.forFeature([Tag])],
   controllers: [TagController],
   providers: [TagService],
+  exports: [TagService],
 })
 export class TagModule {}

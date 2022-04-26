@@ -71,9 +71,26 @@ describe('TagController', () => {
       expect(result).toEqual(testTag);
     });
 
-    it('should return null if no tag is found', async () => {
-      const result = await tagController.findOne(v4());
-      expect(result).toBeNull();
+    it('should throw a NotFoundException if no tag is found', async () => {
+      await expect(tagController.findOne(v4())).rejects.toThrow(
+        NotFoundException,
+      );
+    });
+  });
+
+  describe('findOneByName', () => {
+    it('should return a tag', async () => {
+      const testTag = tag({}, orm);
+
+      const result = await tagController.findOneByName(testTag.name);
+      expect(result).toBeInstanceOf(Tag);
+      expect(result).toEqual(testTag);
+    });
+
+    it('should throw a NotFoundException if no tag is found', async () => {
+      await expect(tagController.findOne(faker.word.noun())).rejects.toThrow(
+        NotFoundException,
+      );
     });
   });
 
