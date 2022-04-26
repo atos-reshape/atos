@@ -1,3 +1,3 @@
 import { Socket } from 'socket.io';
 
-export type Joined = Socket & { lobbyId: string };
+export type Joined = Socket & { lobbyId: string; playerId: string };

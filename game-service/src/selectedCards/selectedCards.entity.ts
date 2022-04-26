@@ -17,7 +17,9 @@ export class SelectedCards extends BaseEntity {
   @ManyToOne({
     entity: () => Round,
     wrappedReference: true,
-    serializer: (value) => value.id,
+    serializer:
+      /* istanbul ignore next */
+      (value) => value.id,
     serializedName: 'roundId',
     index: true,
   })
@@ -26,7 +28,9 @@ export class SelectedCards extends BaseEntity {
   @ManyToOne({
     entity: () => Player,
     wrappedReference: true,
-    serializer: (value) => value.id,
+    serializer:
+      /* istanbul ignore next */
+      (value) => value.id,
     serializedName: 'playerId',
     index: true,
   })

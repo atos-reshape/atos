@@ -8,6 +8,8 @@ import { RoundService } from '../round/round.service';
 import { Lobby } from '../lobby/lobby.entity';
 import { Round } from '../round/round.entity';
 import { SelectedCardsCommand } from './selectedCards.command';
+import { SelectedCardsGateway } from './selectedCards.gateway';
+import { LobbyService } from '../lobby/lobby.service';
 
 @Module({
   imports: [MikroOrmModule.forFeature([SelectedCards, Lobby, Round])],
@@ -17,6 +19,8 @@ import { SelectedCardsCommand } from './selectedCards.command';
     SocketService,
     RoundService,
     SelectedCardsCommand,
+    SelectedCardsGateway,
+    LobbyService,
   ],
 })
 export class SelectedCardsModule {}

@@ -14,6 +14,7 @@ import { PlayerResponseDto } from './dto/player-response.dto';
 import { SocketService } from '../lobby/socket.service';
 import { SelectedCardsService } from '../selectedCards/selectedCards.service';
 import { SelectedCards } from '../selectedCards/selectedCards.entity';
+import { JwtModule } from '@nestjs/jwt';
 
 describe('PlayerGateway', () => {
   let gateway: PlayerGateway;
@@ -24,6 +25,10 @@ describe('PlayerGateway', () => {
     app = await Test.createTestingModule({
       imports: [
         ConfigModule.forRoot(),
+        JwtModule.register({
+          secret: 'JWT-TEST-secret',
+          signOptions: { issuer: 'game-service' },
+        }),
         UseDatabaseTestConfig(),
         MikroOrmModule.forFeature({ entities: [Player, Lobby, SelectedCards] }),
       ],

@@ -91,11 +91,12 @@
       "<rootDir>/test",
       "<rootDir>/redis.adapter.ts",
       "<rootDir>/auth/jwt-auth.guard.ts",
-      "<rootDir>/auth/dto/jwt-payload.dto.ts"
+      "<rootDir>/auth/dto/jwt-payload.dto.ts",
+      "<rootDir>/auth/roles"
     ],
     "coverageThreshold": {
       "global": {
-        "branches": 75,
+        "branches": 90,
         "functions": 90,
         "lines": 90,
         "statements": 90
