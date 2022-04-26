@@ -1,5 +1,6 @@
 import {
   ArrayType,
+  Check,
   Collection,
   Entity,
   IdentifiedReference,
@@ -26,8 +27,9 @@ export class Round extends BaseEntity {
   @Property({ nullable: true })
   endedAt?: Date;
 
-  @Property({ nullable: true })
-  selectableCards?: number = 5;
+  @Property({ columnType: 'int', default: 5 })
+  @Check({ expression: 'selectable_cards > 0' })
+  selectableCards: number;
 
   @OneToOne(() => Lobby, (lobby) => lobby.currentRound, {
     hidden: true,

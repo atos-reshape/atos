@@ -55,7 +55,6 @@ export const lobbyWithRound = (
     id: v4(),
     createdAt: faker.date.recent(),
     updatedAt: faker.date.recent(),
-    selectableCards: 4,
     startedAt: started ? faker.date.recent() : null,
     endedAt: ended ? faker.date.recent() : null,
   });

@@ -127,7 +127,7 @@ export class SelectedCardsService {
     const selected = await this.findSelectedCards(playerId, round.id);
     if (round.selectableCards != selected.cards.length) {
       throw new Error(
-        'You need to have selected the exact number of cards for this round',
+        `Received ${selected.cards.length} cards. Round amount is ${round.selectableCards} cards`,
       );
     }
 
