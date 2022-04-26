@@ -2,12 +2,23 @@ import { NestFactory } from '@nestjs/core';
 import { GatewayModule } from './gateway.module';
 import { createProxyMiddleware } from 'http-proxy-middleware';
 import { Logger } from '@nestjs/common';
+import * as fs from 'fs';
 
 async function bootstrap() {
   // THESE PROXIES ARE NOT PROD READY
   // THEY PASS ON ANY ERROR SINCE THERE IS NO BOUNDARY
   // BUT FOR NOW WE CAN USE IT DURING DEVELOPMENT
-  const app = await NestFactory.create(GatewayModule, { bodyParser: false });
+  const httpsOptions = {
+    // GENERATE USING https://letsencrypt.org/docs/certificates-for-localhost/
+    key: fs.readFileSync('../localhost.key'),
+    cert: fs.readFileSync('../localhost.crt'),
+    rejectUnauthorized: false,
+    requestCert: false,
+  };
+  const app = await NestFactory.create(GatewayModule, {
+    bodyParser: false,
+    httpsOptions,
+  });
   app.setGlobalPrefix('api');
 
   const logger = new Logger('ProxyMiddleware');
@@ -23,9 +34,10 @@ async function bootstrap() {
   app.use(
     '/api/lobbies',
     createProxyMiddleware({
-      target: `http://${process.env.GAME_SERVICE_HOST}:${process.env.GAME_SERVICE_PORT}`,
+      target: `https://${process.env.GAME_SERVICE_HOST}:${process.env.GAME_SERVICE_PORT}`,
       changeOrigin: true,
       logLevel: 'debug',
+      secure: false,
       logProvider: () => logProvider,
     }),
   );
@@ -33,9 +45,10 @@ async function bootstrap() {
   app.use(
     '/api/auth',
     createProxyMiddleware({
-      target: `http://${process.env.GAME_SERVICE_HOST}:${process.env.GAME_SERVICE_PORT}`,
+      target: `https://${process.env.GAME_SERVICE_HOST}:${process.env.GAME_SERVICE_PORT}`,
       changeOrigin: true,
       logLevel: 'debug',
+      secure: false,
       logProvider: () => logProvider,
     }),
   );
@@ -44,9 +57,10 @@ async function bootstrap() {
   app.use(
     '/api/cards',
     createProxyMiddleware({
-      target: `http://${process.env.ADMIN_SERVICE_HOST}:${process.env.ADMIN_SERVICE_PORT}`,
+      target: `https://${process.env.ADMIN_SERVICE_HOST}:${process.env.ADMIN_SERVICE_PORT}`,
       changeOrigin: true,
       logLevel: 'debug',
+      secure: false,
       logProvider: () => logProvider,
     }),
   );
@@ -55,9 +69,10 @@ async function bootstrap() {
   app.use(
     '/lobby',
     createProxyMiddleware({
-      target: `ws://${process.env.GAME_SERVICE_HOST}:${process.env.GAME_SERVICE_PORT}`,
+      target: `wss://${process.env.GAME_SERVICE_HOST}:${process.env.GAME_SERVICE_PORT}`,
       changeOrigin: true,
       ws: true,
+      secure: false,
       logLevel: 'debug',
       logProvider: () => logProvider,
     }),
