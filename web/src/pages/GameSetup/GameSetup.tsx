@@ -1,6 +1,5 @@
 import { Container, Tabs } from '@mantine/core';
 import GameSettings from '../../components/GameSettings/GameSetings';
-import CardSettings from '../../components/CardSettings/CardSettings';
 import Context from '../../context/Context';
 import { useGameContext } from '../../hooks/useGameContext';
 
