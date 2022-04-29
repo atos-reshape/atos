@@ -24,7 +24,7 @@ import {
   createCardTranslations,
 } from '../../test/factories/cardTranslation';
 import { tag } from '../../test/factories/tag';
-import { FindAllOptionsDto } from './dtos/find-all-options.dto';
+import { FindAllCardOptionsDto } from './dtos/find-all-options.dto';
 import { TagModule } from '../tag/tag.module';
 import { FindOneOptionsDto } from './dtos/find-one-options.dto';
 import { ALL_TRANSLATIONS } from './constants';
@@ -79,7 +79,7 @@ describe('CardController', () => {
           orm,
         );
         const responseObject = await cardController.findAll(
-          new FindAllOptionsDto({
+          new FindAllCardOptionsDto({
             isActive: true,
             language: ALL_TRANSLATIONS,
             tag: undefined,
@@ -120,7 +120,7 @@ describe('CardController', () => {
         orm,
       );
       const responseObject = await cardController.findAll(
-        new FindAllOptionsDto({
+        new FindAllCardOptionsDto({
           isActive: true,
           language: undefined,
           tag: undefined,
@@ -160,7 +160,7 @@ describe('CardController', () => {
         orm,
       );
       const responseObject = await cardController.findAll(
-        new FindAllOptionsDto({
+        new FindAllCardOptionsDto({
           isActive: true,
           language: 'en',
           tag: undefined,
@@ -180,7 +180,7 @@ describe('CardController', () => {
 
     it('should return an empty array if there are no cards', async () => {
       const responseObject = await cardController.findAll(
-        new FindAllOptionsDto({
+        new FindAllCardOptionsDto({
           isActive: true,
           language: ALL_TRANSLATIONS,
           tag: undefined,
@@ -197,7 +197,7 @@ describe('CardController', () => {
     it('should return only the active cards', async () => {
       createCards([{ deletedAt: new Date() }, {}], orm);
       const responseObject = await cardController.findAll(
-        new FindAllOptionsDto({
+        new FindAllCardOptionsDto({
           isActive: true,
           language: ALL_TRANSLATIONS,
           tag: undefined,
@@ -213,7 +213,7 @@ describe('CardController', () => {
     it('should return all cards if isActive is true', async () => {
       createCards([{ deletedAt: new Date() }, {}], orm);
       const responseObject = await cardController.findAll(
-        new FindAllOptionsDto({
+        new FindAllCardOptionsDto({
           isActive: false,
           language: ALL_TRANSLATIONS,
           tag: undefined,
@@ -237,7 +237,7 @@ describe('CardController', () => {
         orm,
       );
       const responseObject = await cardController.findAll(
-        new FindAllOptionsDto({
+        new FindAllCardOptionsDto({
           isActive: true,
           language: ALL_TRANSLATIONS,
           tag: tagName,

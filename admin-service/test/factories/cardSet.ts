@@ -2,13 +2,10 @@ import { v4 } from 'uuid';
 import { faker } from '@faker-js/faker';
 import { Card } from '../../src/card/entities/card.entity';
 import { MikroORM } from '@mikro-orm/core';
-import { CardSet } from '../../src/card-set/entities/card-set.entity';
+import { Set } from '../../src/set/entities/card-set.entity';
 import { card } from './card';
 
-export const cardSet = (
-  data: Partial<CardSet> = {},
-  orm?: MikroORM,
-): CardSet => {
+export const cardSet = (data: Partial<Set> = {}, orm?: MikroORM): Set => {
   const cards: Card[] = [card(), card()];
 
   let cardSet = {
@@ -19,10 +16,10 @@ export const cardSet = (
     createdAt: faker.date.recent(),
     updatedAt: faker.date.recent(),
     ...data,
-  } as CardSet;
+  } as Set;
 
   if (!!orm) {
-    cardSet = orm.em.create(CardSet, cardSet);
+    cardSet = orm.em.create(Set, cardSet);
     orm.em.persist(cardSet);
   }
 
@@ -30,10 +27,10 @@ export const cardSet = (
 };
 
 export const createCardSets = (
-  cardSets: Partial<CardSet>[] = [],
+  cardSets: Partial<Set>[] = [],
   orm?: MikroORM,
-): CardSet[] => {
-  const result = cardSets.map((c: Partial<CardSet>) => cardSet(c, orm));
+): Set[] => {
+  const result = cardSets.map((c: Partial<Set>) => cardSet(c, orm));
 
   if (!!orm) {
     result.forEach((c) => orm.em.persist(c));

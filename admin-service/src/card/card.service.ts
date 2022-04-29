@@ -11,11 +11,11 @@ import { CreateCardDto, PageOptionsDto } from './dtos';
 import { wrap } from '@mikro-orm/core';
 import { PaginatedResult } from '../helpers/pagination.helper';
 import { CardTranslation } from './entities/card-translation.entity';
-import { FindAllOptionsDto } from './dtos/find-all-options.dto';
 import { isValidISO639_1 } from '../helpers/is-iso-639_1.decorator';
 import { TagService } from '../tag/tag.service';
 import { FindOneOptionsDto } from './dtos/find-one-options.dto';
 import { ALL_TRANSLATIONS } from './constants';
+import { FindAllCardOptionsDto } from './dtos/find-all-card-options.dto';
 
 @Injectable()
 export class CardService {
@@ -101,7 +101,7 @@ export class CardService {
    * @returns An array of cards.
    */
   async findAll(
-    findAllOptions: FindAllOptionsDto,
+    findAllOptions: FindAllCardOptionsDto,
     pageOptions: PageOptionsDto,
   ): Promise<PaginatedResult<Card>> {
     const { isActive, language, tag } = findAllOptions;

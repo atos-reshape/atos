@@ -102,14 +102,95 @@
           "length": 6,
           "mappedType": "datetime"
         },
-        "text": {
-          "name": "text",
+        "name": {
+          "name": "name",
           "type": "varchar(255)",
           "unsigned": false,
           "autoincrement": false,
           "primary": false,
           "nullable": false,
           "mappedType": "string"
+        },
+        "deleted_at": {
+          "name": "deleted_at",
+          "type": "timestamptz(0)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "length": 6,
+          "mappedType": "datetime"
+        },
+        "tag_id": {
+          "name": "tag_id",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "mappedType": "string"
+        }
+      },
+      "name": "set",
+      "schema": "public",
+      "indexes": [
+        {
+          "keyName": "set_pkey",
+          "columnNames": [
+            "id"
+          ],
+          "composite": false,
+          "primary": true,
+          "unique": true
+        }
+      ],
+      "checks": [],
+      "foreignKeys": {
+        "set_tag_id_foreign": {
+          "constraintName": "set_tag_id_foreign",
+          "columnNames": [
+            "tag_id"
+          ],
+          "localTableName": "public.set",
+          "referencedColumnNames": [
+            "id"
+          ],
+          "referencedTableName": "public.tag",
+          "deleteRule": "set null",
+          "updateRule": "cascade"
+        }
+      }
+    },
+    {
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "mappedType": "string"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamptz(0)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": 6,
+          "mappedType": "datetime"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamptz(0)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": 6,
+          "mappedType": "datetime"
         },
         "deleted_at": {
           "name": "deleted_at",
@@ -157,6 +238,177 @@
           ],
           "referencedTableName": "public.tag",
           "deleteRule": "set null",
+          "updateRule": "cascade"
+        }
+      }
+    },
+    {
+      "columns": {
+        "set_id": {
+          "name": "set_id",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "mappedType": "string"
+        },
+        "card_id": {
+          "name": "card_id",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "mappedType": "string"
+        }
+      },
+      "name": "set_cards",
+      "schema": "public",
+      "indexes": [
+        {
+          "keyName": "set_cards_pkey",
+          "columnNames": [
+            "set_id",
+            "card_id"
+          ],
+          "composite": true,
+          "primary": true,
+          "unique": true
+        }
+      ],
+      "checks": [],
+      "foreignKeys": {
+        "set_cards_set_id_foreign": {
+          "constraintName": "set_cards_set_id_foreign",
+          "columnNames": [
+            "set_id"
+          ],
+          "localTableName": "public.set_cards",
+          "referencedColumnNames": [
+            "id"
+          ],
+          "referencedTableName": "public.set",
+          "deleteRule": "cascade",
+          "updateRule": "cascade"
+        },
+        "set_cards_card_id_foreign": {
+          "constraintName": "set_cards_card_id_foreign",
+          "columnNames": [
+            "card_id"
+          ],
+          "localTableName": "public.set_cards",
+          "referencedColumnNames": [
+            "id"
+          ],
+          "referencedTableName": "public.card",
+          "deleteRule": "cascade",
+          "updateRule": "cascade"
+        }
+      }
+    },
+    {
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "mappedType": "string"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamptz(0)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": 6,
+          "mappedType": "datetime"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamptz(0)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": 6,
+          "mappedType": "datetime"
+        },
+        "language": {
+          "name": "language",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "mappedType": "string"
+        },
+        "is_default_language": {
+          "name": "is_default_language",
+          "type": "boolean",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "mappedType": "boolean"
+        },
+        "text": {
+          "name": "text",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "mappedType": "string"
+        },
+        "card_id": {
+          "name": "card_id",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "mappedType": "string"
+        }
+      },
+      "name": "card_translation",
+      "schema": "public",
+      "indexes": [
+        {
+          "columnNames": [
+            "card_id"
+          ],
+          "composite": false,
+          "keyName": "card_translation_card_id_index",
+          "primary": false,
+          "unique": false
+        },
+        {
+          "keyName": "card_translation_pkey",
+          "columnNames": [
+            "id"
+          ],
+          "composite": false,
+          "primary": true,
+          "unique": true
+        }
+      ],
+      "checks": [],
+      "foreignKeys": {
+        "card_translation_card_id_foreign": {
+          "constraintName": "card_translation_card_id_foreign",
+          "columnNames": [
+            "card_id"
+          ],
+          "localTableName": "public.card_translation",
+          "referencedColumnNames": [
+            "id"
+          ],
+          "referencedTableName": "public.card",
           "updateRule": "cascade"
         }
       }
