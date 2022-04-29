@@ -113,4 +113,27 @@ export class SelectedCardsService {
 
     return selected;
   }
+
+  /**
+   * Update the selected cards.
+   * @param roundId - The id of the player to update.
+   * @param playerId - The round to update.
+   * @returns The updated selected cards.
+   */
+  async finishedSelecting(
+    round: Round,
+    playerId: string,
+  ): Promise<SelectedCards> {
+    const selected = await this.findSelectedCards(playerId, round.id);
+    if (round.selectableCards != selected.cards.length) {
+      throw new Error(
+        `Received ${selected.cards.length} cards. Round amount is ${round.selectableCards} cards`,
+      );
+    }
+
+    selected.finishedSelecting = new Date();
+    await this.selectedCardsRepository.persistAndFlush(selected);
+
+    return selected;
+  }
 }

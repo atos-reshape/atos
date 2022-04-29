@@ -9,6 +9,7 @@ export const round = (data: Partial<Round> = {}, orm?: MikroORM): Round => {
     createdAt: faker.date.recent(),
     updatedAt: faker.date.recent(),
     cards: [v4(), v4()],
+    selectableCards: 5,
     ...data,
   } as Round;
 
