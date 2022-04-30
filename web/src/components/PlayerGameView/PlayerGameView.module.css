@@ -1,3 +1,29 @@
 .container{
     justify-content: center;
+    margin-top: 100px;
+    margin-inline-start: 35vw;
+    height: 100%;
+}
+.counter{
+    position: absolute;
+    left:40px;
+    top:44vh;
+    width:20px;
+    height: 20px;
+}
+
+.title{
+    font-size: 1.25rem;
+    margin-left: 20%;
+}
+
+.description{
+    font-size: 0.75rem;
+    margin-left: 10%;
+
+}
+
+.drawer-cards{
+    padding-top: 20px;
+    padding-bottom: 20px;
 }

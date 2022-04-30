@@ -1,0 +1,17 @@
+.drawer{
+    height: 100%;
+    overflow-y: scroll;
+    /* background-color: gray; */
+
+}
+.submitbtn{
+    margin-left: 32%;
+}
+
+.drawerarrow{
+    position: absolute;
+    left:30px;
+    top:45vh;
+    width:20px;
+    height: 50px;
+}

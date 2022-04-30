@@ -46,7 +46,6 @@ services:
       DB_USER: ${DB_USER:-postgres}
       DB_PASSWORD: ${DB_PASSWORD:-postgres}
       DB_NAME: ${DB_NAME:-admin-service}
-      PORT: 3002
     networks:
       - backend
     links:
@@ -66,7 +65,6 @@ services:
       DB_USER: ${DB_USER:-postgres}
       DB_PASSWORD: ${DB_PASSWORD:-postgres}
       DB_NAME: ${DB_NAME:-game-service}
-      PORT: 3001
     networks:
       - backend
     links:

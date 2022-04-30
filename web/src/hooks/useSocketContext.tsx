@@ -32,7 +32,7 @@ const SocketProvider = ({ children }: { children: JSX.Element }) => {
     socket.on('player.joined', function (data) {
       console.log(data);
     });
-  }, []);
+  }, [socket]);
 
   return (
     <SocketContext.Provider value={{ socket, state }}>
