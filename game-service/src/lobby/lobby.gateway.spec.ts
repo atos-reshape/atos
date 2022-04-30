@@ -15,9 +15,10 @@ import { LobbyResponseDto } from './dto';
 import { NotFoundException } from '@nestjs/common';
 import { WsException } from '@nestjs/websockets';
 import { RoundService } from '../round/round.service';
-import { SelectedCardsService } from '../payer/selectedCards.service';
-import { SelectedCards } from '../payer/selectedCards.entity';
+import { SelectedCardsService } from '../selectedCards/selectedCards.service';
+import { SelectedCards } from '../selectedCards/selectedCards.entity';
 import { Joined } from '../sockets/joined.type';
+import { JwtModule } from '@nestjs/jwt';
 
 describe('LobbyGateway', () => {
   let gateway: LobbyGateway;
@@ -28,6 +29,10 @@ describe('LobbyGateway', () => {
     app = await Test.createTestingModule({
       imports: [
         ConfigModule.forRoot(),
+        JwtModule.register({
+          secret: 'JWT-TEST-secret',
+          signOptions: { issuer: 'game-service' },
+        }),
         UseDatabaseTestConfig(),
         MikroOrmModule.forFeature({ entities: [Lobby, Round, SelectedCards] }),
       ],
@@ -59,9 +64,7 @@ describe('LobbyGateway', () => {
       it('should return the lobby', async () => {
         const defaultLobby = lobby({}, orm);
         round({ lobby: defaultLobby }, orm);
-        expect(await gateway.joinLobby(socket, defaultLobby.id)).toEqual(
-          new LobbyResponseDto(defaultLobby),
-        );
+        expect(await gateway.joinLobby(socket, defaultLobby.id)).toEqual(true);
       });
     });
 

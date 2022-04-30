@@ -6,7 +6,7 @@ import { SelectedCards } from './components/SelectedCards';
 
 export function GameSettings(): JSX.Element {
   const { lobby } = useContext(GameContext);
-  const start = useStartRound(lobby.currentRound.id, lobby.id);
+  const start = useStartRound(lobby.currentRound.id);
 
   return (
     <Tabs

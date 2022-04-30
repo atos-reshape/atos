@@ -4,17 +4,21 @@ import { LobbyModule } from './lobby/lobby.module';
 import { ConfigModule } from '@nestjs/config';
 import { MikroORM } from '@mikro-orm/core';
 import { RoundModule } from './round/round.module';
-import { PlayerModule } from './payer/player.module';
+import { PlayerModule } from './player/player.module';
 import { AuthModule } from './auth/auth.module';
+import { SelectedCardsModule } from './selectedCards/selectedCards.module';
+import { CoreModule } from './core.module';
 
 @Module({
   imports: [
     MikroOrmModule.forRoot(),
-    ConfigModule.forRoot(),
+    ConfigModule.forRoot({ isGlobal: true }),
     LobbyModule,
     RoundModule,
     PlayerModule,
     AuthModule,
+    CoreModule,
+    SelectedCardsModule,
   ],
 })
 export class AppModule implements OnModuleInit {

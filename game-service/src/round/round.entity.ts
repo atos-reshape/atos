@@ -1,5 +1,6 @@
 import {
   ArrayType,
+  Check,
   Collection,
   Entity,
   IdentifiedReference,
@@ -10,7 +11,7 @@ import {
 } from '@mikro-orm/core';
 import { BaseEntity } from '../database/entities/base-entity.entity';
 import { Lobby } from '../lobby/lobby.entity';
-import { SelectedCards } from '../payer/selectedCards.entity';
+import { SelectedCards } from '../selectedCards/selectedCards.entity';
 
 @Entity()
 export class Round extends BaseEntity {
@@ -25,6 +26,10 @@ export class Round extends BaseEntity {
 
   @Property({ nullable: true })
   endedAt?: Date;
+
+  @Property({ columnType: 'int', default: 5 })
+  @Check({ expression: 'selectable_cards > 0' })
+  selectableCards: number;
 
   @OneToOne(() => Lobby, (lobby) => lobby.currentRound, {
     hidden: true,

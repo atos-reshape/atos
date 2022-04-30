@@ -14,8 +14,8 @@ import { NotFoundException } from '@nestjs/common';
 import { validate } from 'class-validator';
 import { SocketService } from './socket.service';
 import { RoundService } from '../round/round.service';
-import { SelectedCardsService } from '../payer/selectedCards.service';
-import { SelectedCards } from '../payer/selectedCards.entity';
+import { SelectedCardsService } from '../selectedCards/selectedCards.service';
+import { SelectedCards } from '../selectedCards/selectedCards.entity';
 
 describe('LobbyController', () => {
   let controller: LobbyController;
@@ -97,6 +97,7 @@ describe('LobbyController', () => {
       const request: CreateLobbyDto = {
         title: 'some-title',
         cards: ['card-id'],
+        selectableCards: 5,
       };
 
       it('should create a new lobby including a new round', async () => {

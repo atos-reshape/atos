@@ -1,6 +1,7 @@
 import { Exclude, Expose } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
 import { SelectedCards } from '../selectedCards.entity';
+
 @Exclude()
 export class SelectedCardsResponseDto {
   @ApiProperty()

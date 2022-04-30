@@ -13,8 +13,8 @@ import { player } from '@factories/player';
 import { v4 } from 'uuid';
 import { NotFoundException } from '@nestjs/common';
 import { SocketService } from '../lobby/socket.service';
-import { SelectedCardsService } from './selectedCards.service';
-import { SelectedCards } from './selectedCards.entity';
+import { SelectedCardsService } from '../selectedCards/selectedCards.service';
+import { SelectedCards } from '../selectedCards/selectedCards.entity';
 
 describe('PlayerController', () => {
   let controller: PlayerController;

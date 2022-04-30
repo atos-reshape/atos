@@ -7,8 +7,8 @@ import {
   Post,
   Put,
   Query,
-  Res,
   Req,
+  Res,
 } from '@nestjs/common';
 import { CardService } from './card.service';
 import {
@@ -18,14 +18,14 @@ import {
   ApiNotFoundResponse,
   ApiOkResponse,
   ApiOperation,
-  ApiQuery,
   ApiTags,
 } from '@nestjs/swagger';
-import { CreateCardDto } from './dtos/create-card.dto';
+import { CreateCardDto, PageOptionsDto } from './dtos';
 import { Card } from './entities/card.entity';
 import { paginate } from '../helpers/pagination.helper';
-import { Response, Request } from 'express';
-import { PageOptionsDto } from './dtos/page-options.dto';
+import { Request, Response } from 'express';
+import { FindAllOptionsDto } from './dtos/find-all-options.dto';
+import { FindOneOptionsDto } from './dtos/find-one-options.dto';
 
 /**
  * The REST API controller for the card service.
@@ -36,22 +36,19 @@ export class CardController {
   constructor(private readonly cardService: CardService) {}
 
   @ApiOperation({ summary: 'Get all cards' })
-  @ApiQuery({ name: 'isActive' })
   @ApiOkResponse()
   @Get()
   async findAll(
-    @Query('isActive') isActive = true,
+    @Query() findAllOptions?: FindAllOptionsDto,
     @Query() pageOptions?: PageOptionsDto,
-    @Res() response?: Response,
+    @Res({ passthrough: true }) response?: Response,
     @Req() request?: Request,
   ) {
-    return response.json(
-      paginate<Card>(
-        request,
-        response,
-        await this.cardService.findAll(isActive, pageOptions),
-        pageOptions,
-      ),
+    return paginate<Card>(
+      request,
+      response,
+      await this.cardService.findAll(findAllOptions, pageOptions),
+      pageOptions,
     );
   }
 
@@ -59,8 +56,11 @@ export class CardController {
   @ApiOkResponse()
   @ApiNotFoundResponse()
   @Get(':id')
-  async findOne(@Param('id') id: string): Promise<Card> {
-    return this.cardService.findOne(id);
+  async findOne(
+    @Param('id') id: string,
+    @Query() findOneOptions?: FindOneOptionsDto,
+  ): Promise<Card> {
+    return this.cardService.findOne(id, findOneOptions);
   }
 
   @ApiOperation({ summary: 'Create card' })

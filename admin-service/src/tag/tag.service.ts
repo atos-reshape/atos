@@ -35,7 +35,21 @@ export class TagService {
    * @returns The tag with the given id.
    */
   async findOne(id: string): Promise<Tag> {
-    return await this.tagRepository.findOne(id);
+    const tag = await this.tagRepository.findOne(id);
+    if (!tag) throw new NotFoundException(`Tag with id '${id}' not found.`);
+    return tag;
+  }
+
+  /**
+   * Retrieve a tag from database by name.
+   * @param name - The name of the tag to retrieve.
+   * @returns The tag with the given name.
+   *
+   */
+  async findOneByName(name: string): Promise<Tag> {
+    const tag = await this.tagRepository.findOne({ name });
+    if (!tag) throw new NotFoundException(`Tag with name '${name}' not found.`);
+    return tag;
   }
 
   /**
@@ -56,7 +70,6 @@ export class TagService {
    */
   async delete(id: string): Promise<void> {
     const tag = await this.findOne(id);
-    if (!tag) throw new NotFoundException('Tag not found');
     if (tag.deletedAt) throw new ConflictException('Card already deleted');
 
     wrap(tag).assign({ ...tag, deletedAt: new Date() } as Tag);

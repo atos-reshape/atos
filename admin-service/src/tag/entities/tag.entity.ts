@@ -10,7 +10,6 @@ export class Tag extends BaseEntity {
   name: string;
 
   @OneToMany(() => Card, (card) => card.tag)
-  @ApiProperty()
   cards = new Collection<Card>(this);
 
   @Property({ nullable: true })

@@ -7,7 +7,10 @@ export class PageOptionsDto {
     minimum: 0,
     default: 0,
   })
-  @Type(() => Number)
+  @Type(
+    /* istanbul ignore next */
+    () => Number,
+  )
   @IsInt()
   @Min(0)
   @IsOptional()
@@ -18,7 +21,10 @@ export class PageOptionsDto {
     maximum: 100,
     default: 25,
   })
-  @Type(() => Number)
+  @Type(
+    /* istanbul ignore next */
+    () => Number,
+  )
   @IsInt()
   @Min(1)
   @Max(100)

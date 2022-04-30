@@ -1,10 +1,11 @@
 import { Module, OnModuleInit } from '@nestjs/common';
 import { MikroOrmModule } from '@mikro-orm/nestjs';
-import { ConfigModule } from '@nestjs/config';
 import { MikroORM } from '@mikro-orm/core';
 import { CardModule } from './card/card.module';
 import { CardSetModule } from './card-set/card-set.module';
 import { TagModule } from './tag/tag.module';
+import { AuthModule } from './auth/auth.module';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [
@@ -13,6 +14,7 @@ import { TagModule } from './tag/tag.module';
     CardModule,
     CardSetModule,
     TagModule,
+    AuthModule,
   ],
 })
 export class AppModule implements OnModuleInit {

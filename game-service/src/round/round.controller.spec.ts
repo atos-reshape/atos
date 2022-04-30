@@ -7,13 +7,7 @@ import { Lobby } from '../lobby/lobby.entity';
 import { Round } from './round.entity';
 import { RoundController } from './round.controller';
 import { RoundService } from './round.service';
-import {
-  round,
-  lobby,
-  lobbyWithRound,
-  selectedCards,
-  player,
-} from '@factories/index';
+import { round, lobby, lobbyWithRound, player } from '@factories/index';
 import { v4 } from 'uuid';
 import { CreateRoundDto, RoundResponseDto } from './dto';
 import { NotFoundException } from '@nestjs/common';
@@ -21,13 +15,13 @@ import { validate } from 'class-validator';
 import { SocketService } from '../lobby/socket.service';
 import { LobbyService } from '../lobby/lobby.service';
 import { RoundCommand } from './round.command';
-import { SelectedCards } from '../payer/selectedCards.entity';
-import { SelectedCardsService } from '../payer/selectedCards.service';
-import { SelectedCardsResponseDto } from '../payer/dto/selected-cards-response.dto';
+import { SelectedCards } from '../selectedCards/selectedCards.entity';
+import { SelectedCardsService } from '../selectedCards/selectedCards.service';
 
 describe('RoundController', () => {
   let socketService: SocketService;
   let controller: RoundController;
+  let selectedCardsService: SelectedCardsService;
   let app: TestingModule;
   let orm: MikroORM;
 
@@ -50,6 +44,7 @@ describe('RoundController', () => {
 
     socketService = app.get<SocketService>(SocketService);
     controller = app.get<RoundController>(RoundController);
+    selectedCardsService = app.get<SelectedCardsService>(SelectedCardsService);
     orm = app.get<MikroORM>(MikroORM);
   });
 
@@ -82,6 +77,7 @@ describe('RoundController', () => {
   describe('updateCards', () => {
     const request: CreateRoundDto = {
       cards: [v4(), v4()],
+      selectableCards: 5,
     };
 
     describe('for an existing round', () => {
@@ -123,6 +119,7 @@ describe('RoundController', () => {
   describe('createRound', () => {
     const request: CreateRoundDto = {
       cards: [v4(), v4()],
+      selectableCards: 5,
     };
 
     describe('for an existing lobby', () => {
@@ -144,10 +141,10 @@ describe('RoundController', () => {
         );
 
         expect(
-          await controller.getAllSelectedCards(existingLobby.currentRound.id),
-        ).toMatchObject([
-          { playerId: p.id, cards: [] } as SelectedCardsResponseDto,
-        ]);
+          await selectedCardsService.getAllSelectedCards(
+            existingLobby.currentRound.id,
+          ),
+        ).toMatchObject([{ player: { id: p.id }, cards: [] } as SelectedCards]);
       });
     });
 
@@ -264,107 +261,6 @@ describe('RoundController', () => {
           NotFoundException,
         );
       });
-    });
-  });
-
-  describe('getPlayerSelectedCards', () => {
-    it('should return all the selected cards of a player', async () => {
-      const l = lobby({}, orm);
-      const p = player({}, orm);
-      l.players.add(p);
-      const myRound = round({ lobby: l }, orm);
-      const playerSelectedCards = selectedCards(
-        { player: p, round: myRound, cards: [v4(), v4()] },
-        orm,
-      );
-
-      expect(
-        await controller.getPlayerSelectedCards(myRound.id, p.id),
-      ).toMatchObject({
-        cards: playerSelectedCards.cards,
-      });
-    });
-
-    it('should return not found', async () => {
-      await expect(
-        controller.getPlayerSelectedCards(v4(), v4()),
-      ).rejects.toThrow(NotFoundException);
-    });
-  });
-
-  describe('getAllSelectedCards', () => {
-    it('should return all the selected cards during a round', async () => {
-      const l = lobby({}, orm);
-      const p = player({}, orm);
-      l.players.add(p);
-      const myRound = round({ lobby: l }, orm);
-      const playerSelectedCards = selectedCards(
-        { player: p, round: myRound, cards: [v4(), v4()] },
-        orm,
-      );
-
-      const findAllResult = await controller.getAllSelectedCards(myRound.id);
-      expect({ selectedCards: findAllResult[0].cards }).toMatchObject({
-        selectedCards: playerSelectedCards.cards,
-      });
-    });
-  });
-
-  describe('addSelectedCard', () => {
-    it('should add the selected card', async () => {
-      const l = lobby({}, orm);
-      const p = player({}, orm);
-      l.players.add(p);
-      const myRound = round({ lobby: l }, orm);
-      const newCard = v4();
-      const playerSelectedCards = selectedCards(
-        { player: p, round: myRound, cards: [v4(), v4()] },
-        orm,
-      );
-      const req = await controller.addSelectedCard(p.id, myRound.id, newCard);
-      playerSelectedCards.cards.push(newCard);
-
-      expect({ cards: req.cards }).toMatchObject({
-        cards: playerSelectedCards.cards,
-      });
-    });
-
-    it('should return not found', async () => {
-      await expect(
-        controller.addSelectedCard(v4(), v4(), v4()),
-      ).rejects.toThrow(NotFoundException);
-    });
-  });
-
-  describe('removeSelectedCard', () => {
-    it('should remove the selected card', async () => {
-      const l = lobby({}, orm);
-      const p = player({}, orm);
-      l.players.add(p);
-      const myRound = round({ lobby: l }, orm);
-      const removedCard = v4();
-      const playerSelectedCards = selectedCards(
-        { player: p, round: myRound, cards: [v4(), removedCard] },
-        orm,
-      );
-
-      // Remove card from local selected cards
-      const index = playerSelectedCards.cards.indexOf(removedCard);
-      if (index > -1) {
-        playerSelectedCards.cards.splice(index, 1);
-      }
-
-      expect(
-        await controller.removeSelectedCard(p.id, myRound.id, removedCard),
-      ).toMatchObject({
-        cards: playerSelectedCards.cards,
-      });
-    });
-
-    it('should return not found', async () => {
-      await expect(
-        controller.removeSelectedCard(v4(), v4(), v4()),
-      ).rejects.toThrow(NotFoundException);
     });
   });
 });

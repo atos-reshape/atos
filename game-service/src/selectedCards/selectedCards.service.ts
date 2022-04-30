@@ -4,7 +4,8 @@ import { EntityRepository } from '@mikro-orm/postgresql';
 import { SelectedCards } from './selectedCards.entity';
 import { Lobby } from 'src/lobby/lobby.entity';
 import { Round } from 'src/round/round.entity';
-import { Player } from './player.entity';
+import { Player } from '../player/player.entity';
+import { LikeCardCmd } from './dto/like-card.cmd';
 
 @Injectable()
 export class SelectedCardsService {
@@ -80,14 +81,14 @@ export class SelectedCardsService {
    * @param newCard - The card to add to the selected cards.
    * @returns The updated selected cards.
    */
-  async addSelectedCard(
-    playerId: string,
-    roundId: string,
-    newCard: string,
-  ): Promise<SelectedCards> {
+  async addCardToLiked({
+    cardId,
+    roundId,
+    playerId,
+  }: LikeCardCmd): Promise<SelectedCards> {
     const selectedCards = await this.findSelectedCards(playerId, roundId);
 
-    selectedCards.cards.push(newCard);
+    selectedCards.cards.push(cardId);
     await this.selectedCardsRepository.persistAndFlush(selectedCards);
 
     return selectedCards;
@@ -100,14 +101,37 @@ export class SelectedCardsService {
    * @param removedCard - The card to add to the selected cards.
    * @returns The updated selected cards.
    */
-  async removeSelectedCard(
-    playerId: string,
-    roundId: string,
-    removedCard: string,
-  ): Promise<SelectedCards> {
+  async removeCardFromLiked({
+    cardId,
+    roundId,
+    playerId,
+  }: LikeCardCmd): Promise<SelectedCards> {
     const selected = await this.findSelectedCards(playerId, roundId);
 
-    selected.cards = selected.cards.filter((id) => id !== removedCard);
+    selected.cards = selected.cards.filter((id) => id !== cardId);
+    await this.selectedCardsRepository.persistAndFlush(selected);
+
+    return selected;
+  }
+
+  /**
+   * Update the selected cards.
+   * @param roundId - The id of the player to update.
+   * @param playerId - The round to update.
+   * @returns The updated selected cards.
+   */
+  async finishedSelecting(
+    round: Round,
+    playerId: string,
+  ): Promise<SelectedCards> {
+    const selected = await this.findSelectedCards(playerId, round.id);
+    if (round.selectableCards != selected.cards.length) {
+      throw new Error(
+        `Received ${selected.cards.length} cards. Round amount is ${round.selectableCards} cards`,
+      );
+    }
+
+    selected.finishedSelecting = new Date();
     await this.selectedCardsRepository.persistAndFlush(selected);
 
     return selected;
