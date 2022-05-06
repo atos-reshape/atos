@@ -24,7 +24,8 @@ function JoinGame() {
   return (
     <Container size="xs" className={styles.container}>
       <Group direction="column" position="center">
-        <h1>Join Lobby!</h1>
+        <img src='/Atos_logo_blue_RGB.png' height='70' width='200' />
+        <h2 className={styles.headers}>Architecture Game</h2>
         <TextInput
           placeholder="Game Code"
           label="Game Code"
@@ -33,7 +34,7 @@ function JoinGame() {
           onChange={
             setGameCode
               ? (event) =>
-                  setGameCode(event.currentTarget.value.toLocaleUpperCase())
+                setGameCode(event.currentTarget.value.toLocaleUpperCase())
               : undefined
           }
         />
