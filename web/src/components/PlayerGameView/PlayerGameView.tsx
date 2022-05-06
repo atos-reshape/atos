@@ -1,6 +1,6 @@
 import { Container, Group, Button, Text, Drawer, Card } from '@mantine/core';
 import CardTemplate from '../Card/Card';
-import { FaThumbsDown, FaThumbsUp } from 'react-icons/fa';
+import { FaGrinAlt, FaRegFrown } from 'react-icons/fa';
 import { useContext, useState } from 'react';
 import { PlayerGameContext } from '../../hooks/usePlayerGameContext';
 import styles from './PlayerGameView.module.css';
@@ -52,11 +52,11 @@ function PlayerGameView2() {
           }
         />
         <Group direction="row">
-          <Button style={{ marginLeft: '138px' }} onClick={dislike}>
-            <FaThumbsDown />
+          <Button className={styles.likeButton} onClick={like}>
+            <FaGrinAlt />
           </Button>
-          <Button onClick={like}>
-            <FaThumbsUp />
+          <Button className={styles.dislikeButton} onClick={dislike}>
+            <FaRegFrown />
           </Button>
         </Group>
 
