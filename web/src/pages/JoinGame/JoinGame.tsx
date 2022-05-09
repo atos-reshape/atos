@@ -1,6 +1,7 @@
 import { useState } from 'react';
-import { Button, Container, Group, TextInput } from '@mantine/core';
+import { Button, Container, Group, TextInput, Text } from '@mantine/core';
 import { useJoinGame } from '../../api/requests/joingame';
+import styles from './JoinGame.module.css';
 function JoinGame() {
   const [gameCode, setGameCode] = useState('');
   const [playerName, setPlayerName] = useState('');
@@ -12,7 +13,7 @@ function JoinGame() {
       {
         onSuccess: (res) => {
           localStorage.setItem('accessTokenAtos', res.accessToken);
-          window.location.href = `/game`;
+          window.location.href = `/game?id=${res.lobbyId}`;
         },
         onError: (res) => {
           alert(res.message);
@@ -21,8 +22,9 @@ function JoinGame() {
     );
   }
   return (
-    <Container size="xs">
+    <Container size="xs" className={styles.container}>
       <Group direction="column" position="center">
+        <h1>Join Lobby!</h1>
         <TextInput
           placeholder="Game Code"
           label="Game Code"

@@ -1,8 +1,9 @@
 import { Container, Group, TextInput, Button } from '@mantine/core';
-import { useContext, useEffect } from 'react';
+import { useContext } from 'react';
 import Context from '../../context/Context';
 import { useCreateLobby } from '../../api/requests/lobbies';
 import { useGetCards } from '../../api/requests/card';
+import styles from './GameSettings.module.css';
 
 function GameSettings() {
   const createLobby = useCreateLobby();
@@ -28,7 +29,7 @@ function GameSettings() {
   return (
     <>
       <Container>
-        <Group direction="column">
+        <Group direction="column" className={styles.container}>
           <h1>Game Settings</h1>
 
           <TextInput

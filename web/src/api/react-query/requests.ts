@@ -26,7 +26,13 @@ export const defaultFetch = async <TResponse = any>(
   path: string,
   queryParams?: Record<string, any>
 ): Promise<TResponse> => {
-  return executeRequest<TResponse>(path, queryParams);
+  return executeRequest<TResponse>(path, {
+    ...queryParams,
+    headers: {
+      ...queryParams?.headers,
+      Authorization: `Bearer ${localStorage.getItem('accessToken')}`
+    }
+  });
 };
 
 export const defaultCreate = <TRequest = any, TResponse = TRequest>(
@@ -36,6 +42,7 @@ export const defaultCreate = <TRequest = any, TResponse = TRequest>(
     return executeRequest<TResponse>(path, {
       method: 'POST',
       headers: {
+        Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
         'Content-Type': 'application/json'
       },
       body: JSON.stringify(values)
@@ -52,6 +59,7 @@ export const defaultUpdate =
     return executeRequest<TResponse>(path, {
       method: 'PUT',
       headers: {
+        Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
         'Content-Type': 'application/json'
       },
       body: JSON.stringify(values)
@@ -62,6 +70,9 @@ export const defaultDelete =
   <TResponse = any>(path: string) =>
   async (): Promise<TResponse> => {
     return executeRequest<TResponse>(path, {
-      method: 'DELETE'
+      method: 'DELETE',
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('accessToken')}`
+      }
     });
   };

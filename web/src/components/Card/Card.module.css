@@ -6,6 +6,7 @@
     height: 40vh;
     max-height: 80vh;
     padding: 30px;
+    margin-bottom: 20px;
     border: 1px solid black;
     text-align: center;
     justify-content: center;
@@ -25,5 +26,5 @@
 }
 
 .cardtext {
-    padding: 20% 5% 5% 5%;
+    padding: 31% 5% 5% 5%;
 }

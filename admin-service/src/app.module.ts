@@ -4,9 +4,18 @@ import { MikroORM } from '@mikro-orm/core';
 import { CardModule } from './card/card.module';
 import { CardSetModule } from './card-set/card-set.module';
 import { TagModule } from './tag/tag.module';
+import { AuthModule } from './auth/auth.module';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
-  imports: [MikroOrmModule.forRoot(), CardModule, CardSetModule, TagModule],
+  imports: [
+    MikroOrmModule.forRoot(),
+    ConfigModule.forRoot(),
+    CardModule,
+    CardSetModule,
+    TagModule,
+    AuthModule,
+  ],
 })
 export class AppModule implements OnModuleInit {
   constructor(private readonly orm: MikroORM) {}

@@ -81,4 +81,20 @@ export class SelectedCardsController {
       await this.selectCommand.unLikeACard({ playerId, roundId, cardId }),
     );
   }
+
+  @ApiOperation({ summary: 'Finish the selection player of cards of a player' })
+  @ApiResponse({
+    status: 200,
+    description: 'Returns the new selected cards array ',
+    type: SelectedCardsResponseDto,
+  })
+  @Put(':round_id/players/:player_id/cards/like/:id/finish')
+  async finishedSelecting(
+    @Param('player_id') playerId: string,
+    @Param('round_id') roundId: string,
+  ): Promise<SelectedCardsResponseDto> {
+    return new SelectedCardsResponseDto(
+      await this.selectCommand.finishedSelecting(roundId, playerId),
+    );
+  }
 }

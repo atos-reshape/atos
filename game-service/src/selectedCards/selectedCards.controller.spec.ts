@@ -170,4 +170,56 @@ describe('SelectedCardsController', () => {
       ).rejects.toThrow(NotFoundException);
     });
   });
+
+  describe('finishedSelecting', () => {
+    const playerCards = [v4(), v4(), v4(), v4()];
+
+    describe('with correct amount of cards', () => {
+      it('should finish selecting cards process', async () => {
+        const l = lobbyWithRound({}, orm);
+        const p = player({ lobby: l }, orm);
+        const playerSelectedCards = selectedCards(
+          { player: p, round: l.currentRound, cards: [...playerCards, v4()] },
+          orm,
+        );
+        const req = await controller.finishedSelecting(p.id, l.currentRound.id);
+
+        expect({ cards: req.cards }).toMatchObject({
+          cards: playerSelectedCards.cards,
+        });
+      });
+    });
+
+    describe('with incorrect amount of cards', () => {
+      it('should return too few selected cards for the round', async () => {
+        const l = lobbyWithRound({}, orm);
+        const p = player({ lobby: l }, orm);
+        selectedCards(
+          { player: p, round: l.currentRound, cards: [...playerCards] },
+          orm,
+        );
+
+        expect(
+          controller.finishedSelecting(p.id, l.currentRound.id),
+        ).rejects.toThrow(Error);
+      });
+
+      it('should return too many selected cards for the round', async () => {
+        const l = lobbyWithRound({}, orm);
+        const p = player({ lobby: l }, orm);
+        selectedCards(
+          {
+            player: p,
+            round: l.currentRound,
+            cards: [...playerCards, v4(), v4()],
+          },
+          orm,
+        );
+
+        await expect(
+          controller.finishedSelecting(p.id, l.currentRound.id),
+        ).rejects.toThrow(Error);
+      });
+    });
+  });
 });
