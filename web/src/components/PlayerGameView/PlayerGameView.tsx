@@ -52,10 +52,14 @@ function PlayerGameView2() {
           }
         />
         <Group direction="row">
-          <Button style={{ marginLeft: '138px' }} onClick={dislike}>
+          <Button
+            id="dislike"
+            style={{ marginLeft: '138px' }}
+            onClick={dislike}
+          >
             <FaThumbsDown />
           </Button>
-          <Button onClick={like}>
+          <Button id="like" onClick={like}>
             <FaThumbsUp />
           </Button>
         </Group>
