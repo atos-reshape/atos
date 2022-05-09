@@ -1,8 +1,8 @@
 import { io, Socket } from 'socket.io-client';
 import { createContext, useEffect, useState } from 'react';
-import { Lobby } from '../../../../api/models/Lobby';
-import { Player } from '../../../../api/models/Player';
-import { Round } from '../../../../api/models/Round';
+import { Lobby } from './../../../api/models/Lobby';
+import { Player } from './../../../api/models/Player';
+import { Round } from './../../../api/models/Round';
 
 interface Props {
   children: JSX.Element;
@@ -57,8 +57,7 @@ const SocketProvider = ({ children, id }: Props) => {
   useEffect(() => {
     const socket = io('', {
       transports: ['websocket'],
-      path: '/lobby/',
-      auth: { token: localStorage.getItem('accessToken') }
+      path: '/lobby/'
     });
 
     socket.on('connect', () => {
