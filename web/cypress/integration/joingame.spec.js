@@ -1,6 +1,6 @@
 /// <reference types = "cypress"/>
 import { FaThumbsDown, FaThumbsUp } from 'react-icons/fa';
-describe('Join Game', () => {
+describe('Frontend Testing', () => {
   //   beforeEach(() => {
   //     cy.visit('http://localhost:3000/join');
   //   });
