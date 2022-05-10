@@ -106,10 +106,18 @@ export class CardService {
   ): Promise<PaginatedResult<Card>> {
     const { isActive, language, tag } = findAllOptions;
 
+    let filters: { isActive: boolean; hasTag?: { name: string } } = {
+      isActive,
+    };
+
+    if (tag) {
+      filters = { ...filters, hasTag: { name: tag } };
+    }
+
     const [cards, count] = await this.cardRepository.findAndCount(
       {},
       {
-        filters: { isActive, hasTag: { name: tag } },
+        filters,
         populate: ['translations'],
         limit: pageOptions.limit,
         offset: pageOptions.offset,
