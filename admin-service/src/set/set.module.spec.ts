@@ -4,8 +4,9 @@ import { useDatabaseTestConfig } from '../../test/helpers/database';
 import { SetController } from './set.controller';
 import { SetService } from './set.service';
 import { Set } from './entities/set.entity';
+import { TagModule } from '../tag/tag.module';
 
-describe('CardSetModule', () => {
+describe('SetModule', () => {
   let module: TestingModule;
 
   beforeAll(async () => {
@@ -13,6 +14,7 @@ describe('CardSetModule', () => {
       imports: [
         useDatabaseTestConfig(),
         MikroOrmModule.forFeature({ entities: [Set] }),
+        TagModule,
       ],
       controllers: [SetController],
       providers: [SetService],

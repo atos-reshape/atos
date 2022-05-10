@@ -1,36 +1,45 @@
-import faker from '@faker-js/faker';
 import { v4 } from 'uuid';
-import { MikroORM, wrap } from '@mikro-orm/core';
-import { MikroOrmModule } from '@mikro-orm/nestjs';
-import { ClassSerializerInterceptor, NotFoundException } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
-import { useDatabaseTestConfig } from '../../test/helpers/database';
 import { SetController } from './set.controller';
 import { SetService } from './set.service';
-import { CreateSetDto } from './dtos/create-set.dto';
 import { Set } from './entities/set.entity';
-import { cardSet, createCardSets } from '../../test/factories/cardSet';
-import { card } from '../../test/factories/card';
+import { Test, TestingModule } from '@nestjs/testing';
+import { MikroORM } from '@mikro-orm/core';
+import { useDatabaseTestConfig } from '../../test/helpers/database';
+import { MikroOrmModule } from '@mikro-orm/nestjs';
+import { Request, Response } from 'express';
+import { TagModule } from '../tag/tag.module';
+import { FindAllSetOptionsDto } from './dtos/find-all-set-options.dto';
+import { PageOptionsDto } from '../dtos/page-options.dto';
+import {
+  createSets,
+  createSetsWithCard,
+  set,
+  setWithCard,
+} from '../../test/factories/set';
+import { ConflictException, NotFoundException } from '@nestjs/common';
+import { tag } from '../../test/factories/tag';
+import { CreateSetDto } from './dtos/create-set.dto';
 
-describe('CardSetController', () => {
-  let cardSetController: SetController;
+describe('SetController', () => {
+  let setController: SetController;
+  let setService: SetService;
   let module: TestingModule;
   let orm: MikroORM;
-  let cardCollection;
 
   beforeAll(async () => {
     module = await Test.createTestingModule({
       imports: [
         useDatabaseTestConfig(),
         MikroOrmModule.forFeature({ entities: [Set] }),
+        TagModule,
       ],
       controllers: [SetController],
-      providers: [SetService, ClassSerializerInterceptor],
+      providers: [SetService],
     }).compile();
 
-    cardSetController = module.get<SetController>(SetController);
+    setController = module.get<SetController>(SetController);
+    setService = module.get<SetService>(SetService);
     orm = module.get<MikroORM>(MikroORM);
-    cardCollection = [card(), card()];
   });
 
   beforeEach(async () => {
@@ -43,111 +52,276 @@ describe('CardSetController', () => {
   });
 
   describe('findAll', () => {
-    it('should return an array of card sets', async () => {
-      const length = 5;
-      const cards = createCardSets(new Array(length).fill({}), orm);
+    let request, response: Partial<Response>;
 
-      const findAllResult = await cardSetController.findAll();
-      expect(findAllResult).toMatchObject(cards);
-      expect(findAllResult).toHaveLength(length);
+    beforeEach(() => {
+      request = {} as Request;
+      response = {
+        setHeader: jest.fn().mockImplementation(),
+      };
     });
 
-    it('should return an empty array if there are no card sets', async () => {
-      const findAllResult = await cardSetController.findAll();
-      expect(findAllResult).toMatchObject([]);
+    it.each([...Array(10).keys()])(
+      'should return an array of sets without cards',
+      async (length: number) => {
+        const sets = createSets(new Array(length).fill({}), orm);
+
+        const responseObject = await setController.findAll(
+          new FindAllSetOptionsDto({
+            isActive: true,
+            tag: undefined,
+          }),
+          new PageOptionsDto(),
+          response as Response,
+          request,
+        );
+        expect(responseObject).toBeInstanceOf(Array);
+        expect(responseObject).toHaveLength(length);
+        expect(responseObject).toStrictEqual(sets);
+      },
+    );
+
+    it('should return an empty array if no sets are persisted', async () => {
+      const responseObject = await setController.findAll(
+        new FindAllSetOptionsDto({
+          isActive: true,
+          tag: undefined,
+        }),
+        new PageOptionsDto(),
+        response as Response,
+        request,
+      );
+      expect(responseObject).toBeInstanceOf(Array);
+      expect(responseObject).toHaveLength(0);
+      expect(responseObject).toStrictEqual([]);
     });
 
-    it('should return only the active card sets', async () => {
-      const cards = createCardSets([{ deletedAt: new Date() }, {}], orm);
+    it.each([...Array(10).keys()])(
+      'should return an array of set with all cards',
+      async (length: number) => {
+        createSetsWithCard(
+          new Array(length).fill({}),
+          new Array(length).fill({}),
+          orm,
+        );
+        const responseObject = await setController.findAll(
+          new FindAllSetOptionsDto({
+            isActive: true,
+            tag: undefined,
+          }),
+          new PageOptionsDto(),
+          response as Response,
+          request,
+        );
+        expect(responseObject).toBeInstanceOf(Array);
+        expect(responseObject).toHaveLength(length);
+        // Expect each object in the array to have an array called cards.
+        responseObject.forEach((set: Set) => {
+          expect(set.cards.getItems()).toBeInstanceOf(Array);
+        });
+      },
+    );
 
-      const findAllResult = await cardSetController.findAll();
-      expect(findAllResult).toMatchObject([cards[1]]);
-      expect(findAllResult).toHaveLength(1);
+    it('should return only the active sets', async () => {
+      createSets([{ deletedAt: new Date() }, {}], orm);
+      const responseObject = await setController.findAll(
+        new FindAllSetOptionsDto({
+          isActive: true,
+          tag: undefined,
+        }),
+        new PageOptionsDto(),
+        response as Response,
+        request,
+      );
+      expect(responseObject).toBeInstanceOf(Array);
+      expect(responseObject).toHaveLength(1);
     });
 
-    it('should return all card sets if isActive is true', async () => {
-      const cards = createCardSets([{ deletedAt: new Date() }, {}], orm);
+    it('should return all sets if isActive is true', async () => {
+      createSets([{ deletedAt: new Date() }, {}], orm);
+      const responseObject = await setController.findAll(
+        new FindAllSetOptionsDto({
+          isActive: false,
+          tag: undefined,
+        }),
+        new PageOptionsDto(),
+        response as Response,
+        request,
+      );
+      expect(responseObject).toBeInstanceOf(Array);
+      expect(responseObject).toHaveLength(2);
+    });
 
-      const findAllResult = await cardSetController.findAll(false);
-      expect(findAllResult).toMatchObject(cards);
-      expect(findAllResult).toHaveLength(2);
+    it('should return all sets that have a certain tag', async () => {
+      const tagName = 'this is a tag';
+      createSets(
+        [
+          { tag: tag({ name: tagName }) },
+          { tag: tag({ name: 'a different tag' }) },
+          {},
+        ],
+        orm,
+      );
+      const responseObject = await setController.findAll(
+        new FindAllSetOptionsDto({
+          isActive: true,
+          tag: tagName,
+        }),
+        new PageOptionsDto(),
+        response as Response,
+        request,
+      );
+      expect(responseObject).toBeInstanceOf(Array);
+      expect(responseObject).toHaveLength(1);
+      expect(responseObject[0].tag.name).toBe(tagName);
     });
   });
 
   describe('findOne', () => {
-    it('should return a card set', async () => {
-      const testCard = cardSet({}, orm);
+    it('should return a set with all cards', async () => {
+      const testSet = set({}, orm);
 
-      const findOneResult = await cardSetController.findOne(testCard.id);
-      expect(findOneResult).toMatchObject(testCard);
+      const findOneResult = await setController.findOne(testSet.id);
+      expect(findOneResult).toMatchObject(testSet);
     });
 
-    it('should return 404 if there is no card set', async () => {
-      const findOneResult = await cardSetController.findOne(v4());
-      expect(findOneResult).toBeNull();
+    it('should return null if there is no set', async () => {
+      await expect(setController.findOne(v4())).rejects.toThrow(
+        NotFoundException,
+      );
     });
   });
 
   describe('create', () => {
-    it('should create a card set', async () => {
-      const testCardSet = new CreateSetDto();
-      testCardSet.tag = faker.lorem.sentence();
-      testCardSet.name = faker.lorem.sentence();
-      testCardSet.cards = cardCollection;
+    it('should create a set', async () => {
+      const testSet = new CreateSetDto({
+        name: 'test set',
+      });
 
-      const createResult = await cardSetController.create(testCardSet);
+      const createResult = await setController.create(testSet);
+      expect(createResult).toMatchObject(testSet);
+    });
 
-      expect(wrap(createResult).toObject()).toMatchObject(testCardSet);
+    it('should create a set with an existing tag as name', async () => {
+      const testTag = tag({ name: 'existing tag' }, orm);
+      const testSet = new CreateSetDto({
+        name: 'test set',
+        tag: testTag.name,
+      });
+
+      const createResult = await setController.create(testSet);
+      expect(createResult.tag.name).toBe(testTag.name);
+    });
+
+    it('should create a set with an existing tag as UUID', async () => {
+      const testTag = tag({ name: 'existing tag' }, orm);
+      const testSet = new CreateSetDto({
+        name: 'test set',
+        tag: testTag.id,
+      });
+
+      const createResult = await setController.create(testSet);
+      expect(createResult.tag.name).toBe(testTag.name);
+    });
+
+    it('should throw a NotFoundException when creating a set with a new tag', async () => {
+      const tagName = 'new tag';
+      const testSet = new CreateSetDto({
+        name: 'test set',
+        tag: tagName,
+      });
+
+      await expect(setController.create(testSet)).rejects.toThrow(
+        NotFoundException,
+      );
     });
   });
 
   describe('update', () => {
-    it('should return a card set', async () => {
-      const testCardSet = cardSet({}, orm);
+    it('should return a set', async () => {
+      const testSet = set({}, orm);
 
-      const cardSetUpdate = new CreateSetDto();
-      cardSetUpdate.tag = faker.lorem.sentence();
-      cardSetUpdate.name = faker.lorem.sentence();
-      cardSetUpdate.cards = [card(), card()];
+      const setUpdate = new CreateSetDto({
+        name: 'updated set',
+      });
 
-      // Update the card
-      testCardSet.type = cardSetUpdate.tag;
-      const updateResult = await cardSetController.update(
-        testCardSet.id,
-        cardSetUpdate,
-      );
+      // Update the set
+      const updateResult = await setController.update(testSet.id, setUpdate);
 
-      expect(updateResult).toMatchObject(testCardSet);
+      expect(updateResult).toMatchObject(testSet);
     });
 
-    it('should return 404 if there is no card set', async () => {
-      const cardSetUpdate = new CreateSetDto();
-      cardSetUpdate.tag = faker.lorem.sentence();
+    it('should update a set with an existing tag as name', async () => {
+      const testTag = tag({ name: 'existing tag' }, orm);
+      const testSet = set({ tag: testTag }, orm);
+      const setUpdate = new CreateSetDto();
+      setUpdate.tag = testTag.name;
 
-      const nonExistingUUID = v4();
+      // Update the set
+      testSet.tag = testTag;
+      const updateResult = await setController.update(testSet.id, setUpdate);
 
-      try {
-        await cardSetController.update(nonExistingUUID, cardSetUpdate);
-      } catch (e) {
-        expect(e).toBeInstanceOf(NotFoundException);
-      }
+      expect(updateResult).toMatchObject(testSet);
+      expect(updateResult.tag.name).toBe(testTag.name);
+    });
+
+    it('should update a set with an existing tag as UUID', async () => {
+      const testTag = tag({ name: 'existing tag' }, orm);
+      const testSet = set({ tag: testTag }, orm);
+      const setUpdate = new CreateSetDto();
+      setUpdate.tag = testTag.id;
+
+      // Update the set
+      testSet.tag = testTag;
+      const updateResult = await setController.update(testSet.id, setUpdate);
+
+      expect(updateResult).toMatchObject(testSet);
+      expect(updateResult.tag.name).toBe(testTag.name);
+    });
+
+    it('should throw a NotFoundException when updating a set with a new tag', async () => {
+      const testSet = set({}, orm);
+      const tagName = 'new tag';
+      const setUpdate = new CreateSetDto();
+      setUpdate.tag = tagName;
+
+      // Update the set
+      await expect(setController.update(testSet.id, setUpdate)).rejects.toThrow(
+        NotFoundException,
+      );
+    });
+
+    it('should throw NotFoundException if there is no set', async () => {
+      await expect(
+        setController.update(v4(), {
+          name: 'test set',
+        } as CreateSetDto),
+      ).rejects.toThrow(NotFoundException);
     });
   });
 
   describe('delete', () => {
-    it('should return a card set', async () => {
-      const testCardSet = cardSet({}, orm);
+    it('should delete a set', async () => {
+      const testSet = setWithCard({}, {}, orm);
 
-      const deleteResult = await cardSetController.delete(testCardSet.id);
+      const deleteResult = await setController.delete(testSet.id);
       expect(deleteResult).toBeUndefined();
+
+      const setFromRepository = await setService.findOne(testSet.id);
+      expect(setFromRepository.deletedAt).toBeInstanceOf(Date);
     });
 
-    it('should return 404 if there is no card set', async () => {
-      try {
-        await cardSetController.delete(v4());
-      } catch (e) {
-        expect(e).toBeInstanceOf(NotFoundException);
-      }
+    it('should throw a ConflictException if the set is already deleted', async () => {
+      const testSet = set({ deletedAt: new Date() }, orm);
+      await expect(setController.delete(testSet.id)).rejects.toThrow(
+        ConflictException,
+      );
+    });
+
+    it('should throw a NotFoundException if no set is found', async () => {
+      await expect(setController.delete(v4())).rejects.toThrow(
+        NotFoundException,
+      );
     });
   });
 });

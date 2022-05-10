@@ -25,4 +25,8 @@ export class CreateSetDto {
   @IsString()
   @IsOptional()
   tag?: string;
+
+  constructor(partial?: Partial<CreateSetDto>) {
+    Object.assign(this, partial);
+  }
 }
