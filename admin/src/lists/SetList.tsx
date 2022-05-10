@@ -1,25 +1,25 @@
 import {
-  ArrayField,
   ChipField,
   Datagrid,
   DateField,
-  EditButton,
   DeleteButton,
+  EditButton,
   List,
+  ReferenceArrayField,
   ReferenceField,
   SingleFieldList,
   TextField,
 } from 'react-admin';
 
-export const CardList = (): JSX.Element => (
+export const SetList = (): JSX.Element => (
   <List>
     <Datagrid>
       <TextField source="id" />
-      <ArrayField source="translations">
+      <ReferenceArrayField source="cards" reference="cards">
         <SingleFieldList>
-          <ChipField source="text" />
+          <ChipField source="id" />
         </SingleFieldList>
-      </ArrayField>
+      </ReferenceArrayField>
       <ReferenceField source="tag" reference="tags">
         <ChipField source="name" emptyText="No tag assigned" />
       </ReferenceField>

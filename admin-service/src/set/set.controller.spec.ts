@@ -91,7 +91,7 @@ describe('CardSetController', () => {
   describe('create', () => {
     it('should create a card set', async () => {
       const testCardSet = new CreateSetDto();
-      testCardSet.type = faker.lorem.sentence();
+      testCardSet.tag = faker.lorem.sentence();
       testCardSet.name = faker.lorem.sentence();
       testCardSet.cards = cardCollection;
 
@@ -106,12 +106,12 @@ describe('CardSetController', () => {
       const testCardSet = cardSet({}, orm);
 
       const cardSetUpdate = new CreateSetDto();
-      cardSetUpdate.type = faker.lorem.sentence();
+      cardSetUpdate.tag = faker.lorem.sentence();
       cardSetUpdate.name = faker.lorem.sentence();
       cardSetUpdate.cards = [card(), card()];
 
       // Update the card
-      testCardSet.type = cardSetUpdate.type;
+      testCardSet.type = cardSetUpdate.tag;
       const updateResult = await cardSetController.update(
         testCardSet.id,
         cardSetUpdate,
@@ -122,7 +122,7 @@ describe('CardSetController', () => {
 
     it('should return 404 if there is no card set', async () => {
       const cardSetUpdate = new CreateSetDto();
-      cardSetUpdate.type = faker.lorem.sentence();
+      cardSetUpdate.tag = faker.lorem.sentence();
 
       const nonExistingUUID = v4();
 

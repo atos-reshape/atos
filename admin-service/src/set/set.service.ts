@@ -1,24 +1,30 @@
 import { EntityRepository, wrap } from '@mikro-orm/core';
 import { InjectRepository } from '@mikro-orm/nestjs';
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateSetDto } from './dtos/create-set.dto';
 import { Set } from './entities/set.entity';
 import { PageOptionsDto } from '../dtos/page-options.dto';
 import { PaginatedResult } from '../helpers/pagination.helper';
 import { FindAllSetOptionsDto } from './dtos/find-all-set-options.dto';
+import { TagService } from '../tag/tag.service';
 
 @Injectable()
 export class SetService {
   constructor(
     @InjectRepository(Set)
-    private readonly cardSetRepository: EntityRepository<Set>,
+    private readonly setRepository: EntityRepository<Set>,
+    private readonly tagService: TagService,
   ) {}
 
   /**
-   * Retrieve all CardSets from database.
+   * Retrieve all sets from database.
    * @param findAllOptions - The options for the query.
    * @param pageOptions - Pagination options.
-   * @returns An array of CardSets.
+   * @returns An array of sets.
    */
   async findAll(
     findAllOptions: FindAllSetOptionsDto,
@@ -26,10 +32,11 @@ export class SetService {
   ): Promise<PaginatedResult<Set>> {
     const { isActive, tag } = findAllOptions;
 
-    return await this.cardSetRepository.findAndCount(
+    return await this.setRepository.findAndCount(
       {},
       {
         filters: { isActive, ...(tag && { hasTag: { name: tag } }) },
+        populate: ['cards'],
         limit: pageOptions.limit,
         offset: pageOptions.offset,
       },
@@ -37,50 +44,67 @@ export class SetService {
   }
 
   /**
-   * Retrieve a CardSet from database.
-   * @param id - The id of the CardSet to retrieve.
-   * @returns The CardSet with the given id.
+   * Retrieve a set from database.
+   * @param id - The id of the set to retrieve.
+   * @returns The set with the given id.
    */
   async findOne(id: string): Promise<Set> {
-    return await this.cardSetRepository.findOne(id);
+    const set = await this.setRepository.findOne(id, {
+      filters: { isActive: false },
+      populate: ['cards'],
+    });
+
+    if (!set) throw new NotFoundException(`Set with id '${id}' not found.`);
+
+    return set;
   }
 
   /**
-   * Create a new CardSet in the database.
-   * @param cardSet - The data to create the CardSet with.
-   * @returns The created CardSet.
+   * Create a new set in the database.
+   * @param set - The data to create the set with.
+   * @returns The created set.
    */
-  async create(cardSet: CreateSetDto): Promise<Set> {
-    const newCardSet = this.cardSetRepository.create(cardSet);
-    await this.cardSetRepository.persistAndFlush(newCardSet);
-    return newCardSet;
+  async create(set: CreateSetDto): Promise<Set> {
+    if (set.tag) {
+      set.tag = (await this.tagService.getTag(set.tag)).id;
+    }
+
+    const newSet = this.setRepository.create(set);
+    await this.setRepository.persistAndFlush(newSet);
+    return newSet;
   }
 
   /**
-   * Update a CardSet in the database.
-   * @param id - The id of the CardSet to update.
-   * @param cardSetData - The data to update the CardSet with.
-   * @returns The updated CardSet.
+   * Update a set in the database.
+   * @param id - The id of the set to update.
+   * @param setData - The data to update the set with.
+   * @returns The updated set.
    */
-  async update(id: string, cardSetData: CreateSetDto): Promise<Set> {
-    const cardSet = await this.findOne(id);
-    if (!cardSet) throw new NotFoundException('CardSet not found');
-    wrap(cardSet).assign(cardSetData);
-    await this.cardSetRepository.flush();
+  async update(id: string, setData: CreateSetDto): Promise<Set> {
+    const set = await this.findOne(id);
 
-    return cardSet;
+    if (setData.tag) {
+      setData.tag = (await this.tagService.getTag(setData.tag)).id;
+    }
+
+    this.setRepository.assign(set, setData);
+    await this.setRepository.flush();
+
+    return set;
   }
 
   /**
-   * Mark a CardSet as deleted and update it in the database.
-   * @param id - The id of the CardSet to delete.
-   * @returns The deleted CardSet.
+   * Mark a set as deleted and update it in the database.
+   * @param id - The id of the set to delete.
+   * @returns The deleted set.
    */
   async delete(id: string): Promise<void> {
-    const cardSet = await this.findOne(id);
-    if (!cardSet) throw new NotFoundException('CardSet not found');
-    wrap(cardSet).assign({ ...cardSet, deletedAt: new Date() } as Set);
+    const set = await this.findOne(id);
+    if (set.deletedAt)
+      throw new ConflictException(`Set with id ${id} already deleted`);
 
-    return await this.cardSetRepository.flush();
+    wrap(set).assign({ ...set, deletedAt: new Date() } as Set);
+
+    return await this.setRepository.flush();
   }
 }

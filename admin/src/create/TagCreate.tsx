@@ -1,9 +1,8 @@
-import {Create, CreateProps, SimpleForm, TextInput} from "react-admin";
+import { Create, CreateProps } from 'react-admin';
+import { TagForm } from '../form/TagForm';
 
 export const TagCreate = (props: CreateProps): JSX.Element => (
   <Create {...props}>
-    <SimpleForm>
-      <TextInput name="name" label="Name" source="name"/>
-    </SimpleForm>
+    <TagForm />
   </Create>
 );

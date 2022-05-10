@@ -30,6 +30,6 @@ export class Set extends BaseEntity {
   @ManyToOne(() => Tag, { nullable: true })
   tag?: Tag;
 
-  @ManyToMany(() => Card)
-  cards = new Collection<Card>(this);
+  @ManyToMany(() => Card, undefined, { nullable: true })
+  cards? = new Collection<Card>(this);
 }

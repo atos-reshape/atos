@@ -163,8 +163,7 @@ export class CardService {
     CardService.hasAtLeastAndAtMostOneDefaultLanguage(card.translations);
     CardService.isValidLanguageOnTranslation(card.translations);
     if (card.tag) {
-      // Set the tag to its id.
-      card.tag = (await this.tagService.findOneByName(card.tag)).id;
+      card.tag = (await this.tagService.getTag(card.tag)).id;
     }
 
     const newCard = this.cardRepository.create(card);
@@ -181,13 +180,10 @@ export class CardService {
   async update(id: string, cardData: CreateCardDto): Promise<Card> {
     const card = await this.findOne(id, { language: ALL_TRANSLATIONS });
 
-    CardService.hasAtLeastAndAtMostOneDefaultLanguage(
-      card.translations.getItems(),
-    );
-    CardService.isValidLanguageOnTranslation(card.translations.getItems());
+    CardService.hasAtLeastAndAtMostOneDefaultLanguage(cardData.translations);
+    CardService.isValidLanguageOnTranslation(cardData.translations);
     if (cardData.tag) {
-      // Set the tag to its id.
-      cardData.tag = (await this.tagService.findOneByName(cardData.tag)).id;
+      cardData.tag = (await this.tagService.getTag(cardData.tag)).id;
     }
 
     this.cardRepository.assign(card, cardData);
@@ -204,7 +200,8 @@ export class CardService {
    */
   async delete(id: string): Promise<void> {
     const card = await this.findOne(id, { language: ALL_TRANSLATIONS });
-    if (card.deletedAt) throw new ConflictException('Card already deleted');
+    if (card.deletedAt)
+      throw new ConflictException(`Card with id ${id} already deleted`);
 
     wrap(card).assign({ ...card, deletedAt: new Date() } as Card);
 
