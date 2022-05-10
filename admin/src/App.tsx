@@ -1,11 +1,5 @@
 import React from 'react';
-import {
-  Admin,
-  Layout,
-  LayoutProps,
-  Resource,
-  TranslationMessages,
-} from 'react-admin';
+import { Admin, Layout, LayoutProps, Resource } from 'react-admin';
 import { CardList } from './lists/CardList';
 import { TagList } from './lists/TagList';
 import { SetList } from './lists/SetList';
