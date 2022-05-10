@@ -33,7 +33,6 @@ export class SetController {
   constructor(private readonly setService: SetService) {}
 
   @ApiOperation({ summary: 'Get all card sets' })
-  @ApiQuery({ name: 'isActive' })
   @ApiOkResponse()
   @Get()
   async findAll(

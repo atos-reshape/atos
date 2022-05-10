@@ -29,7 +29,7 @@ export class SetService {
     return await this.cardSetRepository.findAndCount(
       {},
       {
-        filters: { isActive, hasTag: { name: tag } },
+        filters: { isActive, ...(tag && { hasTag: { name: tag } }) },
         limit: pageOptions.limit,
         offset: pageOptions.offset,
       },
