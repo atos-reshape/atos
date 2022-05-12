@@ -1,11 +1,16 @@
-import { List, Tabs } from '@mantine/core';
+import { List, Tabs, Button } from '@mantine/core';
 import { useContext } from 'react';
 import { GameContext } from './contexts/GameProvider';
 import { Player } from '../../../api/models/Player';
 import { PlayerView } from '../../../components/PlayerAvatar/PlayerView';
+import { IndividualResults } from '../../results/IndividualResults';
 
 export function ActiveGame() {
   const { players } = useContext(GameContext);
+
+  function endGame(){ 
+    window.location.href = `/results`;
+  }
 
   return (
     <Tabs
@@ -26,6 +31,9 @@ export function ActiveGame() {
           })}
         </List>
       </Tabs.Tab>
+      <Button color="red" radius="xs" uppercase onClick={endGame}>
+        End Game
+      </Button>
     </Tabs>
   );
 }
