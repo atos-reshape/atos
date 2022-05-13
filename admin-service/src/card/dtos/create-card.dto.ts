@@ -9,7 +9,9 @@ export class CreateCardDto {
   @ArrayNotEmpty()
   readonly translations: CardTranslation[] = [];
 
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({
+    description: 'Can be either the name of the tag or the UUID of the tag.',
+  })
   @Type(
     /* istanbul ignore next */
     () => String,

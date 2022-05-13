@@ -11,11 +11,11 @@ import { CreateCardDto, PageOptionsDto } from './dtos';
 import { wrap } from '@mikro-orm/core';
 import { PaginatedResult } from '../helpers/pagination.helper';
 import { CardTranslation } from './entities/card-translation.entity';
-import { FindAllOptionsDto } from './dtos/find-all-options.dto';
 import { isValidISO639_1 } from '../helpers/is-iso-639_1.decorator';
 import { TagService } from '../tag/tag.service';
 import { FindOneOptionsDto } from './dtos/find-one-options.dto';
 import { ALL_TRANSLATIONS } from './constants';
+import { FindAllCardOptionsDto } from './dtos/find-all-card-options.dto';
 
 @Injectable()
 export class CardService {
@@ -101,7 +101,7 @@ export class CardService {
    * @returns An array of cards.
    */
   async findAll(
-    findAllOptions: FindAllOptionsDto,
+    findAllOptions: FindAllCardOptionsDto,
     pageOptions: PageOptionsDto,
   ): Promise<PaginatedResult<Card>> {
     const { isActive, language, tag } = findAllOptions;
@@ -109,7 +109,7 @@ export class CardService {
     const [cards, count] = await this.cardRepository.findAndCount(
       {},
       {
-        filters: { isActive, hasTag: { name: tag } },
+        filters: { isActive, ...(tag && { hasTag: { name: tag } }) },
         populate: ['translations'],
         limit: pageOptions.limit,
         offset: pageOptions.offset,
@@ -163,8 +163,7 @@ export class CardService {
     CardService.hasAtLeastAndAtMostOneDefaultLanguage(card.translations);
     CardService.isValidLanguageOnTranslation(card.translations);
     if (card.tag) {
-      // Set the tag to its id.
-      card.tag = (await this.tagService.findOneByName(card.tag)).id;
+      card.tag = (await this.tagService.findOne(card.tag)).id;
     }
 
     const newCard = this.cardRepository.create(card);
@@ -181,13 +180,10 @@ export class CardService {
   async update(id: string, cardData: CreateCardDto): Promise<Card> {
     const card = await this.findOne(id, { language: ALL_TRANSLATIONS });
 
-    CardService.hasAtLeastAndAtMostOneDefaultLanguage(
-      card.translations.getItems(),
-    );
-    CardService.isValidLanguageOnTranslation(card.translations.getItems());
+    CardService.hasAtLeastAndAtMostOneDefaultLanguage(cardData.translations);
+    CardService.isValidLanguageOnTranslation(cardData.translations);
     if (cardData.tag) {
-      // Set the tag to its id.
-      cardData.tag = (await this.tagService.findOneByName(cardData.tag)).id;
+      cardData.tag = (await this.tagService.findOne(cardData.tag)).id;
     }
 
     this.cardRepository.assign(card, cardData);
@@ -204,7 +200,8 @@ export class CardService {
    */
   async delete(id: string): Promise<void> {
     const card = await this.findOne(id, { language: ALL_TRANSLATIONS });
-    if (card.deletedAt) throw new ConflictException('Card already deleted');
+    if (card.deletedAt)
+      throw new ConflictException(`Card with id ${id} already deleted`);
 
     wrap(card).assign({ ...card, deletedAt: new Date() } as Card);
 

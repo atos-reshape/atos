@@ -24,8 +24,8 @@ import { CreateCardDto, PageOptionsDto } from './dtos';
 import { Card } from './entities/card.entity';
 import { paginate } from '../helpers/pagination.helper';
 import { Request, Response } from 'express';
-import { FindAllOptionsDto } from './dtos/find-all-options.dto';
 import { FindOneOptionsDto } from './dtos/find-one-options.dto';
+import { FindAllCardOptionsDto } from './dtos/find-all-card-options.dto';
 
 /**
  * The REST API controller for the card service.
@@ -39,7 +39,7 @@ export class CardController {
   @ApiOkResponse()
   @Get()
   async findAll(
-    @Query() findAllOptions?: FindAllOptionsDto,
+    @Query() findAllOptions?: FindAllCardOptionsDto,
     @Query() pageOptions?: PageOptionsDto,
     @Res({ passthrough: true }) response?: Response,
     @Req() request?: Request,

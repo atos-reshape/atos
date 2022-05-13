@@ -8,6 +8,8 @@ import { InjectRepository } from '@mikro-orm/nestjs';
 import { wrap } from '@mikro-orm/core';
 import { Tag } from './entities/tag.entity';
 import { CreateTagDto } from './dtos/create-tag.dto';
+import { PageOptionsDto } from '../dtos/page-options.dto';
+import { PaginatedResult } from '../helpers/pagination.helper';
 
 /**
  * The TagService handles all the business logic regarding a tag. Note that a
@@ -23,10 +25,17 @@ export class TagService {
 
   /**
    * Retrieve all tags from database.
+   * @param pageOptions - Pagination options.
    * @returns An array of tags.
    */
-  async findAll(): Promise<Tag[]> {
-    return await this.tagRepository.findAll();
+  async findAll(pageOptions: PageOptionsDto): Promise<PaginatedResult<Tag>> {
+    return await this.tagRepository.findAndCount(
+      {},
+      {
+        limit: pageOptions.limit,
+        offset: pageOptions.offset,
+      },
+    );
   }
 
   /**
@@ -37,18 +46,6 @@ export class TagService {
   async findOne(id: string): Promise<Tag> {
     const tag = await this.tagRepository.findOne(id);
     if (!tag) throw new NotFoundException(`Tag with id '${id}' not found.`);
-    return tag;
-  }
-
-  /**
-   * Retrieve a tag from database by name.
-   * @param name - The name of the tag to retrieve.
-   * @returns The tag with the given name.
-   *
-   */
-  async findOneByName(name: string): Promise<Tag> {
-    const tag = await this.tagRepository.findOne({ name });
-    if (!tag) throw new NotFoundException(`Tag with name '${name}' not found.`);
     return tag;
   }
 
