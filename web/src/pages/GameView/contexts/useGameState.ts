@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import { Lobby } from './../../../api/models/Lobby';
-import { Player } from './../../../api/models/Player';
-import { Round } from './../../../api/models/Round';
+import { Lobby } from '../../../api/models/Lobby';
+import { Player } from '../../../api/models/Player';
+import { Round } from '../../../api/models/Round';
 
 type State = {
   loading: true;

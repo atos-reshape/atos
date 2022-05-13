@@ -1,9 +1,9 @@
 import { createContext, useContext, useEffect } from 'react';
 import { SocketContext } from './SocketProvider';
-import { Lobby } from './../../../api/models/Lobby';
-import { Player } from './../../../api/models/Player';
+import { Lobby, Player } from './../../../api/models';
 import { useGameState } from './useGameState';
 import { COLORS, usePlayerColors } from './usePlayerColors';
+import { AtosLoadingScreen } from '../../../components/AtosLoadingScreen/AtosLoadingScreen';
 
 interface Props {
   children: JSX.Element;
@@ -45,10 +45,7 @@ const GameProvider = ({ children }: Props) => {
     socket.on('round.updated', updateRound);
   }, [socket]);
 
-  if (state.loading) {
-    // TODO Create a nice loading screen...
-    return <div>Loading Game Data</div>;
-  }
+  if (state.loading) return <AtosLoadingScreen />;
 
   const { lobby, players } = state;
   return (

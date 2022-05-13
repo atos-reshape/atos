@@ -7,6 +7,8 @@ import { ActiveGame } from './ActiveGame';
 
 export function GameView(): JSX.Element {
   const { lobby } = useContext(GameContext);
+  console.log(lobby);
+  console.log('hey');
 
   if (!lobby.currentRound.startedAt)
     return (
@@ -21,6 +23,17 @@ export function GameView(): JSX.Element {
         </Grid>
       </Container>
     );
+
+  // if (!lobby.currentRound.startedAt && admin == false)
+  //   return (
+  //     <Container size={1000}>
+  //       <Grid justify="center" style={{ height: 600 }} gutter="xl">
+  //         <Grid.Col span={4}>
+  //           <PlayerList />
+  //         </Grid.Col>
+  //       </Grid>
+  //     </Container>
+  //   );
 
   if (!!lobby.currentRound.startedAt && !lobby.currentRound.endedAt)
     return <ActiveGame />;
