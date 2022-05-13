@@ -30,7 +30,7 @@ function GameSettings() {
     <>
       <Container>
         <Group direction="column" className={styles.container}>
-          <h1 style={{ color: "rgb(5, 150, 255)"}}>Game Settings</h1>
+          <h1 style={{ color: 'rgb(5, 150, 255)' }}>Game Settings</h1>
 
           <TextInput
             placeholder="Game Name"
