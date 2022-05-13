@@ -7,6 +7,7 @@ export const tag = (data: Partial<Tag> = {}, orm?: MikroORM): Tag => {
   let tag = {
     id: v4(),
     name: faker.lorem.sentence(),
+    description: faker.lorem.paragraphs(3),
     createdAt: faker.date.recent(),
     updatedAt: faker.date.recent(),
     ...data,
