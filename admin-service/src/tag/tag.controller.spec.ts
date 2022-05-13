@@ -101,6 +101,7 @@ describe('TagController', () => {
     it('should create a tag', async () => {
       const testTag = new CreateTagDto();
       testTag.name = faker.lorem.word();
+      testTag.description = faker.lorem.paragraphs(3);
 
       const result = await tagController.create(testTag);
       expect(result).toBeInstanceOf(Tag);

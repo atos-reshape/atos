@@ -55,7 +55,7 @@ export class TagService {
    * @returns The created card.
    */
   async create(tagData: CreateTagDto): Promise<Tag> {
-    const newTag = this.tagRepository.create({ name: tagData.name });
+    const newTag = this.tagRepository.create(tagData);
     await this.tagRepository.persistAndFlush(newTag);
     return newTag;
   }
