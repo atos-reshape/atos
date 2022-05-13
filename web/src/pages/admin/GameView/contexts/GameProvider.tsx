@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect } from 'react';
 import { SocketContext } from './SocketProvider';
-import { Lobby, Player } from '../../../../api/models';
+import { Lobby, Player, SelectedCards } from '../../../../api/models';
 import { useGameState } from './useGameState';
 import { COLORS, usePlayerColors } from './usePlayerColors';
 import { AtosLoadingScreen } from '../../../../components/AtosLoadingScreen/AtosLoadingScreen';
@@ -13,6 +13,7 @@ type GameContext = {
   lobby: Lobby;
   players: Player[];
   addCard: (id: string) => void;
+  playerCards: { [key: string]: SelectedCards };
 };
 
 type ColorContext = {
@@ -23,7 +24,7 @@ const GameContext = createContext<GameContext>({} as GameContext);
 const ColorContext = createContext<ColorContext>({} as ColorContext);
 
 const GameProvider = ({ children }: Props) => {
-  const { state, updateRound, addPlayer, onLoad, addCard } = useGameState();
+  const gameState = useGameState();
   const { findColor } = usePlayerColors();
   const { socket } = useContext(SocketContext);
 
@@ -31,25 +32,30 @@ const GameProvider = ({ children }: Props) => {
   useEffect(() => {
     socket.emit('getLobby', null, (lobby: Lobby) => {
       socket.emit('getPlayers', null, (players: Player[]) => {
-        onLoad(lobby, players);
+        gameState.onLoad(lobby, players);
       });
     });
   }, [socket]);
 
   // Subscribing to events from server
   useEffect(() => {
-    socket.on('player.joined', addPlayer);
-    socket.on('round.started', updateRound);
-    socket.on('round.ended', updateRound);
-    socket.on('round.created', updateRound);
-    socket.on('round.updated', updateRound);
+    socket.on('player.joined', gameState.addPlayer);
+    socket.on('round.started', gameState.updateRound);
+    socket.on('round.ended', gameState.updateRound);
+    socket.on('round.created', gameState.updateRound);
+    socket.on('round.updated', gameState.updateRound);
+    socket.on('cards.selected.updated', gameState.updateSPC);
   }, [socket]);
 
-  if (state.loading) return <AtosLoadingScreen />;
+  if (gameState.state.loading) return <AtosLoadingScreen />;
 
-  const { lobby, players } = state;
+  const {
+    state: { lobby, players },
+    playerCards,
+    addCard
+  } = gameState;
   return (
-    <GameContext.Provider value={{ lobby, players, addCard }}>
+    <GameContext.Provider value={{ lobby, players, addCard, playerCards }}>
       <ColorContext.Provider value={{ findColor }}>
         {children}
       </ColorContext.Provider>

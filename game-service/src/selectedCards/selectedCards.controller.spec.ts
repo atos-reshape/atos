@@ -113,7 +113,7 @@ describe('SelectedCardsController', () => {
         orm,
       );
       const req = await controller.addCardToLiked(
-        p.id,
+        { playerId: p.id },
         l.currentRound.id,
         newCard,
       );
@@ -151,7 +151,7 @@ describe('SelectedCardsController', () => {
 
       expect(
         await controller.removeCardFromLiked(
-          p.id,
+          { playerId: p.id },
           l.currentRound.id,
           removedCard,
         ),
@@ -182,7 +182,10 @@ describe('SelectedCardsController', () => {
           { player: p, round: l.currentRound, cards: [...playerCards, v4()] },
           orm,
         );
-        const req = await controller.finishedSelecting(p.id, l.currentRound.id);
+        const req = await controller.finishedSelecting(
+          { playerId: p.id },
+          l.currentRound.id,
+        );
 
         expect({ cards: req.cards }).toMatchObject({
           cards: playerSelectedCards.cards,
@@ -200,7 +203,7 @@ describe('SelectedCardsController', () => {
         );
 
         expect(
-          controller.finishedSelecting(p.id, l.currentRound.id),
+          controller.finishedSelecting({ playerId: p.id }, l.currentRound.id),
         ).rejects.toThrow(Error);
       });
 
@@ -217,7 +220,7 @@ describe('SelectedCardsController', () => {
         );
 
         await expect(
-          controller.finishedSelecting(p.id, l.currentRound.id),
+          controller.finishedSelecting({ playerId: p.id }, l.currentRound.id),
         ).rejects.toThrow(Error);
       });
     });
