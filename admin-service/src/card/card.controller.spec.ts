@@ -339,21 +339,6 @@ describe('CardController', () => {
       );
     });
 
-    it('should create a card with an existing tag as name', async () => {
-      const translation = cardTranslation({});
-      const testTag = tag({ name: 'existing tag' }, orm);
-      const testCard = new CreateCardDto({
-        tag: testTag.name,
-        translations: [translation],
-      });
-
-      const createResult = await cardController.create(testCard);
-      expect(createResult.translations).toHaveLength(
-        testCard.translations.length,
-      );
-      expect(createResult.tag.name).toBe(testTag.name);
-    });
-
     it('should create a card with an existing tag as UUID', async () => {
       const translation = cardTranslation({});
       const testTag = tag({ name: 'existing tag' }, orm);
@@ -445,28 +430,6 @@ describe('CardController', () => {
       const updateResult = await cardController.update(testCard.id, cardUpdate);
 
       expect(updateResult).toMatchObject(testCard);
-    });
-
-    it('should update a card with an existing tag as name', async () => {
-      const testTag = tag({ name: 'existing tag' }, orm);
-      const testCard = card({ tag: testTag }, orm);
-      const translation = cardTranslation(
-        {
-          card: testCard,
-        },
-        orm,
-      );
-      const cardUpdate = new CreateCardDto();
-      cardUpdate.translations.push(translation);
-      cardUpdate.tag = testTag.name;
-
-      // Update the card
-      testCard.translations.add(translation);
-      testCard.tag = testTag;
-      const updateResult = await cardController.update(testCard.id, cardUpdate);
-
-      expect(updateResult).toMatchObject(testCard);
-      expect(updateResult.tag.name).toBe(testTag.name);
     });
 
     it('should update a card with an existing tag as uuid', async () => {

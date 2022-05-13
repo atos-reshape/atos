@@ -66,7 +66,7 @@ export class SetService {
    */
   async create(set: CreateSetDto): Promise<Set> {
     if (set.tag) {
-      set.tag = (await this.tagService.getTag(set.tag)).id;
+      set.tag = (await this.tagService.findOne(set.tag)).id;
     }
 
     const newSet = this.setRepository.create(set);
@@ -84,7 +84,7 @@ export class SetService {
     const set = await this.findOne(id);
 
     if (setData.tag) {
-      setData.tag = (await this.tagService.getTag(setData.tag)).id;
+      setData.tag = (await this.tagService.findOne(setData.tag)).id;
     }
 
     this.setRepository.assign(set, setData);

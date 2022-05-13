@@ -54,14 +54,6 @@ export class TagController {
     return await this.tagService.findOne(id);
   }
 
-  @ApiOperation({ summary: 'Get tag by name' })
-  @ApiOkResponse()
-  @ApiNotFoundResponse()
-  @Get(':name')
-  async findOneByName(@Param('name') name: string): Promise<Tag> {
-    return await this.tagService.findOneByName(name);
-  }
-
   @ApiOperation({ summary: 'Create tag' })
   @ApiCreatedResponse()
   @ApiBadRequestResponse()

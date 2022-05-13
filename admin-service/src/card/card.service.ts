@@ -163,7 +163,7 @@ export class CardService {
     CardService.hasAtLeastAndAtMostOneDefaultLanguage(card.translations);
     CardService.isValidLanguageOnTranslation(card.translations);
     if (card.tag) {
-      card.tag = (await this.tagService.getTag(card.tag)).id;
+      card.tag = (await this.tagService.findOne(card.tag)).id;
     }
 
     const newCard = this.cardRepository.create(card);
@@ -183,7 +183,7 @@ export class CardService {
     CardService.hasAtLeastAndAtMostOneDefaultLanguage(cardData.translations);
     CardService.isValidLanguageOnTranslation(cardData.translations);
     if (cardData.tag) {
-      cardData.tag = (await this.tagService.getTag(cardData.tag)).id;
+      cardData.tag = (await this.tagService.findOne(cardData.tag)).id;
     }
 
     this.cardRepository.assign(card, cardData);

@@ -24,19 +24,6 @@ export class TagService {
   ) {}
 
   /**
-   * When creating a card, a tag can be either passed through as name of the tag or as UUID of the tag.
-   * @param tag - The name or UUID of the tag.
-   */
-  async getTag(tag: string): Promise<Tag> {
-    // See if card.tag is a UUID
-    return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-5][0-9a-f]{3}-[089ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(
-      tag,
-    )
-      ? await this.findOne(tag)
-      : await this.findOneByName(tag);
-  }
-
-  /**
    * Retrieve all tags from database.
    * @param pageOptions - Pagination options.
    * @returns An array of tags.
@@ -59,18 +46,6 @@ export class TagService {
   async findOne(id: string): Promise<Tag> {
     const tag = await this.tagRepository.findOne(id);
     if (!tag) throw new NotFoundException(`Tag with id '${id}' not found.`);
-    return tag;
-  }
-
-  /**
-   * Retrieve a tag from database by name.
-   * @param name - The name of the tag to retrieve.
-   * @returns The tag with the given name.
-   *
-   */
-  async findOneByName(name: string): Promise<Tag> {
-    const tag = await this.tagRepository.findOne({ name });
-    if (!tag) throw new NotFoundException(`Tag with name '${name}' not found.`);
     return tag;
   }
 

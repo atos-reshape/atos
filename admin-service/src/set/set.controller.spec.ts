@@ -202,17 +202,6 @@ describe('SetController', () => {
       expect(createResult).toMatchObject(testSet);
     });
 
-    it('should create a set with an existing tag as name', async () => {
-      const testTag = tag({ name: 'existing tag' }, orm);
-      const testSet = new CreateSetDto({
-        name: 'test set',
-        tag: testTag.name,
-      });
-
-      const createResult = await setController.create(testSet);
-      expect(createResult.tag.name).toBe(testTag.name);
-    });
-
     it('should create a set with an existing tag as UUID', async () => {
       const testTag = tag({ name: 'existing tag' }, orm);
       const testSet = new CreateSetDto({
@@ -249,20 +238,6 @@ describe('SetController', () => {
       const updateResult = await setController.update(testSet.id, setUpdate);
 
       expect(updateResult).toMatchObject(testSet);
-    });
-
-    it('should update a set with an existing tag as name', async () => {
-      const testTag = tag({ name: 'existing tag' }, orm);
-      const testSet = set({ tag: testTag }, orm);
-      const setUpdate = new CreateSetDto();
-      setUpdate.tag = testTag.name;
-
-      // Update the set
-      testSet.tag = testTag;
-      const updateResult = await setController.update(testSet.id, setUpdate);
-
-      expect(updateResult).toMatchObject(testSet);
-      expect(updateResult.tag.name).toBe(testTag.name);
     });
 
     it('should update a set with an existing tag as UUID', async () => {
