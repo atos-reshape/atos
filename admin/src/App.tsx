@@ -7,7 +7,6 @@ import { CardCreate } from './create/CardCreate';
 import { TagCreate } from './create/TagCreate';
 import { CardEdit } from './edit/CardEdit';
 import CustomDataProvider from './dataprovider/DataProvider';
-import { TagEdit } from './edit/TagEdit';
 import { SetEdit } from './edit/SetEdit';
 import { SetCreate } from './create/SetCreate';
 import { CustomAppBar } from './appbar/CustomAppBar';
@@ -38,7 +37,7 @@ const App = (): JSX.Element => (
       edit={CardEdit}
       create={CardCreate}
     />
-    <Resource name="tags" list={TagList} edit={TagEdit} create={TagCreate} />
+    <Resource name="tags" list={TagList} create={TagCreate} />
     <Resource name="sets" list={SetList} edit={SetEdit} create={SetCreate} />
   </Admin>
 );
