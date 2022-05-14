@@ -5,10 +5,12 @@
     border-radius: 12px;
     width: 280px;
     height: 260px;
+    background-color: white;
 }
 
 .title {
     margin: 10px 0 50px 0;
+    color: rgb(0, 149, 255);
 }
 
 .loader {
