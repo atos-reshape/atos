@@ -1,6 +1,6 @@
 import { io, Socket } from 'socket.io-client';
 import { createContext, useEffect, useState } from 'react';
-import { Lobby, Player, Round } from '../../../../api/models';
+import { Lobby, Player, Round, SelectedCards } from '../../../../api/models';
 import { AtosLoadingScreen } from '../../../../components/AtosLoadingScreen/AtosLoadingScreen';
 
 interface Props {
@@ -36,6 +36,7 @@ type ListenEvents = {
   'round.started': (round: Round) => void;
   'round.ended': (round: Round) => void;
   'round.updated': (round: Round) => void;
+  'cards.selected.updated': (selectedCards: SelectedCards) => void;
 };
 
 // These are manually typed send events for type safety.
