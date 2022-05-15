@@ -22,7 +22,7 @@ function IndividualResults() {
       setTagDescription(getOutcomeTag.description);
   }, []);
   return (
-    <Group direction="column" position="center">
+    <Group direction="column" position="center" style={{ padding: '0% 5%' }}>
       <h1>Personal results</h1>
       <Text>Your personal profile based on the cards you selected</Text>
       <Group direction="row">
