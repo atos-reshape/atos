@@ -16,12 +16,19 @@ import { TagService } from '../tag/tag.service';
 import { FindOneOptionsDto } from './dtos/find-one-options.dto';
 import { ALL_TRANSLATIONS } from './constants';
 import { FindAllCardOptionsDto } from './dtos/find-all-card-options.dto';
+import { Readable } from 'stream';
+import { CsvParser, ParsedData } from 'nest-csv-parser';
+import { CardFileUploadDto, language } from './dtos/card-file-upload.dto';
+import { getAll639_1 } from 'all-iso-language-codes';
+import { Tag } from '../tag/entities/tag.entity';
+import { removeBomFromBuffer } from '../helpers/remove-bom.helper';
 
 @Injectable()
 export class CardService {
   constructor(
     @InjectRepository(Card)
     private readonly cardRepository: EntityRepository<Card>,
+    private readonly csvParser: CsvParser,
     private readonly tagService: TagService,
   ) {}
 
@@ -169,6 +176,66 @@ export class CardService {
     const newCard = this.cardRepository.create(card);
     await this.cardRepository.persistAndFlush(newCard);
     return newCard;
+  }
+
+  /**
+   * Giving the user the ability to upload a .csv file containing cards, this method will create the cards in the database.
+   * @param file - The .csv file.
+   * @returns The created cards.
+   */
+  async createFromFile(file: Express.Multer.File): Promise<Card[]> {
+    // Map the buffer to a stream.
+    const stream = Readable.from(removeBomFromBuffer(file.buffer));
+
+    // Parse the stream.
+    const csv: ParsedData<CardFileUploadDto> = await this.csvParser.parse(
+      stream,
+      CardFileUploadDto,
+      null,
+      null,
+      { separator: ',' },
+    );
+
+    // I assume that all tags are contained within a limit of 100.
+    const [tags]: PaginatedResult<Tag> = await this.tagService.findAll({
+      limit: 100,
+    });
+
+    // Map each tag to an id.
+    const csvData: CardFileUploadDto[] = await Promise.all(
+      csv.list.map(async (row: CardFileUploadDto) => ({
+        ...row,
+        tag: tags.find((t: Tag) => t.name === row.tag)?.id,
+      })),
+    );
+
+    // Create the cards and return them.
+    return await Promise.all(
+      csvData.map(async (row: CardFileUploadDto) => {
+        const possibleLanguages = getAll639_1();
+        // Map [key: language]: string; from row to possibleLanguages.
+        const languages: [language, string][] = Object.entries(row).filter(
+          ([key]) => possibleLanguages.includes(key),
+        );
+
+        // Just pick the first language to be the default.
+        const defaultLanguage = languages[0][0];
+
+        return await this.create(
+          new CreateCardDto({
+            tag: row.tag,
+            translations: languages.map(
+              (entry) =>
+                ({
+                  isDefaultLanguage: entry[0] === defaultLanguage,
+                  language: entry[0],
+                  text: entry[1],
+                } as CardTranslation),
+            ),
+          }),
+        );
+      }),
+    );
   }
 
   /**
