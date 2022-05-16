@@ -3,6 +3,7 @@ import { GameContext } from './contexts/GameProvider';
 import { Button, Tabs, Text } from '@mantine/core';
 import { useStartRound } from '../../../api/requests/rounds';
 import { SelectedCards } from './components/SelectedCards';
+import styles from './GameSettings.module.css';
 
 export function GameSettings(): JSX.Element {
   const { lobby } = useContext(GameContext);
@@ -21,8 +22,10 @@ export function GameSettings(): JSX.Element {
       })}
     >
       <Tabs.Tab label="Game">
-        <Text>Lobby Code: {lobby.code}</Text>
-        <Text>Lobby Title: {lobby.title}</Text>
+        <Text className={styles.black}>Lobby Code: {lobby.code}</Text>
+        <Text className={styles.black} style={{ color: 'black' }}>
+          Lobby Title: {lobby.title}
+        </Text>
       </Tabs.Tab>
       <Tabs.Tab label="Next Round">
         <Button onClick={() => start.mutate({})}>Start round</Button>
