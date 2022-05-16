@@ -20,6 +20,7 @@ export const registerProxyGateway = (app: INestApplication) => {
     // Admin service api proxy
     '/api/cards': `http://${process.env.ADMIN_SERVICE_HOST}:${process.env.ADMIN_SERVICE_PORT}`,
     '/api/login': `http://${process.env.ADMIN_SERVICE_HOST}:${process.env.ADMIN_SERVICE_PORT}`,
+    '/api/tags': `http://${process.env.ADMIN_SERVICE_HOST}:${process.env.ADMIN_SERVICE_PORT}`,
     '/docs/admin-service': `http://${process.env.ADMIN_SERVICE_HOST}:${process.env.ADMIN_SERVICE_PORT}`,
     // Frontend apps
     '*': `http://${process.env.FRONTEND_HOST}:${process.env.FRONTEND_PORT}`,
