@@ -1,4 +1,4 @@
-import { SelectedCards } from '../models';
+import { SelectedCards } from '../models/SelectedCards';
 
 export const useLikeCard = (roundId: string) => {
   return async (cardId: string): Promise<SelectedCards> => {
@@ -7,7 +7,7 @@ export const useLikeCard = (roundId: string) => {
       {
         method: 'PUT',
         headers: {
-          Authorization: `Bearer ${localStorage.getItem('accessTokenAtos')}`
+          Authorization: `Bearer ${localStorage.getItem('accessToken')}`
         }
       }
     );
@@ -22,7 +22,7 @@ export const useUnLikeCard = (roundId: string) => {
       {
         method: 'DELETE',
         headers: {
-          Authorization: `Bearer ${localStorage.getItem('accessTokenAtos')}`
+          Authorization: `Bearer ${localStorage.getItem('accessToken')}`
         }
       }
     );
@@ -37,7 +37,7 @@ export const useFinishSelecting = (roundId: string) => {
       {
         method: 'PUT',
         headers: {
-          Authorization: `Bearer ${localStorage.getItem('accessTokenAtos')}`
+          Authorization: `Bearer ${localStorage.getItem('accessToken')}`
         }
       }
     );

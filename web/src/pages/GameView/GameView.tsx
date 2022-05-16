@@ -6,7 +6,6 @@ import { GameContext } from './contexts/GameProvider';
 import { GameSettings } from './../admin/GameView/GameSettings';
 import { ActiveGame } from './../admin/GameView/ActiveGame';
 import Navbar from '../../components/NavbarGame/Navbar';
-import { Container, Grid } from '@mantine/core';
 import { SocketProvider } from '../../hooks/useSocketContext';
 import { PlayerGameProvider } from '../../hooks/usePlayerGameContext';
 import PlayerGameView from '../../components/PlayerGameView/PlayerGameView';
@@ -16,7 +15,6 @@ export function GameView(): JSX.Element {
   const { lobby } = useContext(GameContext);
 
   if (!lobby.currentRound.startedAt) {
-    console.log('lobby');
     return (
       <div className={styles.container}>
         <Container size={1000} style={{ backgroundColor: 'rgb(29, 28, 28)' }}>
@@ -37,12 +35,10 @@ export function GameView(): JSX.Element {
 
   if (!!lobby.currentRound.startedAt && !lobby.currentRound.endedAt)
     return (
-      <SocketProvider>
-        <PlayerGameProvider>
-          <Navbar />
-          <PlayerGameView />
-        </PlayerGameProvider>
-      </SocketProvider>
+      <PlayerGameProvider>
+        <Navbar />
+        <PlayerGameView />
+      </PlayerGameProvider>
     );
 
   if (!!lobby.currentRound.startedAt && !!lobby.currentRound.endedAt)

@@ -57,7 +57,7 @@ const SocketProvider = ({ children, id }: Props) => {
     const socket = io('', {
       transports: ['websocket'],
       path: '/lobby/',
-      auth: { token: localStorage.getItem('accessTokenAtos') }
+      auth: { token: localStorage.getItem('accessToken') }
     });
 
     socket.on('connect', () => {
