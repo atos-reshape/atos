@@ -1,7 +1,5 @@
 import { useState } from 'react';
-import { Lobby } from '../../../../api/models/Lobby';
-import { Player } from '../../../../api/models/Player';
-import { Round } from '../../../../api/models/Round';
+import { Round, Player, Lobby, SelectedCards } from '../../../../api/models';
 
 type State = {
   loading: true;
@@ -19,6 +17,9 @@ export function useGameState() {
   const [state, setState] = useState<State | LoadedState>({
     loading: true
   });
+  const [playerCards, setPlayerCards] = useState<{
+    [key: string]: SelectedCards;
+  }>({});
 
   const updateRound = (round: Round) =>
     setState(
@@ -52,5 +53,20 @@ export function useGameState() {
       } as unknown as LoadedState;
     });
 
-  return { state, updateRound, addPlayer, onLoad, addCard };
+  const updateSPC = (selectedCards: SelectedCards) => {
+    setPlayerCards((playerCards) => ({
+      ...playerCards,
+      [selectedCards.playerId]: selectedCards
+    }));
+  };
+
+  return {
+    state,
+    updateRound,
+    addPlayer,
+    onLoad,
+    addCard,
+    updateSPC,
+    playerCards
+  };
 }

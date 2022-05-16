@@ -8,6 +8,8 @@ import { InjectRepository } from '@mikro-orm/nestjs';
 import { wrap } from '@mikro-orm/core';
 import { Tag } from './entities/tag.entity';
 import { CreateTagDto } from './dtos/create-tag.dto';
+import { PageOptionsDto } from '../dtos/page-options.dto';
+import { PaginatedResult } from '../helpers/pagination.helper';
 
 /**
  * The TagService handles all the business logic regarding a tag. Note that a
@@ -23,10 +25,17 @@ export class TagService {
 
   /**
    * Retrieve all tags from database.
+   * @param pageOptions - Pagination options.
    * @returns An array of tags.
    */
-  async findAll(): Promise<Tag[]> {
-    return await this.tagRepository.findAll();
+  async findAll(pageOptions: PageOptionsDto): Promise<PaginatedResult<Tag>> {
+    return await this.tagRepository.findAndCount(
+      {},
+      {
+        limit: pageOptions.limit,
+        offset: pageOptions.offset,
+      },
+    );
   }
 
   /**
@@ -41,24 +50,12 @@ export class TagService {
   }
 
   /**
-   * Retrieve a tag from database by name.
-   * @param name - The name of the tag to retrieve.
-   * @returns The tag with the given name.
-   *
-   */
-  async findOneByName(name: string): Promise<Tag> {
-    const tag = await this.tagRepository.findOne({ name });
-    if (!tag) throw new NotFoundException(`Tag with name '${name}' not found.`);
-    return tag;
-  }
-
-  /**
    * Create a new tag in the database.
    * @param tagData - The data to create the card with.
    * @returns The created card.
    */
   async create(tagData: CreateTagDto): Promise<Tag> {
-    const newTag = this.tagRepository.create({ name: tagData.name });
+    const newTag = this.tagRepository.create(tagData);
     await this.tagRepository.persistAndFlush(newTag);
     return newTag;
   }

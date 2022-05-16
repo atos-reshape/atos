@@ -10,6 +10,8 @@ import { createTags, tag } from '../../test/factories/tag';
 import { CreateTagDto } from './dtos/create-tag.dto';
 import { faker } from '@faker-js/faker';
 import { ConflictException, NotFoundException } from '@nestjs/common';
+import { PageOptionsDto } from '../dtos/page-options.dto';
+import { Request, Response } from 'express';
 
 describe('TagController', () => {
   let tagController: TagController;
@@ -42,12 +44,25 @@ describe('TagController', () => {
   });
 
   describe('findAll', () => {
+    let request, response: Partial<Response>;
+
+    beforeEach(() => {
+      request = {} as Request;
+      response = {
+        setHeader: jest.fn().mockImplementation(),
+      };
+    });
+
     it.each([...Array(10).keys()])(
       'should return an array of tags',
       async (length) => {
         const tags = createTags(new Array(length).fill({}), orm);
 
-        const result = await tagController.findAll();
+        const result = await tagController.findAll(
+          new PageOptionsDto(),
+          response as Response,
+          request,
+        );
         expect(result).toBeInstanceOf(Array);
         expect(result).toHaveLength(length);
         expect(result).toEqual(tags);
@@ -55,7 +70,11 @@ describe('TagController', () => {
     );
 
     it('should return an empty array if no tags are pesisted', async () => {
-      const result = await tagController.findAll();
+      const result = await tagController.findAll(
+        new PageOptionsDto(),
+        response as Response,
+        request,
+      );
       expect(result).toBeInstanceOf(Array);
       expect(result).toHaveLength(0);
       expect(result).toEqual([]);
@@ -78,26 +97,11 @@ describe('TagController', () => {
     });
   });
 
-  describe('findOneByName', () => {
-    it('should return a tag', async () => {
-      const testTag = tag({}, orm);
-
-      const result = await tagController.findOneByName(testTag.name);
-      expect(result).toBeInstanceOf(Tag);
-      expect(result).toEqual(testTag);
-    });
-
-    it('should throw a NotFoundException if no tag is found', async () => {
-      await expect(tagController.findOne(faker.word.noun())).rejects.toThrow(
-        NotFoundException,
-      );
-    });
-  });
-
   describe('create', () => {
     it('should create a tag', async () => {
       const testTag = new CreateTagDto();
       testTag.name = faker.lorem.word();
+      testTag.description = faker.lorem.paragraphs(3);
 
       const result = await tagController.create(testTag);
       expect(result).toBeInstanceOf(Tag);
