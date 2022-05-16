@@ -21,6 +21,7 @@ import { CsvParser, ParsedData } from 'nest-csv-parser';
 import { CardFileUploadDto, language } from './dtos/card-file-upload.dto';
 import { getAll639_1 } from 'all-iso-language-codes';
 import { Tag } from '../tag/entities/tag.entity';
+import { removeBomFromBuffer } from '../helpers/remove-bom.helper';
 
 @Injectable()
 export class CardService {
@@ -184,21 +185,19 @@ export class CardService {
    */
   async createFromFile(file: Express.Multer.File): Promise<Card[]> {
     // Map the buffer to a stream.
-    const stream = new Readable({
-      read() {
-        this.push(file.buffer);
-        this.push(null);
-      },
-    });
+    const stream = Readable.from(removeBomFromBuffer(file.buffer));
 
     // Parse the stream.
     const csv: ParsedData<CardFileUploadDto> = await this.csvParser.parse(
       stream,
       CardFileUploadDto,
+      null,
+      null,
+      { separator: ',' },
     );
 
     // I assume that all tags are contained within a limit of 100.
-    const [tags, count]: PaginatedResult<Tag> = await this.tagService.findAll({
+    const [tags]: PaginatedResult<Tag> = await this.tagService.findAll({
       limit: 100,
     });
 
