@@ -14,10 +14,6 @@ function IndividualResults() {
     const getOutcomeTag: Tag | undefined = data?.find(
       (tag) => tag.name === outcome
     );
-    console.log(data);
-    console.log(getOutcomeTag);
-    console.log(outcome);
-
     if (getOutcomeTag !== undefined)
       setTagDescription(getOutcomeTag.description);
   }, []);
