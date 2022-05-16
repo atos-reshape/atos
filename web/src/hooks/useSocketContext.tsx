@@ -22,7 +22,7 @@ const SocketProvider = ({ children }: { children: JSX.Element }) => {
     socket = io('', {
       transports: ['websocket'],
       path: '/lobby/',
-      auth: { token: localStorage.getItem('accessTokenAtos') }
+      auth: { token: localStorage.getItem('accessToken') }
     });
 
     socket.on('connect', function () {

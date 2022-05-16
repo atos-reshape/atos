@@ -12,15 +12,16 @@ import {
 } from '../../api/requests/selectedCards';
 import { SocketContext } from '../../hooks/useSocketContext';
 import { Card } from '../../api/requests/card';
+import { GameContext } from '../../pages/GameView/contexts/GameProvider';
 
 function PlayerGameView2() {
   const { carouselCards, selectedCards, setSelectedCards } =
     useContext(PlayerGameContext);
-  const { state } = useContext(SocketContext);
+  const { lobby } = useContext(GameContext);
   const [index, setIndex] = useState(0);
-  const likeCard = useLikeCard(state?.currentRound.id || '');
-  const unLikeCard = useUnLikeCard(state?.currentRound.id || '');
-  const finishSelecting = useFinishSelecting(state?.currentRound.id || '');
+  const likeCard = useLikeCard(String(lobby.currentRound.id));
+  const unLikeCard = useUnLikeCard(String(lobby.currentRound.id));
+  const finishSelecting = useFinishSelecting(String(lobby.currentRound.id));
 
   const renderedCards = carouselCards.filter(
     (card: any) => !selectedCards.includes(card)
