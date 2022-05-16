@@ -24,10 +24,10 @@ import {
   createCardTranslations,
 } from '../../test/factories/cardTranslation';
 import { tag } from '../../test/factories/tag';
-import { FindAllOptionsDto } from './dtos/find-all-options.dto';
 import { TagModule } from '../tag/tag.module';
 import { FindOneOptionsDto } from './dtos/find-one-options.dto';
 import { ALL_TRANSLATIONS } from './constants';
+import { FindAllCardOptionsDto } from './dtos/find-all-card-options.dto';
 
 describe('CardController', () => {
   let cardController: CardController;
@@ -72,14 +72,14 @@ describe('CardController', () => {
 
     it.each([...Array(10).keys()])(
       'should return an array of cards with all translations',
-      async (length) => {
+      async (length: number) => {
         createCardsWithTranslation(
           new Array(length).fill({}),
           new Array(length).fill({}),
           orm,
         );
         const responseObject = await cardController.findAll(
-          new FindAllOptionsDto({
+          new FindAllCardOptionsDto({
             isActive: true,
             language: ALL_TRANSLATIONS,
             tag: undefined,
@@ -120,7 +120,7 @@ describe('CardController', () => {
         orm,
       );
       const responseObject = await cardController.findAll(
-        new FindAllOptionsDto({
+        new FindAllCardOptionsDto({
           isActive: true,
           language: undefined,
           tag: undefined,
@@ -160,7 +160,7 @@ describe('CardController', () => {
         orm,
       );
       const responseObject = await cardController.findAll(
-        new FindAllOptionsDto({
+        new FindAllCardOptionsDto({
           isActive: true,
           language: 'en',
           tag: undefined,
@@ -180,7 +180,7 @@ describe('CardController', () => {
 
     it('should return an empty array if there are no cards', async () => {
       const responseObject = await cardController.findAll(
-        new FindAllOptionsDto({
+        new FindAllCardOptionsDto({
           isActive: true,
           language: ALL_TRANSLATIONS,
           tag: undefined,
@@ -197,7 +197,7 @@ describe('CardController', () => {
     it('should return only the active cards', async () => {
       createCards([{ deletedAt: new Date() }, {}], orm);
       const responseObject = await cardController.findAll(
-        new FindAllOptionsDto({
+        new FindAllCardOptionsDto({
           isActive: true,
           language: ALL_TRANSLATIONS,
           tag: undefined,
@@ -213,7 +213,7 @@ describe('CardController', () => {
     it('should return all cards if isActive is true', async () => {
       createCards([{ deletedAt: new Date() }, {}], orm);
       const responseObject = await cardController.findAll(
-        new FindAllOptionsDto({
+        new FindAllCardOptionsDto({
           isActive: false,
           language: ALL_TRANSLATIONS,
           tag: undefined,
@@ -237,7 +237,7 @@ describe('CardController', () => {
         orm,
       );
       const responseObject = await cardController.findAll(
-        new FindAllOptionsDto({
+        new FindAllCardOptionsDto({
           isActive: true,
           language: ALL_TRANSLATIONS,
           tag: tagName,
@@ -339,11 +339,11 @@ describe('CardController', () => {
       );
     });
 
-    it('should create a card with an existing tag', async () => {
+    it('should create a card with an existing tag as UUID', async () => {
       const translation = cardTranslation({});
       const testTag = tag({ name: 'existing tag' }, orm);
       const testCard = new CreateCardDto({
-        tag: testTag.name,
+        tag: testTag.id,
         translations: [translation],
       });
 
@@ -432,7 +432,7 @@ describe('CardController', () => {
       expect(updateResult).toMatchObject(testCard);
     });
 
-    it('should update a card with an existing tag', async () => {
+    it('should update a card with an existing tag as uuid', async () => {
       const testTag = tag({ name: 'existing tag' }, orm);
       const testCard = card({ tag: testTag }, orm);
       const translation = cardTranslation(
@@ -443,7 +443,7 @@ describe('CardController', () => {
       );
       const cardUpdate = new CreateCardDto();
       cardUpdate.translations.push(translation);
-      cardUpdate.tag = testTag.name;
+      cardUpdate.tag = testTag.id;
 
       // Update the card
       testCard.translations.add(translation);

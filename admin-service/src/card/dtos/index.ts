@@ -1,2 +1,2 @@
 export * from './create-card.dto';
-export * from './page-options.dto';
+export * from '../../dtos/page-options.dto';

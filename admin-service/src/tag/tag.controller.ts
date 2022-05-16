@@ -1,4 +1,14 @@
-import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  Query,
+  Req,
+  Res,
+} from '@nestjs/common';
 import {
   ApiBadRequestResponse,
   ApiConflictResponse,
@@ -11,6 +21,9 @@ import {
 import { TagService } from './tag.service';
 import { CreateTagDto } from './dtos/create-tag.dto';
 import { Tag } from './entities/tag.entity';
+import { PageOptionsDto } from '../dtos/page-options.dto';
+import { Request, Response } from 'express';
+import { paginate } from '../helpers/pagination.helper';
 
 @ApiTags('tags')
 @Controller('tags')
@@ -20,8 +33,17 @@ export class TagController {
   @ApiOperation({ summary: 'Get all tags' })
   @ApiOkResponse()
   @Get()
-  async findAll(): Promise<Tag[]> {
-    return await this.tagService.findAll();
+  async findAll(
+    @Query() pageOptions?: PageOptionsDto,
+    @Res({ passthrough: true }) response?: Response,
+    @Req() request?: Request,
+  ): Promise<Tag[]> {
+    return paginate<Tag>(
+      request,
+      response,
+      await this.tagService.findAll(pageOptions),
+      pageOptions,
+    );
   }
 
   @ApiOperation({ summary: 'Get tag by id' })
@@ -30,14 +52,6 @@ export class TagController {
   @Get(':id')
   async findOne(@Param('id') id: string): Promise<Tag> {
     return await this.tagService.findOne(id);
-  }
-
-  @ApiOperation({ summary: 'Get tag by name' })
-  @ApiOkResponse()
-  @ApiNotFoundResponse()
-  @Get(':name')
-  async findOneByName(@Param('name') name: string): Promise<Tag> {
-    return await this.tagService.findOneByName(name);
   }
 
   @ApiOperation({ summary: 'Create tag' })

@@ -9,6 +9,10 @@ export class Tag extends BaseEntity {
   @ApiProperty()
   name: string;
 
+  @Property({ columnType: 'text' })
+  @ApiProperty()
+  description: string;
+
   @OneToMany(() => Card, (card) => card.tag)
   cards = new Collection<Card>(this);
 
