@@ -5,6 +5,7 @@ import { CardController } from './card.controller';
 import { CardService } from './card.service';
 import { useDatabaseTestConfig } from '../../test/helpers/database';
 import { TagModule } from '../tag/tag.module';
+import { CsvParser } from 'nest-csv-parser';
 
 describe('CardModule', () => {
   let module: TestingModule;
@@ -17,7 +18,7 @@ describe('CardModule', () => {
         TagModule,
       ],
       controllers: [CardController],
-      providers: [CardService],
+      providers: [CardService, CsvParser],
     }).compile();
   });
 
@@ -30,5 +31,6 @@ describe('CardModule', () => {
     expect(module.get(CardController)).toBeInstanceOf(CardController);
     expect(module.get(CardService)).toBeInstanceOf(CardService);
     expect(module.get(TagModule)).toBeInstanceOf(TagModule);
+    expect(module.get(CsvParser)).toBeInstanceOf(CsvParser);
   });
 });

@@ -28,6 +28,8 @@ import { TagModule } from '../tag/tag.module';
 import { FindOneOptionsDto } from './dtos/find-one-options.dto';
 import { ALL_TRANSLATIONS } from './constants';
 import { FindAllCardOptionsDto } from './dtos/find-all-card-options.dto';
+import * as fs from 'fs';
+import { CsvParser } from 'nest-csv-parser';
 
 describe('CardController', () => {
   let cardController: CardController;
@@ -43,7 +45,7 @@ describe('CardController', () => {
         TagModule,
       ],
       controllers: [CardController],
-      providers: [CardService],
+      providers: [CardService, CsvParser],
     }).compile();
 
     cardController = module.get<CardController>(CardController);
@@ -408,6 +410,82 @@ describe('CardController', () => {
 
       await expect(cardController.create(testCard)).rejects.toThrow(
         BadRequestException,
+      );
+    });
+  });
+
+  describe('createFromFile', () => {
+    beforeEach(() => {
+      // For these test we assume that the tags already exist.
+      tag({ name: 'White' }, orm);
+      tag({ name: 'Green' }, orm);
+    });
+
+    it('should return a list of cards', async () => {
+      const data = fs.readFileSync('./test/files/test.csv');
+      const fileBuffer: Buffer = Buffer.from(data);
+      const file: Express.Multer.File = {
+        fieldname: 'file',
+        originalname: 'test.csv',
+        encoding: '7bit',
+        mimetype: 'text/csv',
+        buffer: fileBuffer,
+        size: fileBuffer.length,
+      } as Express.Multer.File;
+
+      const result = await cardController.createFromFile(file);
+      expect(result).toHaveLength(2);
+      expect(result).toStrictEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            id: expect.any(String),
+            createdAt: expect.any(Date),
+            updatedAt: expect.any(Date),
+            tag: 'Green',
+            translations: expect.arrayContaining([
+              expect.objectContaining({
+                id: expect.any(String),
+                createdAt: expect.any(Date),
+                updatedAt: expect.any(Date),
+                language: 'nl',
+                text: 'Ik zorgde dat nieuwe rolmodellen de ruimte kregen',
+                isDefaultLanguage: true,
+              }),
+              expect.objectContaining({
+                id: expect.any(String),
+                createdAt: expect.any(Date),
+                updatedAt: expect.any(Date),
+                language: 'en',
+                text: 'I made sure that new role models were given space',
+                isDefaultLanguage: false,
+              }),
+            ]),
+          }),
+          expect.objectContaining({
+            id: expect.any(String),
+            createdAt: expect.any(Date),
+            updatedAt: expect.any(Date),
+            tag: 'White',
+            translations: expect.arrayContaining([
+              expect.objectContaining({
+                id: expect.any(String),
+                createdAt: expect.any(Date),
+                updatedAt: expect.any(Date),
+                language: 'nl',
+                text: 'Ik was een rolmodel voor anderen',
+                isDefaultLanguage: true,
+              }),
+              expect.objectContaining({
+                id: expect.any(String),
+                createdAt: expect.any(Date),
+                updatedAt: expect.any(Date),
+                language: 'en',
+                text: 'I was a role model for others',
+                isDefaultLanguage: false,
+              }),
+            ]),
+          }),
+        ]),
       );
     });
   });
