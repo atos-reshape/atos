@@ -7,8 +7,6 @@ import { ActiveGame } from './ActiveGame';
 
 export function GameView(): JSX.Element {
   const { lobby } = useContext(GameContext);
-  console.log(lobby);
-  console.log('hey');
 
   if (!lobby.currentRound.startedAt)
     return (
