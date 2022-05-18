@@ -28,6 +28,8 @@ import { TagModule } from '../tag/tag.module';
 import { FindOneOptionsDto } from './dtos/find-one-options.dto';
 import { ALL_TRANSLATIONS } from './constants';
 import { FindAllCardOptionsDto } from './dtos/find-all-card-options.dto';
+import * as fs from 'fs';
+import { CsvParser } from 'nest-csv-parser';
 
 describe('CardController', () => {
   let cardController: CardController;
@@ -43,7 +45,7 @@ describe('CardController', () => {
         TagModule,
       ],
       controllers: [CardController],
-      providers: [CardService],
+      providers: [CardService, CsvParser],
     }).compile();
 
     cardController = module.get<CardController>(CardController);
@@ -409,6 +411,31 @@ describe('CardController', () => {
       await expect(cardController.create(testCard)).rejects.toThrow(
         BadRequestException,
       );
+    });
+  });
+
+  describe('createFromFile', () => {
+    beforeEach(() => {
+      // For these test we assume that one of the tags already exist.
+      tag({ name: 'White' }, orm);
+    });
+
+    it('should return a list of cards', async () => {
+      const data = fs.readFileSync('./test/files/test.csv');
+      const fileBuffer: Buffer = Buffer.from(data);
+      const file: Express.Multer.File = {
+        fieldname: 'file',
+        originalname: 'test.csv',
+        encoding: '7bit',
+        mimetype: 'text/csv',
+        buffer: fileBuffer,
+        size: fileBuffer.length,
+      } as Express.Multer.File;
+
+      const result = await cardController.createFromFile(file);
+      expect(result).toHaveLength(2);
+      expect(result[0].translations).toHaveLength(2);
+      expect(result[1].translations).toHaveLength(2);
     });
   });
 

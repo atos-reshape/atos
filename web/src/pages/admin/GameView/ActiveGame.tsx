@@ -1,11 +1,11 @@
 import { List, Tabs } from '@mantine/core';
 import { useContext } from 'react';
 import { GameContext } from './contexts/GameProvider';
-import { Player } from '../../../api/models/Player';
+import { Player } from '../../../api/models';
 import { PlayerView } from '../../../components/PlayerAvatar/PlayerView';
 
 export function ActiveGame() {
-  const { players } = useContext(GameContext);
+  const { players, playerCards } = useContext(GameContext);
 
   return (
     <Tabs
@@ -22,7 +22,13 @@ export function ActiveGame() {
         <List>
           {players.map((player: Player) => {
             // TODO add list of selected cards
-            return <PlayerView player={player} key={player.id} />;
+            return (
+              <PlayerView
+                player={player}
+                key={player.id}
+                cardIds={playerCards[player.id]?.cards || []}
+              />
+            );
           })}
         </List>
       </Tabs.Tab>

@@ -9,11 +9,15 @@ import {
   Query,
   Req,
   Res,
+  UploadedFile,
+  UseInterceptors,
 } from '@nestjs/common';
 import { CardService } from './card.service';
 import {
   ApiBadRequestResponse,
+  ApiBody,
   ApiConflictResponse,
+  ApiConsumes,
   ApiCreatedResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
@@ -23,9 +27,10 @@ import {
 import { CreateCardDto, PageOptionsDto } from './dtos';
 import { Card } from './entities/card.entity';
 import { paginate } from '../helpers/pagination.helper';
-import { Request, Response } from 'express';
+import { Express, Request, Response } from 'express';
 import { FindOneOptionsDto } from './dtos/find-one-options.dto';
 import { FindAllCardOptionsDto } from './dtos/find-all-card-options.dto';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 /**
  * The REST API controller for the card service.
@@ -43,7 +48,7 @@ export class CardController {
     @Query() pageOptions?: PageOptionsDto,
     @Res({ passthrough: true }) response?: Response,
     @Req() request?: Request,
-  ) {
+  ): Promise<Card[]> {
     return paginate<Card>(
       request,
       response,
@@ -70,6 +75,27 @@ export class CardController {
   @Post()
   async create(@Body() card: CreateCardDto): Promise<Card> {
     return this.cardService.create(card);
+  }
+
+  @ApiOperation({ summary: 'Create cards from .csv file' })
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        file: {
+          type: 'string',
+          format: 'binary',
+        },
+      },
+    },
+  })
+  @UseInterceptors(FileInterceptor('file'))
+  @Post('upload')
+  async createFromFile(
+    @UploadedFile() file: Express.Multer.File,
+  ): Promise<Card[]> {
+    return this.cardService.createFromFile(file);
   }
 
   @ApiOperation({ summary: 'Update card' })

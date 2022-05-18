@@ -1,7 +1,7 @@
 import { io, Socket } from 'socket.io-client';
 import { createContext, useEffect, useState } from 'react';
-import { Lobby, Player, Round, SelectedCards } from '../../../../api/models';
-import { AtosLoadingScreen } from '../../../../components/AtosLoadingScreen/AtosLoadingScreen';
+import { Lobby, Player, Round } from '../../../api/models';
+import { AtosLoadingScreen } from '../../../components/AtosLoadingScreen/AtosLoadingScreen';
 
 interface Props {
   children: JSX.Element;
@@ -36,7 +36,6 @@ type ListenEvents = {
   'round.started': (round: Round) => void;
   'round.ended': (round: Round) => void;
   'round.updated': (round: Round) => void;
-  'cards.selected.updated': (selectedCards: SelectedCards) => void;
 };
 
 // These are manually typed send events for type safety.
@@ -63,10 +62,7 @@ const SocketProvider = ({ children, id }: Props) => {
 
     socket.on('connect', () => {
       console.log('Connected');
-      socket.emit('joinLobby', id, (data: { code: string }) => {
-        console.log('Joined lobby:', data.code);
-        setState((state) => ({ ...state, connected: true, socket }));
-      });
+      setState((state) => ({ ...state, connected: true, socket }));
     });
 
     socket.on('disconnect', () => {

@@ -1,39 +1,62 @@
-import { Container, Group, Button, Text, Drawer, Card } from '@mantine/core';
+import { Container, Group, Button, Text } from '@mantine/core';
 import CardTemplate from '../Card/Card';
 import { FaGrinAlt, FaRegFrown } from 'react-icons/fa';
 import { useContext, useState } from 'react';
 import { PlayerGameContext } from '../../hooks/usePlayerGameContext';
 import styles from './PlayerGameView.module.css';
 import DrawerComponent from '../Drawer/Drawer';
+import {
+  useFinishSelecting,
+  useLikeCard,
+  useUnLikeCard
+} from '../../api/requests/selectedCards';
+import { SocketContext } from '../../hooks/useSocketContext';
+import { Card } from '../../api/requests/card';
+import { GameContext } from '../../pages/GameView/contexts/GameProvider';
 
 function PlayerGameView2() {
   const { carouselCards, selectedCards, setSelectedCards } =
     useContext(PlayerGameContext);
+  const { lobby } = useContext(GameContext);
   const [index, setIndex] = useState(0);
+  const likeCard = useLikeCard(String(lobby.currentRound.id));
+  const unLikeCard = useUnLikeCard(String(lobby.currentRound.id));
+  const finishSelecting = useFinishSelecting(String(lobby.currentRound.id));
 
   const renderedCards = carouselCards.filter(
     (card: any) => !selectedCards.includes(card)
   );
+
   function dislike() {
     setIndex(index + 1);
   }
   function like() {
-    if (renderedCards && index < renderedCards.length) {
-      setSelectedCards((selectedCards: any) => [
-        ...selectedCards,
-        renderedCards[index]
-      ]);
-    }
+    likeCard(renderedCards[index].id).then(() => {
+      if (renderedCards && index < renderedCards.length) {
+        setSelectedCards((selectedCards: any) => [
+          ...selectedCards,
+          renderedCards[index]
+        ]);
+      }
+    });
   }
 
   function removeDrawerCard(deletedCardText: string) {
-    setSelectedCards((selectedCards: any) => {
-      return selectedCards.filter((card: any) => card.text !== deletedCardText);
+    const id = selectedCards.find((c: Card) => c.text === deletedCardText)?.id;
+
+    unLikeCard(id).then(() => {
+      setSelectedCards((selectedCards: any) => {
+        return selectedCards.filter(
+          (card: Card) => card.text !== deletedCardText
+        );
+      });
     });
   }
 
   function submitAnswer() {
-    window.location.href = `/results`;
+    finishSelecting().then(() => {
+      window.location.href = `/results`;
+    });
   }
   return (
     <Container size="xs" className={styles.container}>

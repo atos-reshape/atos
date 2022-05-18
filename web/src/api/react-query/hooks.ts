@@ -11,9 +11,6 @@ export const useFetch = <TResponse = any>(
   queryParams?: Record<string, any>,
   options?: UseQueryOptions<TResponse, any>
 ) => {
-  if (process.env.NODE_ENV === 'development')
-    path = 'http://localhost:8000' + path;
-
   return useQuery<TResponse, any>(
     [path, queryParams],
     async ({ queryKey }: any) => {
@@ -27,9 +24,6 @@ export const useCreate = <TResponse = any, TRequest = any>(
   path: string,
   options?: UseMutationOptions<TResponse, any, any>
 ) => {
-  if (process.env.NODE_ENV === 'development')
-    path = 'http://localhost:8000' + path;
-
   return useMutation<TResponse, any, TRequest>(
     [path],
     defaultCreate(path),

@@ -1,13 +1,16 @@
 import { useEffect, useState, createContext } from 'react';
 import { io, Socket } from 'socket.io-client';
 
-const SocketContext = createContext<any>(null);
+const SocketContext = createContext<{
+  state: Lobby | undefined;
+  socket: Socket;
+}>(null as any);
 
 interface Lobby {
   code: string;
   createdAt: string;
   updatedAt: string;
-  currentRound: object;
+  currentRound: { id: string };
   id: string;
   title: string;
 }
@@ -16,10 +19,10 @@ const SocketProvider = ({ children }: { children: JSX.Element }) => {
   const [state, setState] = useState<Lobby | undefined>(undefined);
   let socket: Socket = null as unknown as Socket;
   useEffect(() => {
-    socket = io('http://localhost:8000', {
+    socket = io('', {
       transports: ['websocket'],
       path: '/lobby/',
-      auth: { token: localStorage.getItem('accessTokenAtos') }
+      auth: { token: localStorage.getItem('accessToken') }
     });
 
     socket.on('connect', function () {

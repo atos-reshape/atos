@@ -12,7 +12,7 @@ function JoinGame() {
       { name: playerName },
       {
         onSuccess: (res) => {
-          localStorage.setItem('accessTokenAtos', res.accessToken);
+          localStorage.setItem('accessToken', res.accessToken);
           window.location.href = `/game?id=${res.lobbyId}`;
         },
         onError: (res) => {
