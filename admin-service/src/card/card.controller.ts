@@ -95,6 +95,7 @@ export class CardController {
   async createFromFile(
     @UploadedFile() file: Express.Multer.File,
   ): Promise<Card[]> {
+    console.log(file);
     return this.cardService.createFromFile(file);
   }
 
