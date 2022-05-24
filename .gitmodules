@@ -1,0 +1,4 @@
+[submodule "game-service"]
+	path = game-service
+	url = git@github.com:atos-reshape/game-service.git
+	branch = main
