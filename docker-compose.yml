@@ -30,6 +30,13 @@ services:
     networks:
       - frontend
 
+  admin-frontend-service:
+    build: ./admin
+    restart: always
+    hostname: admin-frontend-service
+    networks:
+      - frontend
+
   admin-service:
     build: ./admin-service
     restart: always

@@ -19,10 +19,12 @@ export const registerProxyGateway = (app: INestApplication) => {
     '/docs/game-service': `http://${process.env.GAME_SERVICE_HOST}:${process.env.GAME_SERVICE_PORT}`,
     // Admin service api proxy
     '/api/cards': `http://${process.env.ADMIN_SERVICE_HOST}:${process.env.ADMIN_SERVICE_PORT}`,
+    '/api/sets': `http://${process.env.ADMIN_SERVICE_HOST}:${process.env.ADMIN_SERVICE_PORT}`,
     '/api/login': `http://${process.env.ADMIN_SERVICE_HOST}:${process.env.ADMIN_SERVICE_PORT}`,
     '/api/tags': `http://${process.env.ADMIN_SERVICE_HOST}:${process.env.ADMIN_SERVICE_PORT}`,
     '/docs/admin-service': `http://${process.env.ADMIN_SERVICE_HOST}:${process.env.ADMIN_SERVICE_PORT}`,
     // Frontend apps
+    '/admin': `http://${process.env.ADMIN_FRONTEND_HOST}:${process.env.ADMIN_FRONTEND_PORT}`,
     '*': `http://${process.env.FRONTEND_HOST}:${process.env.FRONTEND_PORT}`,
   };
 
