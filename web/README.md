@@ -78,17 +78,21 @@ For development, you can use the OpenAPI Swagger documentation available at `loc
 
 The frontend currently has 3 urls.
 
-_For more examples, please refer to the [Documentation](https://example.com)_
+* /join - join lobby url
+* /game - game view for the players
+* /admin/lobbies - Microsoft Active Directories protected url for admins for lobby management.
+This should be moved to the admin view, but we did not have time!
+
+
+_For more examples and information, please refer to the [Documentation](https://example.com)_
 
 <p align="right">(<a href="#top">back to top</a>)</p>
-
 
 <!-- CONTACT -->
 ## Contact
 
-Your Name - [@twitter_handle](https://twitter.com/twitter_handle) - email@email_client.com
-
-Project Link: [https://github.com/github_username/repo_name](https://github.com/github_username/repo_name)
+* Functionality - Rares P. - r.petrisor@student.fontys.nl
+* Functionality & Styling - Vladimir A. - v.abuhnoaei@student.fontys.nl
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
