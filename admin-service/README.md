@@ -11,7 +11,7 @@
   <p align="center">
     The admin microservice for the Atos reshape project.
     <br />
-    <a href="https://github.com/github_username/repo_name"><strong>Explore the docs »</strong></a>
+    <a href="https://github.com/atos-reshape/atos/wiki"><strong>Explore the docs »</strong></a>
     <br />
     <br />
 </div>
