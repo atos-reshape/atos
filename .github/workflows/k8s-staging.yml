@@ -1,0 +1,24 @@
+name: Deploy Staging
+
+on:
+  push:
+    branches:
+      - 'main'
+    paths:
+      - 'k8s/staging/**'
+      - '.github/workflows/k8s-staging.yml'
+
+concurrency: deploy-staging
+
+jobs:
+  deploy:
+    name: Deploy Kubernetes configuration
+    runs-on: self-hosted
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      # Deploy the Docker image to the GKE cluster
+      - name: Deploy
+        run: microk8s kubectl apply -f ./k8s/staging
