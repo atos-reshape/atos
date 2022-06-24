@@ -1,11 +1,9 @@
-# Atos web
-
 <div id="top"></div>
 <!-- PROJECT LOGO -->
 <br />
 <div align="center">
   <a href="https://github.com/github_username/repo_name">
-    <img src="../docs/images/logo.png" alt="Logo" width="200" height="60">
+    <img src="docs/logo.png" alt="Logo" width="200" height="60">
   </a>
 
 <h3 align="center">Frontend</h3>
@@ -21,7 +19,7 @@
 <!-- ABOUT THE PROJECT -->
 ## About The Component
 
-![Product Name Screen Shot](../docs/images/frontend_preview.png)
+![Product Name Screen Shot](./docs/images/frontend_preview.png)
 
 This is the main frontend for the Atos card game. This service handles the main game logic and also currently holds the admin lobby logic (should be moved to the admin-view)
 
@@ -78,21 +76,17 @@ For development, you can use the OpenAPI Swagger documentation available at `loc
 
 The frontend currently has 3 urls.
 
-* /join - join lobby url
-* /game - game view for the players
-* /admin/lobbies - Microsoft Active Directories protected url for admins for lobby management.
-This should be moved to the admin view, but we did not have time!
-
-
-_For more examples and information, please refer to the [Documentation](https://github.com/atos-reshape/atos/wiki/Frontend)_
+_For more examples, please refer to the [Documentation](https://example.com)_
 
 <p align="right">(<a href="#top">back to top</a>)</p>
+
 
 <!-- CONTACT -->
 ## Contact
 
-* Functionality - Rares P. - r.petrisor@student.fontys.nl
-* Functionality & Styling - Vladimir A. - v.abuhnoaei@student.fontys.nl
+Your Name - [@twitter_handle](https://twitter.com/twitter_handle) - email@email_client.com
+
+Project Link: [https://github.com/github_username/repo_name](https://github.com/github_username/repo_name)
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
