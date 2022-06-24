@@ -84,7 +84,7 @@ The frontend currently has 3 urls.
 This should be moved to the admin view, but we did not have time!
 
 
-_For more examples and information, please refer to the [Documentation](https://example.com)_
+_For more examples and information, please refer to the [Documentation](https://github.com/atos-reshape/atos/wiki/Frontend)_
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
